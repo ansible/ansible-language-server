@@ -122,3 +122,7 @@ any level (User, Remote, Workspace and/or Folder).
   have syntax highlighting of Jinja template files, you'll need to install other
   extension.
 - Jinja *blocks* (inside Ansible YAML files) are not supported yet.
+
+## Credit
+
+Based on the good work done by [Tomasz Maciążek](https://github.com/tomaciazek/vscode-ansible)
