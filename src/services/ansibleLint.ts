@@ -50,7 +50,7 @@ export class AnsibleLint {
   public async doValidate(
     textDocument: TextDocument
   ): Promise<Map<string, Diagnostic[]>> {
-    const docPath = new URL(textDocument.uri).pathname;
+    const docPath = decodeURI(new URL(textDocument.uri).pathname);
     let diagnostics: Map<string, Diagnostic[]> = new Map();
     let progressTracker;
     if (this.useProgressTracker) {
@@ -61,7 +61,9 @@ export class AnsibleLint {
       textDocument.uri
     );
 
-    const workingDirectory = new URL(this.context.workspaceFolder.uri).pathname;
+    const workingDirectory = decodeURI(
+      new URL(this.context.workspaceFolder.uri).pathname
+    );
 
     try {
       const settings = await this.context.documentSettings.get(
@@ -79,7 +81,7 @@ export class AnsibleLint {
 
         const [command, env] = withInterpreter(
           settings.ansibleLint.path,
-          `${settings.ansibleLint.arguments} --offline --nocolor -f codeclimate ${docPath}`,
+          `${settings.ansibleLint.arguments} --offline --nocolor -f codeclimate "${docPath}"`,
           settings.python.interpreterPath,
           settings.python.activationScript
         );
@@ -192,8 +194,8 @@ export class AnsibleLint {
                 }
               }
             }
-
-            const locationUri = `file://${workingDirectory}/${item.location.path}`;
+            const path = `${workingDirectory}/${item.location.path}`;
+            const locationUri = `file://${encodeURI(path)}`;
 
             let fileDiagnostics = diagnostics.get(locationUri);
             if (!fileDiagnostics) {
