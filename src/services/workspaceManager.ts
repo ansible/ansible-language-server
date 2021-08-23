@@ -8,6 +8,7 @@ import {
 } from 'vscode-languageserver';
 import { AnsibleConfig } from './ansibleConfig';
 import { AnsibleLint } from './ansibleLint';
+import { AnsibleSyntaxCheck } from './ansibleSyntaxCheck';
 import { DocsLibrary } from './docsLibrary';
 import { MetadataLibrary } from './metadataLibrary';
 import { SettingsManager } from './settingsManager';
@@ -111,6 +112,7 @@ export class WorkspaceFolderContext {
   private _docsLibrary: Thenable<DocsLibrary> | undefined;
   private _ansibleConfig: Thenable<AnsibleConfig> | undefined;
   private _ansibleLint: AnsibleLint | undefined;
+  private _ansibleSyntaxCheck: AnsibleSyntaxCheck | undefined;
 
   constructor(
     connection: Connection,
@@ -174,5 +176,12 @@ export class WorkspaceFolderContext {
       this._ansibleLint = new AnsibleLint(this.connection, this);
     }
     return this._ansibleLint;
+  }
+
+  public get ansibleSyntaxCheck(): AnsibleSyntaxCheck {
+    if (!this._ansibleSyntaxCheck) {
+      this._ansibleSyntaxCheck = new AnsibleSyntaxCheck(this.connection, this);
+    }
+    return this._ansibleSyntaxCheck;
   }
 }
