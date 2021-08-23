@@ -11,6 +11,7 @@ import { TextDocument } from 'vscode-languageserver-textdocument';
 import { ValidationManager } from '../services/validationManager';
 import { WorkspaceFolderContext } from '../services/workspaceManager';
 import { parseAllDocuments } from '../utils/yaml';
+import { libraryChecker } from '../utils/libraryChecker';
 
 /**
  * Validates the given document.
@@ -32,8 +33,21 @@ export async function doValidate(
       validationManager.getValidationFromCache(textDocument.uri) ||
       new Map<string, Diagnostic[]>();
   } else {
-    // full validation with ansible-lint
-    diagnosticsByFile = await context.ansibleLint.doValidate(textDocument);
+    // full validation with ansible-lint or ansible syntax-check (if ansible-lint is not installed or disabled)
+
+    const lintAvailability = libraryChecker('ansible-lint', '--version');
+
+    if (await lintAvailability) {
+      console.debug('Validating using ansible-lint');
+      diagnosticsByFile = await context.ansibleLint.doValidate(textDocument);
+    }
+
+    if (!diagnosticsByFile || !(await lintAvailability))
+      console.debug('Validating using ansible syntax-check');
+    diagnosticsByFile = await context.ansibleSyntaxCheck.doValidate(
+      textDocument
+    );
+
     if (!diagnosticsByFile.has(textDocument.uri)) {
       // In case there are no diagnostics for the file that triggered the
       // validation, set an empty array in order to clear the validation.
