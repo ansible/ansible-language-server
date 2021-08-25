@@ -59,7 +59,7 @@ export class AnsibleSyntaxCheck {
       }
 
       const [command, env] = withInterpreter(
-        settings.ansiblePlaybook.path,
+        `${settings.ansible.path}-playbook`,
         `${docPath} --syntax-check`,
         settings.python.interpreterPath,
         settings.python.activationScript
