@@ -42,11 +42,12 @@ export async function doValidate(
       diagnosticsByFile = await context.ansibleLint.doValidate(textDocument);
     }
 
-    if (!diagnosticsByFile || !(await lintAvailability))
+    if (!diagnosticsByFile || !(await lintAvailability)) {
       console.debug('Validating using ansible syntax-check');
-    diagnosticsByFile = await context.ansibleSyntaxCheck.doValidate(
-      textDocument
-    );
+      diagnosticsByFile = await context.ansibleSyntaxCheck.doValidate(
+        textDocument
+      );
+    }
 
     if (!diagnosticsByFile.has(textDocument.uri)) {
       // In case there are no diagnostics for the file that triggered the
