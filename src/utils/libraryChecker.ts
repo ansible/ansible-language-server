@@ -16,11 +16,6 @@ export async function libraryChecker(
     });
   } catch (error) {
     if (error instanceof Error) {
-      error as ExecException & {
-        // according to the docs, these are always available
-        stdout: string;
-        stderr: string;
-      };
       success = false;
     }
   }

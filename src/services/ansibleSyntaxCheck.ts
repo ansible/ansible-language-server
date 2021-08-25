@@ -6,12 +6,10 @@ import {
   Connection,
   Diagnostic,
   DiagnosticSeverity,
-  DidChangeWatchedFilesParams,
   Position,
   Range,
 } from 'vscode-languageserver';
 import { TextDocument } from 'vscode-languageserver-textdocument';
-import { IAnsibleLintConfig } from '../interfaces/ansibleLintConfig';
 import { withInterpreter } from '../utils/misc';
 import { WorkspaceFolderContext } from './workspaceManager';
 const exec = promisify(child_process.exec);
@@ -19,15 +17,11 @@ const exec = promisify(child_process.exec);
 /**
  * Acts as and interface to ansible syntax check and a cache of its output.
  *
- * ansible syntax-check may provide diagnostics for more than just the file for which
- * linting was triggered, and this is reflected in the implementation.
  */
 export class AnsibleSyntaxCheck {
   private connection: Connection;
   private context: WorkspaceFolderContext;
   private useProgressTracker = false;
-
-  private configCache: Map<string, IAnsibleLintConfig> = new Map();
 
   constructor(connection: Connection, context: WorkspaceFolderContext) {
     this.connection = connection;
@@ -38,12 +32,6 @@ export class AnsibleSyntaxCheck {
 
   /**
    * Perform ansible syntax-check for the given document.
-   *
-   * In case no errors are found for the current document, and linting has been
-   * performed on opening the document, then only the cache is cleared, and not
-   * the diagnostics on the client side. That way old diagnostics will persist
-   * until the file is changed. This allows inspecting more complex errors
-   * reported in other files.
    */
   public async doValidate(
     textDocument: TextDocument
@@ -64,7 +52,7 @@ export class AnsibleSyntaxCheck {
 
       if (progressTracker) {
         progressTracker.begin(
-          'ansible syntex-check',
+          'ansible syntax-check',
           undefined,
           'Processing files...'
         );
@@ -90,6 +78,7 @@ export class AnsibleSyntaxCheck {
           stderr: string;
         };
 
+        // This is the regex to extract the filename, line and column number from the strerr produced by syntax-check command
         const ansibleSyntaxCheckRegex =
           /The error appears to be in '(?<filename>.*)': line (?<line>\d+), column (?<column>\d+)/;
 
@@ -167,7 +156,6 @@ export class AnsibleSyntaxCheck {
         source: 'Ansible',
       });
     } catch (error) {
-      // console.debug(error);
       this.connection.window.showErrorMessage(
         'Could not parse ansible syntax-check output. Please check your ansible installation & configuration.' +
           ' More info in `Ansible Server` output.'
@@ -184,14 +172,5 @@ export class AnsibleSyntaxCheck {
       );
     }
     return diagnostics;
-  }
-
-  public handleWatchedDocumentChange(
-    params: DidChangeWatchedFilesParams
-  ): void {
-    for (const fileEvent of params.changes) {
-      // remove from cache on any change
-      this.configCache.delete(fileEvent.uri);
-    }
   }
 }
