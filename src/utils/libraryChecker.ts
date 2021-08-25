@@ -1,5 +1,4 @@
 import * as child_process from 'child_process';
-import { ExecException } from 'child_process';
 import { promisify } from 'util';
 
 const exec = promisify(child_process.exec);
