@@ -11,14 +11,17 @@ import {
 } from 'vscode-languageserver';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { withInterpreter } from '../utils/misc';
+import { AnsiblePlaybook } from './ansiblePlaybook';
 import { WorkspaceFolderContext } from './workspaceManager';
 const exec = promisify(child_process.exec);
 
 /**
  * Acts as and interface to ansible syntax check and a cache of its output.
  *
+ * ansible syntax-check may provide diagnostics for more than just the file for which
+ * it was triggered, and this is reflected in the implementation.
  */
-export class AnsibleSyntaxCheck {
+export class AnsibleSyntaxChecker {
   private connection: Connection;
   private context: WorkspaceFolderContext;
   private useProgressTracker = false;

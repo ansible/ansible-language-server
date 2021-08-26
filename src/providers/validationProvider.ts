@@ -44,7 +44,7 @@ export async function doValidate(
 
     if (!diagnosticsByFile || !(await lintAvailability)) {
       console.debug('Validating using ansible syntax-check');
-      diagnosticsByFile = await context.ansibleSyntaxCheck.doValidate(
+      diagnosticsByFile = await context.ansibleSyntaxChecker.doValidate(
         textDocument
       );
     }
