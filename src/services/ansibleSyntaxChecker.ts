@@ -11,6 +11,10 @@ import {
 } from 'vscode-languageserver';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { withInterpreter } from '../utils/misc';
+<<<<<<< HEAD
+=======
+import { AnsiblePlaybook } from './ansiblePlaybook';
+>>>>>>> 6600347 (Rename ansibleSyntaxCheck service to ansibleSyntaxChecker)
 import { WorkspaceFolderContext } from './workspaceManager';
 const exec = promisify(child_process.exec);
 
