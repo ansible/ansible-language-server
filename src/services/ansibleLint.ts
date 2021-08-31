@@ -116,11 +116,6 @@ export class AnsibleLint {
 
         if (result.stderr) {
           this.connection.console.info(`[ansible-lint] ${result.stderr}`);
-        } else {
-          console.debug(
-            'Ansible-lint is disabled. Falling back to ansible syntax-check'
-          );
-          return;
         }
       } catch (error) {
         if (error instanceof Error) {
@@ -152,6 +147,11 @@ export class AnsibleLint {
       if (progressTracker) {
         progressTracker.done();
       }
+    } else {
+      console.debug(
+        'Ansible-lint is disabled. Falling back to ansible syntax-check'
+      );
+      return;
     }
     return diagnostics;
   }
