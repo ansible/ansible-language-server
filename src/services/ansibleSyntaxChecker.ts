@@ -11,7 +11,6 @@ import {
 } from 'vscode-languageserver';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { withInterpreter } from '../utils/misc';
-import { AnsiblePlaybook } from './ansiblePlaybook';
 import { WorkspaceFolderContext } from './workspaceManager';
 const exec = promisify(child_process.exec);
 
