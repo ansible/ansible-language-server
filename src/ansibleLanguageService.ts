@@ -92,6 +92,10 @@ export class AnsibleLanguageService {
     });
 
     this.connection.onInitialized(() => {
+      this.connection.window.showInformationMessage(
+        'Hello from local server (Priyam)!'
+      );
+      console.debug('Test check');
       if (this.workspaceManager.clientCapabilities.workspace?.configuration) {
         // register for all configuration changes
         this.connection.client.register(
