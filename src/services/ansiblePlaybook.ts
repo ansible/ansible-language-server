@@ -15,12 +15,9 @@ import { WorkspaceFolderContext } from './workspaceManager';
 const exec = promisify(child_process.exec);
 
 /**
- * Acts as and interface to ansible syntax check and a cache of its output.
- *
- * ansible syntax-check may provide diagnostics for more than just the file for which
- * it was triggered, and this is reflected in the implementation.
+ * Acts as an interface to ansible-playbook command.
  */
-export class AnsibleSyntaxChecker {
+export class AnsiblePlaybook {
   private connection: Connection;
   private context: WorkspaceFolderContext;
   private useProgressTracker = false;
@@ -33,6 +30,10 @@ export class AnsibleSyntaxChecker {
   }
 
   /**
+   * Acts as an interface to ansible-playbook <file> --syntax-check command and a cache of its output.
+   * ansible syntax-check may provide diagnostics for more than just the file for which
+   * it was triggered, and this is reflected in the implementation.
+   *
    * Perform ansible syntax-check for the given document.
    */
   public async doValidate(
