@@ -11,7 +11,7 @@ import { TextDocument } from 'vscode-languageserver-textdocument';
 import { ValidationManager } from '../services/validationManager';
 import { WorkspaceFolderContext } from '../services/workspaceManager';
 import { parseAllDocuments } from '../utils/yaml';
-import { libraryChecker } from '../utils/libraryChecker';
+import { getExecutablePath } from '../utils/misc';
 
 /**
  * Validates the given document.
@@ -35,7 +35,7 @@ export async function doValidate(
   } else {
     // full validation with ansible-lint or ansible syntax-check (if ansible-lint is not installed or disabled)
 
-    const lintAvailability = libraryChecker('ansible-lint', '--version');
+    const lintAvailability = getExecutablePath('ansible-lint');
 
     if (await lintAvailability) {
       console.debug('Validating using ansible-lint');
