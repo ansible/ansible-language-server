@@ -39,10 +39,12 @@ export class AnsiblePlaybook {
   ): Promise<Map<string, Diagnostic[]>> {
     const docPath = new URL(textDocument.uri).pathname;
     let diagnostics: Map<string, Diagnostic[]> = new Map();
-    let progressTracker;
-    if (this.useProgressTracker) {
-      progressTracker = await this.connection.window.createWorkDoneProgress();
-    }
+    const progressTracker = this.useProgressTracker
+      ? await this.connection.window.createWorkDoneProgress()
+      : {
+          begin: () => {}, // eslint-disable-line @typescript-eslint/no-empty-function
+          done: () => {}, // eslint-disable-line @typescript-eslint/no-empty-function
+        };
 
     const workingDirectory = new URL(this.context.workspaceFolder.uri).pathname;
 
@@ -51,13 +53,11 @@ export class AnsiblePlaybook {
         textDocument.uri
       );
 
-      if (progressTracker) {
-        progressTracker.begin(
-          'ansible syntax-check',
-          undefined,
-          'Processing files...'
-        );
-      }
+      progressTracker.begin(
+        'ansible syntax-check',
+        undefined,
+        'Processing files...'
+      );
 
       const [command, env] = withInterpreter(
         `${settings.ansible.path}-playbook`,
@@ -106,9 +106,7 @@ export class AnsiblePlaybook {
       }
     }
 
-    if (progressTracker) {
-      progressTracker.done();
-    }
+    progressTracker.done();
     return diagnostics;
   }
 
