@@ -35,14 +35,15 @@ export async function doValidate(
   } else {
     // full validation with ansible-lint or ansible syntax-check (if ansible-lint is not installed or disabled)
 
-    const lintAvailability = getExecutablePath('ansible-lint');
+    const lintAvailability = await getExecutablePath('ansible-lint');
+    console.debug('Path for lint: ', lintAvailability);
 
-    if (await lintAvailability) {
+    if (lintAvailability) {
       console.debug('Validating using ansible-lint');
       diagnosticsByFile = await context.ansibleLint.doValidate(textDocument);
     }
 
-    if (!diagnosticsByFile || !(await lintAvailability)) {
+    if (!diagnosticsByFile || !lintAvailability) {
       console.debug('Validating using ansible syntax-check');
       diagnosticsByFile = await context.ansibleSyntaxChecker.doValidate(
         textDocument
