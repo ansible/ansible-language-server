@@ -18,15 +18,13 @@ const exec = promisify(child_process.exec);
  * Acts as an interface to ansible-playbook command.
  */
 export class AnsiblePlaybook {
-  private connection: Connection;
-  private context: WorkspaceFolderContext;
   private useProgressTracker = false;
 
-  constructor(connection: Connection, context: WorkspaceFolderContext) {
-    this.connection = connection;
-    this.context = context;
-    this.useProgressTracker =
-      !!context.clientCapabilities.window?.workDoneProgress;
+  constructor(private connection: Connection, private context: WorkspaceFolderContext) {
+    this.useProgressTracker = !!context
+      .clientCapabilities
+      .window?
+      .workDoneProgress;
   }
 
   /**
