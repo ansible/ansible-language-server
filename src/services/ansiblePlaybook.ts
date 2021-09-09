@@ -123,53 +123,33 @@ export class AnsiblePlaybook {
       );
       return diagnostics;
     }
-    try {
-      const start: Position = {
-        line: line - 1,
-        character: column - 1,
-      };
-      const end: Position = {
-        line: line - 1,
-        character: Number.MAX_SAFE_INTEGER,
-      };
-      const range: Range = {
-        start: start,
-        end: end,
-      };
+    const start: Position = {
+      line: line - 1,
+      character: column - 1,
+    };
+    const end: Position = {
+      line: line - 1,
+      character: Number.MAX_SAFE_INTEGER,
+    };
+    const range: Range = {
+      start,
+      end,
+    };
 
-      const severity: DiagnosticSeverity = DiagnosticSeverity.Error;
+    const severity: DiagnosticSeverity = DiagnosticSeverity.Error;
 
-      const locationUri = `file://${fileName}`;
+    const locationUri = `file://${fileName}`;
 
-      let fileDiagnostics = diagnostics.get(locationUri);
-      if (!fileDiagnostics) {
-        fileDiagnostics = [];
-        diagnostics.set(locationUri, fileDiagnostics);
-      }
+    const fileDiagnostics = diagnostics.get(locationUri) || [];
 
-      const message: string = result;
-      fileDiagnostics.push({
-        message: message,
-        range: range || Range.create(0, 0, 0, 0),
-        severity: severity,
-        source: 'Ansible',
-      });
-    } catch (error) {
-      this.connection.window.showErrorMessage(
-        'Could not parse ansible syntax-check output. Please check your ansible installation & configuration.' +
-          ' More info in `Ansible Server` output.'
-      );
-      let message: string;
-      if (error instanceof Error) {
-        message = error.message;
-      } else {
-        message = JSON.stringify(error);
-      }
-      this.connection.console.error(
-        `Exception while parsing ansible syntax-check output: ${message}` +
-          `\nTried to parse the following:\n${result}`
-      );
-    }
+    fileDiagnostics.push({
+      message: result,
+      range,
+      severity,
+      source: 'Ansible',
+    });
+
+    diagnostics.set(locationUri, fileDiagnostics);
     return diagnostics;
   }
 }
