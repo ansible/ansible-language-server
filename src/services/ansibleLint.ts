@@ -57,7 +57,12 @@ export class AnsibleLint {
 
     const settings = await this.context.documentSettings.get(textDocument.uri);
 
-    if (settings.ansibleLint.enabled) {
+    if (!settings.ansibleLint.enabled) {
+      console.debug(
+        'Ansible-lint is disabled. Falling back to ansible syntax-check'
+      );
+      return;
+    } else {
       let linterArguments = settings.ansibleLint.arguments;
 
       // Determine linter config file
@@ -155,11 +160,6 @@ export class AnsibleLint {
       if (progressTracker) {
         progressTracker.done();
       }
-    } else {
-      console.debug(
-        'Ansible-lint is disabled. Falling back to ansible syntax-check'
-      );
-      return;
     }
     return diagnostics;
   }
