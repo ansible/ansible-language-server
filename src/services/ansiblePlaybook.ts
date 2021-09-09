@@ -19,11 +19,12 @@ const exec = promisify(child_process.exec);
 export class AnsiblePlaybook {
   private useProgressTracker = false;
 
-  constructor(private connection: Connection, private context: WorkspaceFolderContext) {
-    this.useProgressTracker = !!context
-      .clientCapabilities
-      .window?
-      .workDoneProgress;
+  constructor(
+    private connection: Connection,
+    private context: WorkspaceFolderContext
+  ) {
+    this.useProgressTracker =
+      !!context.clientCapabilities.window?.workDoneProgress;
   }
 
   /**
