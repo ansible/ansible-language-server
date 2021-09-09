@@ -1,5 +1,4 @@
 import * as child_process from 'child_process';
-import { ExecException } from 'child_process';
 import { URL } from 'url';
 import { promisify } from 'util';
 import {
@@ -73,7 +72,7 @@ export class AnsiblePlaybook {
       });
     } catch (error) {
       if (error instanceof Error) {
-        const execError = error as ExecException & {
+        const execError = error as child_process.ExecException & {
           // according to the docs, these are always available
           stdout: string;
           stderr: string;
