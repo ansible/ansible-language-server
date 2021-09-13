@@ -48,24 +48,22 @@ export class AnsiblePlaybook {
 
     const workingDirectory = new URL(this.context.workspaceFolder.uri).pathname;
 
+    const settings = await this.context.documentSettings.get(textDocument.uri);
+
+    progressTracker.begin(
+      'ansible syntax-check',
+      undefined,
+      'Processing files...'
+    );
+
+    const [command, env] = withInterpreter(
+      `${settings.ansible.path}-playbook`,
+      `${docPath} --syntax-check`,
+      settings.python.interpreterPath,
+      settings.python.activationScript
+    );
+
     try {
-      const settings = await this.context.documentSettings.get(
-        textDocument.uri
-      );
-
-      progressTracker.begin(
-        'ansible syntax-check',
-        undefined,
-        'Processing files...'
-      );
-
-      const [command, env] = withInterpreter(
-        `${settings.ansible.path}-playbook`,
-        `${docPath} --syntax-check`,
-        settings.python.interpreterPath,
-        settings.python.activationScript
-      );
-
       await exec(command, {
         encoding: 'utf-8',
         cwd: workingDirectory,
