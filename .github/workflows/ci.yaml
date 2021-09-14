@@ -1,0 +1,44 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+          # See https://github.com/ansible/ansible-language-server/issues/26
+          # - windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Use Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: "12"
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          npm run check-dependencies
+
+      - name: Run build
+        run: npm run compile
+
+      - name: Run test
+        run: npm test
+
+      # extra safety measure that ensures code was not modified during build
+      - name: Ensure the job does not produce non-checked-in files
+        run: git diff --exit-code
