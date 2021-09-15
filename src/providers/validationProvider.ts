@@ -35,7 +35,9 @@ export async function doValidate(
   } else {
     // full validation with ansible-lint or ansible syntax-check (if ansible-lint is not installed or disabled)
 
-    const lintAvailability = await getExecutablePath('ansible-lint');
+    const settings = await context.documentSettings.get(textDocument.uri);
+
+    const lintAvailability = await getExecutablePath(settings.ansibleLint.path);
     console.debug('Path for lint: ', lintAvailability);
 
     if (lintAvailability) {
