@@ -30,6 +30,11 @@ jobs:
           ansible-ansible-language-server-*.tgz
 
   test:
+    name: >-
+      NodeJS ${{ matrix.node-version }} / ${{ matrix.os }}${{
+        fromJSON(matrix.experimental) && '[experimental]' || ''
+      }}
+
     needs:
     - build
 
@@ -40,9 +45,9 @@ jobs:
         experimental:
         - false
         node-version:
-        - 16.x
-        - 14.x
-        - 12.x
+        - 16
+        - 14
+        - 12
         os:
         - Ubuntu
         - macOS
@@ -90,16 +95,13 @@ jobs:
       run: npm test
 
   publish:
+    name: Publish to Npmjs and GHNR
+
     environment: release
     needs:
     - test
 
     runs-on: Ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version:
-        - 16.x
 
     steps:
     - name: Fetch the GHA artifact with the package tarball
@@ -108,12 +110,9 @@ jobs:
         name: npm-package-tarball
         path: .
 
-    - name: >-
-        Set up NodeJS ${{ matrix.node-version }}
-        with the global NPM registry
+    - name: Set up NodeJS with the global NPM registry
       uses: actions/setup-node@v2
       with:
-        node-version: ${{ matrix.node-version }}
         registry-url: https://registry.npmjs.org
     - name: >-
         Publish the prebuilt and tested package
@@ -122,12 +121,9 @@ jobs:
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-    - name: >-
-        Set up NodeJS ${{ matrix.node-version }}
-        with the GitHub Packages NPM registry
+    - name: Set up NodeJS with the GitHub Packages NPM registry
       uses: actions/setup-node@v2
       with:
-        node-version: ${{ matrix.node-version }}
         registry-url: https://npm.pkg.github.com
     - name: >-
         Publish the prebuilt and tested package
