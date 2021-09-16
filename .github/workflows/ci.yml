@@ -32,7 +32,7 @@ jobs:
   test:
     name: >-
       NodeJS ${{ matrix.node-version }} / ${{ matrix.os }}${{
-        fromJSON(matrix.experimental) && '[experimental]' || ''
+        fromJSON(matrix.experimental) && ' [XFAIL]' || ''
       }}
 
     needs:
