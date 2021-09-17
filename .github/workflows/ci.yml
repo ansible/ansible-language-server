@@ -9,7 +9,7 @@ jobs:
   build:
     name: Build
 
-    runs-on: Ubuntu-latest
+    runs-on: ubuntu-latest
 
     steps:
     - name: Fetch the src
@@ -40,19 +40,19 @@ jobs:
         experimental:
         - false
         node-version:
-        - 16.x
-        - 14.x
-        - 12.x
+        - 12
         os:
-        - Ubuntu
-        - macOS
+        - ubuntu
+        - macos
         include:
         - experimental: true
           node-version: 16
-          os: Windows
+          os: windows
         - experimental: true
           node-version: 12
-          os: Windows
+          os: windows
+        - node-versionm: 16
+          os: ubuntu
 
     continue-on-error: ${{ matrix.experimental }}
 
@@ -99,7 +99,7 @@ jobs:
     strategy:
       matrix:
         node-version:
-        - 16.x
+        - 16
 
     steps:
     - name: Fetch the GHA artifact with the package tarball
@@ -135,4 +135,3 @@ jobs:
       run: npm publish ansible-ansible-language-server-*.tgz
       env:
         NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-...
