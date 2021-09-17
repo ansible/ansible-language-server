@@ -9,6 +9,8 @@ jobs:
   build:
     name: Build
 
+    # avoid duplicate builds for internal pull-requests
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != 'ansible/ansible-language-server'
     runs-on: Ubuntu-latest
 
     steps:
