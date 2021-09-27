@@ -41,9 +41,6 @@ export class AnsibleLanguageService {
   constructor(connection: Connection, documents: TextDocuments<TextDocument>) {
     this.connection = connection;
     this.documents = documents;
-    console.log('--inside AnsibleLanguageService--')
-    console.log(documents)
-
     this.workspaceManager = new WorkspaceManager(connection);
     this.validationManager = new ValidationManager(connection, documents);
   }

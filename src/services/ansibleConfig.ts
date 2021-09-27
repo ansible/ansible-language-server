@@ -1,17 +1,14 @@
-import * as child_process from 'child_process';
 import * as ini from 'ini';
 import * as _ from 'lodash';
 import * as path from 'path';
-import { URI } from 'vscode-uri';
 import { Connection } from 'vscode-languageserver';
-import { withInterpreter } from '../utils/misc';
 import { WorkspaceFolderContext } from './workspaceManager';
 import { CommandRunner } from '../utils/commandRunner';
 
 export class AnsibleConfig {
   private connection: Connection;
   private context: WorkspaceFolderContext;
-  _collection_paths: string[] = [];
+  private  _collection_paths: string[] = [];
   private _module_locations: string[] = [];
   private _ansible_location = '';
 
