@@ -1,6 +1,3 @@
-import * as child_process from 'child_process';
-import * as ini from 'ini';
-import * as _ from 'lodash';
 import * as path from 'path';
 import { URL } from 'url';
 import { Connection } from 'vscode-languageserver';
@@ -12,16 +9,16 @@ export class CommandRunner {
     private connection: Connection;
     private context: WorkspaceFolderContext;
     private settings: ExtensionSettings;
-  
+
     constructor(connection: Connection, context: WorkspaceFolderContext, settings: ExtensionSettings) {
       this.connection = connection;
       this.context = context;
       this.settings = settings;
     }
-    
+
     public async runCommand(
       executable: string,
-      args: string, 
+      args: string,
       workingDirectory?: string
       ): Promise<{
         stdout: string,
@@ -52,7 +49,7 @@ export class CommandRunner {
         command = executionEnvironment.wrapContainerArgs(`${executable} ${args}`);
         runEnv = undefined
       }
-      
+
       const currentWorkingDirectory = workingDirectory ? workingDirectory : decodeURI(new URL(this.context.workspaceFolder.uri).pathname)
       const result = await asyncExec(command, {
         encoding: 'utf-8',
@@ -63,4 +60,4 @@ export class CommandRunner {
       return result
     }
   }
-  
+

@@ -61,7 +61,7 @@ export async function doCompletion(
   // NOTE: Might no longer be required due to the hack above
   const path = getPathAt(document, position, yamlDocs, true);
   if (path) {
-    const node = path[path.length - 1];  
+    const node = path[path.length - 1];
     if (node) {
       const docsLibrary = await context.docsLibrary;
 

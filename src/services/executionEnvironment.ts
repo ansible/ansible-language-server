@@ -15,7 +15,7 @@ export class ExecutionEnvironment {
     private _container_engine: IContianerEngine;
     private _container_image: string;
     private _container_image_id: string;
-  
+
     constructor(connection: Connection, context: WorkspaceFolderContext) {
       this.connection = connection;
       this.context = context;
@@ -28,7 +28,7 @@ export class ExecutionEnvironment {
         );
         this._container_image = settings.executionEnvironment.image
         this._container_engine = settings.executionEnvironment.containerEngine
-        if (this._container_engine === 'auto') {       
+        if (this._container_engine === 'auto') {
           for (const ce of ['podman', 'docker']) {
               try {
                 child_process.execSync(`which ${ce}`, {
@@ -45,7 +45,7 @@ export class ExecutionEnvironment {
           try {
             child_process.execSync(`which ${this._container_engine}`, {
               encoding: 'utf-8'
-            })            
+            })
           } catch (error) {
             this.connection.window.showErrorMessage(`Container engine '${this._container_engine}' not found. Failed with error '${error}'`)
             return
@@ -76,13 +76,13 @@ export class ExecutionEnvironment {
               );
             }
         }
-      
+
     }
 
     async fetchPluginDocs(): Promise<void> {
       const ansibleConfig = await this.context.ansibleConfig;
       const containerName = `${this._container_image.replace(/[^a-z0-9]/ig, '_')}`
-      
+
       try {
         const containerImageIdCommand = `${this._container_engine} images ${this._container_image} --format="{{.ID}}" | head -n 1`
         this.connection.console.log(containerImageIdCommand)
@@ -94,7 +94,7 @@ export class ExecutionEnvironment {
         if (!this.runContainer(containerName)) {
           return
         }
-        
+
         if (fs.existsSync(hostCacheBasePath)) {
           ansibleConfig.collections_paths = this.updateCachePaths(ansibleConfig.collections_paths, hostCacheBasePath)
           ansibleConfig.module_locations = this.updateCachePaths(ansibleConfig.module_locations, hostCacheBasePath)
@@ -132,7 +132,7 @@ export class ExecutionEnvironment {
         this.cleanUpContainer(containerName)
       }
     }
-    
+
     public wrapContainerArgs(command: string): string {
       const workspaceFolderPath = URI.parse(this.context.workspaceFolder.uri).path
       const containerCommand: Array<string> = [this._container_engine]
@@ -208,7 +208,7 @@ export class ExecutionEnvironment {
       contianerPluginPaths: string[],
       searchKind: string
       ): Promise<string[]> {
-      
+
       const updatedHostDocPath: string[] = []
       if (fs.existsSync(hostPluginDocCacheBasePath)) {
         contianerPluginPaths.forEach((srcPath) => {

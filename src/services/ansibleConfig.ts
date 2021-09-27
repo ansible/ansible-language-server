@@ -22,9 +22,9 @@ export class AnsibleConfig {
       const settings = await this.context.documentSettings.get(
         this.context.workspaceFolder.uri
       );
-      
+
       const commandRunner = new CommandRunner(this.connection, this.context, settings)
-      
+
       // get Ansible configuration
       const ansibleConfigResult = await commandRunner.runCommand(
         'ansible-config',
@@ -75,7 +75,7 @@ export class AnsibleConfig {
   set collections_paths(updatedCollectionPath: string[]) {
     this._collection_paths = updatedCollectionPath;
   }
-  
+
   get collections_paths(): string[] {
     return this._collection_paths;
   }
