@@ -55,18 +55,13 @@ jobs:
         experimental:
         - false
         node-version:
-        - 16.x
-        - 14.x
         - 12.x
         os:
         - Ubuntu
         - macOS
         include:
         - experimental: true
-          node-version: 16
-          os: Windows
-        - experimental: true
-          node-version: 12
+          node-version: 12.x
           os: Windows
 
     continue-on-error: ${{ matrix.experimental }}
@@ -101,7 +96,22 @@ jobs:
 
     - name: Populate the test dependencies
       run: npm ci
-    - name: Run testing against the Git checkout
+
+    - name: Run testing against the Git checkout (node 12)
+      run: npm test
+
+    - name: Enable node 14
+      uses: actions/setup-node@v2
+      with:
+        node-version: 14.x
+    - name: Run testing against the Git checkout (node 14)
+      run: npm test
+
+    - name: Enable node 16
+      uses: actions/setup-node@v2
+      with:
+        node-version: 16.x
+    - name: Run testing against the Git checkout (node 16)
       run: npm test
 
   publish:
