@@ -49,10 +49,6 @@ export async function doCompletion(
   context: WorkspaceFolderContext
 ): Promise<CompletionItem[] | null> {
   let preparedText = document.getText();
-  console.log('--doCompletion--')
-  console.log(document)
-  console.log(position)
-  console.log(context)
   const offset = document.offsetAt(position);
   // HACK: We need to insert a dummy mapping, so that the YAML parser can properly recognize the scope.
   // This is particularly important when parser has nothing more than
@@ -65,8 +61,7 @@ export async function doCompletion(
   // NOTE: Might no longer be required due to the hack above
   const path = getPathAt(document, position, yamlDocs, true);
   if (path) {
-    const node = path[path.length - 1];
-    
+    const node = path[path.length - 1];  
     if (node) {
       const docsLibrary = await context.docsLibrary;
 
