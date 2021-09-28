@@ -132,7 +132,7 @@ export class WorkspaceFolderContext {
       () => {
         // in case the configuration changes for this folder, we should
         // invalidate the services that rely on it in initialization
-        this._executionEnvironment = undefined
+        this._executionEnvironment = undefined;
         this._ansibleConfig = undefined;
         this._docsLibrary = undefined;
       }
@@ -182,8 +182,13 @@ export class WorkspaceFolderContext {
 
   public get executionEnvironment(): Thenable<ExecutionEnvironment> {
     if (!this._executionEnvironment) {
-      const executionEnvironment = new ExecutionEnvironment(this.connection, this);
-      this._executionEnvironment = executionEnvironment.initialize().then(() => executionEnvironment);
+      const executionEnvironment = new ExecutionEnvironment(
+        this.connection,
+        this
+      );
+      this._executionEnvironment = executionEnvironment
+        .initialize()
+        .then(() => executionEnvironment);
     }
     return this._executionEnvironment;
   }

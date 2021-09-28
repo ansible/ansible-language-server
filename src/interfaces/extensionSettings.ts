@@ -1,5 +1,4 @@
-
-export type IContianerEngine = 'auto' | 'podman' | 'docker';
+export type IContainerEngine = 'auto' | 'podman' | 'docker';
 
 export type IPullPolicy = 'always' | 'missing' | 'never' | 'tag';
 
@@ -11,7 +10,7 @@ export interface ExtensionSettings {
 }
 
 interface ExecutionEnvironmentSettings {
-  containerEngine: IContianerEngine;
+  containerEngine: IContainerEngine;
   enabled: boolean;
   image: string;
   pullPolicy: IPullPolicy;

@@ -36,7 +36,8 @@ export class DocsLibrary {
       );
       const ansibleConfig = await this.context.ansibleConfig;
       if (settings.executionEnvironment.enabled) {
-        await this.context.executionEnvironment
+        // ensure plugin/module cache is established
+        await this.context.executionEnvironment;
       }
       for (const modulesPath of ansibleConfig.module_locations) {
         (await findDocumentation(modulesPath, 'builtin')).forEach((doc) => {
@@ -91,7 +92,6 @@ export class DocsLibrary {
         );
       }
     }
-
   }
 
   /**

@@ -8,7 +8,7 @@ import { CommandRunner } from '../utils/commandRunner';
 export class AnsibleConfig {
   private connection: Connection;
   private context: WorkspaceFolderContext;
-  private  _collection_paths: string[] = [];
+  private _collection_paths: string[] = [];
   private _module_locations: string[] = [];
   private _ansible_location = '';
 
@@ -23,7 +23,11 @@ export class AnsibleConfig {
         this.context.workspaceFolder.uri
       );
 
-      const commandRunner = new CommandRunner(this.connection, this.context, settings)
+      const commandRunner = new CommandRunner(
+        this.connection,
+        this.context,
+        settings
+      );
 
       // get Ansible configuration
       const ansibleConfigResult = await commandRunner.runCommand(
@@ -41,7 +45,7 @@ export class AnsibleConfig {
       // get Ansible basic information
       const ansibleVersionResult = await commandRunner.runCommand(
         'ansible',
-        '--version',
+        '--version'
       );
 
       const versionInfo = ini.parse(ansibleVersionResult.stdout);
@@ -58,9 +62,11 @@ export class AnsibleConfig {
       // this is needed to get the pre-installed collections to work
       const pythonPathResult = await commandRunner.runCommand(
         'python3',
-        ' -c "import sys; print(sys.path, end=\\"\\")"',
+        ' -c "import sys; print(sys.path, end=\\"\\")"'
       );
-      this._collection_paths.push(...parsePythonStringArray(pythonPathResult.stdout));
+      this._collection_paths.push(
+        ...parsePythonStringArray(pythonPathResult.stdout)
+      );
     } catch (error) {
       if (error instanceof Error) {
         this.connection.window.showErrorMessage(error.message);
