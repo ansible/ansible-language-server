@@ -68,8 +68,9 @@ export class ExecutionEnvironment {
       );
       const setupDone = await imagePuller.setupImage();
       if (!setupDone) {
-        this.connection.console.error(
-          `Execution environment image ${this._container_image} setup failed.`
+        this.connection.window.showErrorMessage(
+          `Execution environment image '${this._container_image}' setup failed.
+           For more details check output console logs for ansible-language-server`
         );
         return;
       }
@@ -218,8 +219,7 @@ export class ExecutionEnvironment {
     searchPath: string,
     pluginFolderPath: string
   ): boolean {
-    //const command = this.wrapContainerArgs(`find ${searchPath} -path '${pluginFolderPath}'`)
-    const command = `${this._container_engine} exec -i ${containerName} find ${searchPath} -path '${pluginFolderPath}'`;
+    const command = `${this._container_engine} exec ${containerName} find ${searchPath} -path '${pluginFolderPath}'`;
     try {
       this.connection.console.info(`Executing command ${command}`);
       const result = child_process
@@ -244,7 +244,7 @@ export class ExecutionEnvironment {
         encoding: 'utf-8',
       });
     } catch (error) {
-      this.connection.console.error(
+      this.connection.window.showErrorMessage(
         `Failed to initialize execution environment '${this._container_image}': ${error}`
       );
       return false;

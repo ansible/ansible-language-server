@@ -53,7 +53,7 @@ export class ImagePuller {
         child_process.execSync(pullCommand, {
           encoding: 'utf-8',
         });
-        this.connection.window.showInformationMessage(
+        this.connection.console.info(
           `Container image '${this._containerImage}' pull successful`
         );
         setupComplete = true;
@@ -61,7 +61,7 @@ export class ImagePuller {
         let errorMsg = `Failed to pull container image ${this._containerEngine} with error '${error}'`;
         errorMsg +=
           'Check the execution environment image name, connectivity to and permissions for the registry, and try again';
-        this.connection.window.showErrorMessage(errorMsg);
+        this.connection.console.error(errorMsg);
         setupComplete = false;
       }
     } else {
