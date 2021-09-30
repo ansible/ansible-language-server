@@ -11,6 +11,7 @@ import {
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { withInterpreter } from '../utils/misc';
 import { WorkspaceFolderContext } from './workspaceManager';
+
 const exec = promisify(child_process.exec);
 
 /**
