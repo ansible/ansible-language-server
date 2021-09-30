@@ -20,6 +20,12 @@ const exec = promisify(child_process.exec);
 export class AnsiblePlaybook {
   private useProgressTracker = false;
 
+  /**
+   *
+   * @param connection establishes connection with the client
+   * @param context provides workspace context of the client
+   */
+
   constructor(
     private connection: Connection,
     private context: WorkspaceFolderContext
