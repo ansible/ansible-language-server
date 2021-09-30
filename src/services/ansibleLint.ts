@@ -20,7 +20,7 @@ import { WorkspaceFolderContext } from './workspaceManager';
 const exec = promisify(child_process.exec);
 
 /**
- * Acts as an interface to ansible-lint and a cache of its output.
+ * Acts as and interface to ansible-lint and a cache of its output.
  *
  * ansible-lint may provide diagnostics for more than just the file for which
  * linting was triggered, and this is reflected in the implementation.
