@@ -1,5 +1,5 @@
 import * as child_process from 'child_process';
-import { URL } from 'url';
+import { URI } from 'vscode-uri';
 import { promisify } from 'util';
 import {
   Connection,
@@ -44,7 +44,7 @@ export class AnsiblePlaybook {
   public async doValidate(
     textDocument: TextDocument
   ): Promise<Map<string, Diagnostic[]>> {
-    const docPath = new URL(textDocument.uri).pathname;
+    const docPath = URI.parse(textDocument.uri).path;
     let diagnostics: Map<string, Diagnostic[]> = new Map();
     const progressTracker = this.useProgressTracker
       ? await this.connection.window.createWorkDoneProgress()
@@ -53,7 +53,7 @@ export class AnsiblePlaybook {
           done: () => {}, // eslint-disable-line @typescript-eslint/no-empty-function
         };
 
-    const workingDirectory = new URL(this.context.workspaceFolder.uri).pathname;
+    const workingDirectory = URI.parse(this.context.workspaceFolder.uri).path;
 
     const settings = await this.context.documentSettings.get(textDocument.uri);
 
