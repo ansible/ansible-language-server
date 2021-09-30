@@ -34,12 +34,13 @@ export class ExecutionEnvironment {
             child_process.execSync(`which ${ce}`, {
               encoding: 'utf-8',
             });
-            this._container_engine = <IContainerEngine>ce;
-            this.connection.console.log(`Container engine set to: '${ce}'`);
-            break;
           } catch (error) {
             this.connection.console.info(`Container engine '${ce}' not found`);
+            continue;
           }
+          this._container_engine = <IContainerEngine>ce;
+          this.connection.console.log(`Container engine set to: '${ce}'`);
+          break;
         }
       } else {
         try {
