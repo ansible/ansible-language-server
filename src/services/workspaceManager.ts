@@ -112,7 +112,7 @@ export class WorkspaceFolderContext {
   private _docsLibrary: Thenable<DocsLibrary> | undefined;
   private _ansibleConfig: Thenable<AnsibleConfig> | undefined;
   private _ansibleLint: AnsibleLint | undefined;
-  private _ansibleSyntaxChecker: AnsiblePlaybook | undefined;
+  private _ansiblePlaybook: AnsiblePlaybook | undefined;
 
   constructor(
     connection: Connection,
@@ -178,10 +178,10 @@ export class WorkspaceFolderContext {
     return this._ansibleLint;
   }
 
-  public get ansibleSyntaxChecker(): AnsiblePlaybook {
-    if (!this._ansibleSyntaxChecker) {
-      this._ansibleSyntaxChecker = new AnsiblePlaybook(this.connection, this);
+  public get ansiblePlaybook(): AnsiblePlaybook {
+    if (!this._ansiblePlaybook) {
+      this._ansiblePlaybook = new AnsiblePlaybook(this.connection, this);
     }
-    return this._ansibleSyntaxChecker;
+    return this._ansiblePlaybook;
   }
 }
