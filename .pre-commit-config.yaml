@@ -67,7 +67,7 @@ repos:
       - id: debug-statements
         language_version: python3
   - repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v7.30.0
+    rev: v8.0.0-rc.0
     hooks:
       - id: eslint
         args:
