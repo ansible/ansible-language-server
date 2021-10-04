@@ -12,6 +12,7 @@ import { IContainerEngine } from '../interfaces/extensionSettings';
 export class ExecutionEnvironment {
   private connection: Connection;
   private context: WorkspaceFolderContext;
+  private useProgressTracker = false;
   private _container_engine: IContainerEngine;
   private _container_image: string;
   private _container_image_id: string;
@@ -19,6 +20,8 @@ export class ExecutionEnvironment {
   constructor(connection: Connection, context: WorkspaceFolderContext) {
     this.connection = connection;
     this.context = context;
+    this.useProgressTracker =
+      !!context.clientCapabilities.window?.workDoneProgress;
   }
 
   public async initialize(): Promise<void> {
@@ -93,6 +96,7 @@ export class ExecutionEnvironment {
       /[^a-z0-9]/gi,
       '_'
     )}`;
+    let progressTracker;
 
     try {
       const containerImageIdCommand = `${this._container_engine} images ${this._container_image} --format="{{.ID}}" | head -n 1`;
@@ -121,6 +125,17 @@ export class ExecutionEnvironment {
           hostCacheBasePath
         );
       } else {
+        if (this.useProgressTracker) {
+          progressTracker = await this.connection.window.createWorkDoneProgress();
+        }
+        if (progressTracker) {
+          progressTracker.begin(
+            'execution-environment',
+            undefined,
+            `Copy plugin docs from '${this._container_image} to host cache path`,
+            true
+          );
+        }
         ansibleConfig.collections_paths = await this.copyPluginDocFiles(
           hostCacheBasePath,
           containerName,
@@ -163,6 +178,9 @@ export class ExecutionEnvironment {
         )}`
       );
     } finally {
+      if (progressTracker) {
+        progressTracker.done();
+      }
       this.cleanUpContainer(containerName);
     }
   }
@@ -208,9 +226,7 @@ export class ExecutionEnvironment {
           cwd: URI.parse(this.context.workspaceFolder.uri).path,
         });
       } catch (error) {
-        this.connection.console.log(
-          `cleanup command '${command}' failed with error '${error}'`
-        );
+        // container already stopped and/or removed
       }
     });
   }

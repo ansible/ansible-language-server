@@ -45,7 +45,7 @@ export class ImagePuller {
         const pullCommand = `${this._containerEngine} pull ${this._containerImage}`;
         if (progressTracker) {
           progressTracker.begin(
-            'executionEnvironment',
+            'image-puller',
             undefined,
             `Pulling image '${this._containerImage}'`
           );
