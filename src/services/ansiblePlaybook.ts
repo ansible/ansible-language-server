@@ -88,14 +88,14 @@ export class AnsiblePlaybook {
         const ansibleSyntaxCheckRegex =
           /The error appears to be in '(?<filename>.*)': line (?<line>\d+), column (?<column>\d+)/;
 
-        const result = ansibleSyntaxCheckRegex.exec(execError.stderr);
+        const filteredErrorMessage = ansibleSyntaxCheckRegex.exec(execError.stderr);
 
-        diagnostics = result
+        diagnostics = filteredErrorMessage
           ? this.processReport(
               execError.message,
-              result.groups.filename,
-              parseInt(result.groups.line),
-              parseInt(result.groups.column)
+              filteredErrorMessage.groups.filename,
+              parseInt(filteredErrorMessage.groups.line),
+              parseInt(filteredErrorMessage.groups.column)
             )
           : this.processReport(execError.message, docPath, 1, 1);
 
