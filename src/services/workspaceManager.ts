@@ -10,6 +10,7 @@ import { AnsibleConfig } from './ansibleConfig';
 import { AnsibleLint } from './ansibleLint';
 import { AnsiblePlaybook } from './ansiblePlaybook';
 import { DocsLibrary } from './docsLibrary';
+import { ExecutionEnvironment } from './executionEnvironment';
 import { MetadataLibrary } from './metadataLibrary';
 import { SettingsManager } from './settingsManager';
 
@@ -109,6 +110,7 @@ export class WorkspaceFolderContext {
   public documentSettings: SettingsManager;
 
   // Lazy-loading anything that needs this context itself
+  private _executionEnvironment: Thenable<ExecutionEnvironment> | undefined;
   private _docsLibrary: Thenable<DocsLibrary> | undefined;
   private _ansibleConfig: Thenable<AnsibleConfig> | undefined;
   private _ansibleLint: AnsibleLint | undefined;
@@ -132,6 +134,7 @@ export class WorkspaceFolderContext {
       () => {
         // in case the configuration changes for this folder, we should
         // invalidate the services that rely on it in initialization
+        this._executionEnvironment = undefined;
         this._ansibleConfig = undefined;
         this._docsLibrary = undefined;
       }
@@ -147,6 +150,7 @@ export class WorkspaceFolderContext {
       if (fileEvent.uri.startsWith(this.workspaceFolder.uri)) {
         // in case the configuration changes for this folder, we should
         // invalidate the services that rely on it in initialization
+        this._executionEnvironment = undefined;
         this._ansibleConfig = undefined;
         this._docsLibrary = undefined;
       }
@@ -155,7 +159,7 @@ export class WorkspaceFolderContext {
 
   public get docsLibrary(): Thenable<DocsLibrary> {
     if (!this._docsLibrary) {
-      const docsLibrary = new DocsLibrary(this);
+      const docsLibrary = new DocsLibrary(this.connection, this);
       this._docsLibrary = docsLibrary.initialize().then(() => docsLibrary);
     }
     return this._docsLibrary;
@@ -183,5 +187,18 @@ export class WorkspaceFolderContext {
       this._ansiblePlaybook = new AnsiblePlaybook(this.connection, this);
     }
     return this._ansiblePlaybook;
+  }
+  
+  public get executionEnvironment(): Thenable<ExecutionEnvironment> {
+    if (!this._executionEnvironment) {
+      const executionEnvironment = new ExecutionEnvironment(
+        this.connection,
+        this
+      );
+      this._executionEnvironment = executionEnvironment
+        .initialize()
+        .then(() => executionEnvironment);
+    }
+    return this._executionEnvironment;
   }
 }
