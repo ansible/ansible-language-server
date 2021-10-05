@@ -188,7 +188,7 @@ export class WorkspaceFolderContext {
     }
     return this._ansiblePlaybook;
   }
-  
+
   public get executionEnvironment(): Thenable<ExecutionEnvironment> {
     if (!this._executionEnvironment) {
       const executionEnvironment = new ExecutionEnvironment(
