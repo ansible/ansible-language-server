@@ -185,7 +185,7 @@ export class ExecutionEnvironment {
     }
   }
 
-  public wrapContainerArgs(command: string): string {
+  public wrapContainerArgs(command: string, mountPaths?:Set<string>): string {
     const workspaceFolderPath = URI.parse(
       this.context.workspaceFolder.uri
     ).path;
@@ -196,6 +196,16 @@ export class ExecutionEnvironment {
     containerCommand.push(
       ...['-v', `${workspaceFolderPath}:${workspaceFolderPath}`]
     );
+    if (mountPaths) {
+      mountPaths.forEach((mountPath => {
+        const volumeMountPath = `${mountPath}:${mountPath}`
+        if (!containerCommand.includes(volumeMountPath)) {
+          containerCommand.push(
+            ...['-v', `${mountPath}:${mountPath}`]
+          );
+        }
+      }))
+    }
     if (this._container_engine === 'podman') {
       // container namespace stuff
       containerCommand.push('--group-add=root');

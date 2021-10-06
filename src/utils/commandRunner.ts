@@ -23,7 +23,8 @@ export class CommandRunner {
   public async runCommand(
     executable: string,
     args: string,
-    workingDirectory?: string
+    workingDirectory?: string,
+    mountPaths?: Set<string>
   ): Promise<{
     stdout: string;
     stderr: string;
@@ -52,9 +53,9 @@ export class CommandRunner {
         interpreterPath,
         this.settings.python.activationScript
       );
-    } // prepare command executin env run
+    } // prepare command execution env run
     else {
-      command = executionEnvironment.wrapContainerArgs(`${executable} ${args}`);
+      command = executionEnvironment.wrapContainerArgs(`${executable} ${args}`, mountPaths);
       runEnv = undefined;
     }
 
