@@ -5,8 +5,6 @@ import { promisify } from 'util';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { Range } from 'vscode-languageserver-types';
 import * as path from 'path';
-import * as child_process from 'child_process';
-import { promisify } from 'util';
 
 export async function fileExists(fileUri: string): Promise<boolean> {
   return !!(await fs.stat(new URL(fileUri)).catch(() => false));
