@@ -1,6 +1,7 @@
 import IntervalTree from '@flatten-js/interval-tree';
 import * as _ from 'lodash';
 import {
+  Connection,
   Diagnostic,
   DiagnosticRelatedInformation,
   DiagnosticSeverity,
@@ -24,7 +25,8 @@ export async function doValidate(
   textDocument: TextDocument,
   validationManager: ValidationManager,
   quick = true,
-  context?: WorkspaceFolderContext
+  context?: WorkspaceFolderContext,
+  connection?: Connection
 ): Promise<Map<string, Diagnostic[]>> {
   let diagnosticsByFile;
   if (quick || !context) {
