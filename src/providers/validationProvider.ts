@@ -47,7 +47,16 @@ export async function doValidate(
       diagnosticsByFile = await context.ansibleLint.doValidate(textDocument);
     }
 
-    if (!diagnosticsByFile || !lintAvailability) {
+    if (!diagnosticsByFile || !lintAvailability || diagnosticsByFile === -1) {
+      // Notifying the user about the failed ansible-lint command and falling back to ansible syntax-check in this scenario
+      if (diagnosticsByFile === -1) {
+        console.debug(
+          'Ansible-lint command execution failed. Falling back to ansible syntax-check'
+        );
+        connection.window.showInformationMessage(
+          'Falling back to ansible syntax-check.'
+        );
+      }
       console.debug('Validating using ansible syntax-check');
       diagnosticsByFile = await context.ansiblePlaybook.doValidate(
         textDocument

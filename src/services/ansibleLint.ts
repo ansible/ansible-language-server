@@ -50,7 +50,7 @@ export class AnsibleLint {
    */
   public async doValidate(
     textDocument: TextDocument
-  ): Promise<Map<string, Diagnostic[]>> {
+  ): Promise<Map<string, Diagnostic[]> | -1> {
     let diagnostics: Map<string, Diagnostic[]> = new Map();
 
     const workingDirectory = URI.parse(this.context.workspaceFolder.uri).path;
@@ -136,15 +136,8 @@ export class AnsibleLint {
               workingDirectory
             );
           } else {
-            // Notifying the user about the failed command and falling back to ansible syntax-check in this scenario
-            this.connection.window.showWarningMessage(
-              'Falling back to ansible syntax-check.'
-            );
             this.connection.window.showErrorMessage(execError.message);
-            console.debug(
-              'Ansible-lint command execution failed. Falling back to ansible syntax-check'
-            );
-            return;
+            return -1;
           }
 
           if (execError.stderr) {
