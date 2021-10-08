@@ -32,7 +32,6 @@ export class CommandRunner {
     let executablePath: string;
     let command: string;
     let runEnv: NodeJS.ProcessEnv | undefined;
-    const executionEnvironment = await this.context.executionEnvironment;
     const isEEEnabled = this.settings.executionEnvironment.enabled;
     const interpreterPath = isEEEnabled
       ? 'python3'
@@ -53,9 +52,13 @@ export class CommandRunner {
         interpreterPath,
         this.settings.python.activationScript
       );
-    } // prepare command execution env run
-    else {
-      command = executionEnvironment.wrapContainerArgs(`${executable} ${args}`, mountPaths);
+    } else {
+      // prepare command and env for execution environment run
+      const executionEnvironment = await this.context.executionEnvironment;
+      command = executionEnvironment.wrapContainerArgs(
+        `${executable} ${args}`,
+        mountPaths
+      );
       runEnv = undefined;
     }
 
