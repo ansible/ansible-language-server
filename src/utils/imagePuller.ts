@@ -47,7 +47,7 @@ export class ImagePuller {
           progressTracker.begin(
             'execution-environment',
             undefined,
-            'Pulling image...'
+            'Pulling Ansible execution environment image...'
           );
         }
         child_process.execSync(pullCommand, {
