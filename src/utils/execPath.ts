@@ -6,12 +6,10 @@ export function getAnsibleCommandExecPath(
   name: string,
   settings: ExtensionSettings
 ): string {
-  let executablePath = name;
-  if (name.startsWith('ansible')) {
-    executablePath =
-      name === 'ansible-lint'
-        ? (executablePath = settings.ansibleLint.path)
-        : path.join(path.dirname(settings.ansible.path), name);
+  if (!name.startsWith('ansible')) {
+    return name;
   }
-  return executablePath;
+  return name === 'ansible-lint'
+    ? settings.ansibleLint.path
+    : path.join(path.dirname(settings.ansible.path), name);
 }
