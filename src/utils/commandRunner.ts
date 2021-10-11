@@ -1,7 +1,7 @@
-import * as path from 'path';
 import { URI } from 'vscode-uri';
 import { Connection } from 'vscode-languageserver';
 import { withInterpreter, asyncExec } from './misc';
+import { getAnsibleCommandExecPath } from './execPath'
 import { WorkspaceFolderContext } from '../services/workspaceManager';
 import { ExtensionSettings } from '../interfaces/extensionSettings';
 
@@ -39,7 +39,7 @@ export class CommandRunner {
     if (executable.startsWith('ansible')) {
       executablePath = isEEEnabled
         ? executable
-        : path.join(path.dirname(this.settings.ansible.path), executable);
+        : getAnsibleCommandExecPath(executable, this.settings);
     } else {
       executablePath = executable;
     }
