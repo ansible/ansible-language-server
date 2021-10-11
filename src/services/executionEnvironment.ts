@@ -129,7 +129,8 @@ export class ExecutionEnvironment {
         );
       } else {
         if (this.useProgressTracker) {
-          progressTracker = await this.connection.window.createWorkDoneProgress();
+          progressTracker =
+            await this.connection.window.createWorkDoneProgress();
         }
         if (progressTracker) {
           progressTracker.begin(
@@ -188,7 +189,7 @@ export class ExecutionEnvironment {
     }
   }
 
-  public wrapContainerArgs(command: string, mountPaths?:Set<string>): string {
+  public wrapContainerArgs(command: string, mountPaths?: Set<string>): string {
     const workspaceFolderPath = URI.parse(
       this.context.workspaceFolder.uri
     ).path;
@@ -200,14 +201,13 @@ export class ExecutionEnvironment {
       ...['-v', `${workspaceFolderPath}:${workspaceFolderPath}`]
     );
     if (mountPaths) {
-      mountPaths.forEach((mountPath => {
-        const volumeMountPath = `${mountPath}:${mountPath}`
-        if (!containerCommand.includes(volumeMountPath)) {
-          containerCommand.push(
-            ...['-v', `${mountPath}:${mountPath}`]
-          );
+      for (const mountPath of mountPaths || []) {
+        const volumeMountPath = `${mountPath}:${mountPath}`;
+        if (containerCommand.includes(volumeMountPath)) {
+          continue;
         }
-      }))
+        containerCommand.push('-v', volumeMountPath);
+      }
     }
     if (this._container_engine === 'podman') {
       // container namespace stuff

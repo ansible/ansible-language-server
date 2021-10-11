@@ -52,7 +52,7 @@ export class AnsibleLint {
     let diagnostics: Map<string, Diagnostic[]> = new Map();
 
     const workingDirectory = URI.parse(this.context.workspaceFolder.uri).path;
-    const mountPaths = new Set([workingDirectory])
+    const mountPaths = new Set([workingDirectory]);
     const settings = await this.context.documentSettings.get(textDocument.uri);
 
     if (!settings.ansibleLint.enabled) {
@@ -76,13 +76,13 @@ export class AnsibleLint {
         if (ansibleLintConfigFile) {
           ansibleLintConfigPath = URI.parse(ansibleLintConfigFile).path;
           linterArguments = `${linterArguments} -c "${ansibleLintConfigPath}"`;
-          mountPaths.add(path.dirname(ansibleLintConfigPath))
+          mountPaths.add(path.dirname(ansibleLintConfigPath));
         }
       }
       linterArguments = `${linterArguments} --offline --nocolor -f codeclimate`;
 
       const docPath = URI.parse(textDocument.uri).path;
-      mountPaths.add(path.dirname(docPath))
+      mountPaths.add(path.dirname(docPath));
       let progressTracker;
       if (this.useProgressTracker) {
         progressTracker = await this.connection.window.createWorkDoneProgress();
@@ -90,6 +90,12 @@ export class AnsibleLint {
       const ansibleLintConfigPromise = this.getAnsibleLintConfig(
         workingDirectory,
         ansibleLintConfigPath
+      );
+
+      const commandRunner = new CommandRunner(
+        this.connection,
+        this.context,
+        settings
       );
 
       try {
@@ -100,12 +106,6 @@ export class AnsibleLint {
             'Processing files...'
           );
         }
-
-        const commandRunner = new CommandRunner(
-          this.connection,
-          this.context,
-          settings
-        );
 
         // get Ansible configuration
         const result = await commandRunner.runCommand(

@@ -12,7 +12,6 @@ import { TextDocument } from 'vscode-languageserver-textdocument';
 import { WorkspaceFolderContext } from './workspaceManager';
 import { CommandRunner } from '../utils/commandRunner';
 
-
 /**
  * Acts as an interface to ansible-playbook command.
  */
@@ -53,8 +52,7 @@ export class AnsiblePlaybook {
         };
 
     const workingDirectory = URI.parse(this.context.workspaceFolder.uri).path;
-    const mountPaths = new Set([workingDirectory])
-    mountPaths.add(path.dirname(docPath))
+    const mountPaths = new Set([workingDirectory, path.dirname(docPath)]);
     const settings = await this.context.documentSettings.get(textDocument.uri);
 
     progressTracker.begin(
@@ -63,13 +61,12 @@ export class AnsiblePlaybook {
       'Processing files...'
     );
 
+    const commandRunner = new CommandRunner(
+      this.connection,
+      this.context,
+      settings
+    );
     try {
-      const commandRunner = new CommandRunner(
-        this.connection,
-        this.context,
-        settings
-      );
-
       // run ansible playbook syntax-check
       await commandRunner.runCommand(
         'ansible-playbook',
@@ -89,7 +86,9 @@ export class AnsiblePlaybook {
         const ansibleSyntaxCheckRegex =
           /The error appears to be in '(?<filename>.*)': line (?<line>\d+), column (?<column>\d+)/;
 
-        const filteredErrorMessage = ansibleSyntaxCheckRegex.exec(execError.stderr);
+        const filteredErrorMessage = ansibleSyntaxCheckRegex.exec(
+          execError.stderr
+        );
 
         diagnostics = filteredErrorMessage
           ? this.processReport(
