@@ -1,7 +1,6 @@
 import * as child_process from 'child_process';
 import * as path from 'path';
 import { URI } from 'vscode-uri';
-import { promisify } from 'util';
 import {
   Connection,
   Diagnostic,
