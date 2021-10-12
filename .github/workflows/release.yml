@@ -1,0 +1,57 @@
+name: release
+
+on:
+  create:
+    tags:
+
+jobs:
+  before-release:
+    uses: ansible/ansible-language-server/.github/workflows/ci.yml@main
+
+  release:
+    name: release ${{ github.event.ref }}
+    environment: release
+    needs:
+    - before-release
+
+    runs-on: Ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version:
+        - 16.x
+
+    steps:
+    - name: Fetch the GHA artifact with the package tarball
+      uses: actions/upload-artifact@v2
+      with:
+        name: npm-package-tarball
+        path: .
+
+    - name: >-
+        Set up NodeJS ${{ matrix.node-version }}
+        with the global NPM registry
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+        registry-url: https://registry.npmjs.org
+    - name: >-
+        Publish the prebuilt and tested package
+        to public NPM Registry
+      run: npm publish ansible-ansible-language-server-*.tgz
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+    - name: >-
+        Set up NodeJS ${{ matrix.node-version }}
+        with the GitHub Packages NPM registry
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+        registry-url: https://npm.pkg.github.com
+    - name: >-
+        Publish the prebuilt and tested package
+        to GitHub Packages NPM Registry
+      run: npm publish ansible-ansible-language-server-*.tgz
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
