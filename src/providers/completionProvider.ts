@@ -146,7 +146,7 @@ export async function doCompletion(
                   ? `${priority}_${moduleFqcn}`
                   : `${priority}_${name}`,
                 filterText: useFqcn
-                  ? `${moduleFqcn} ${collection} ${namespace} ${name}` // moduleFqcn should have highest priority (in case of FQCN)
+                  ? `${name} ${moduleFqcn} ${collection} ${namespace}` // name should have highest priority (in case of FQCN)
                   : `${name} ${moduleFqcn}`, // name should have priority (in case of no FQCN)
                 data: {
                   documentUri: document.uri, // preserve document URI for completion request
