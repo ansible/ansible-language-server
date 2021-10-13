@@ -200,15 +200,15 @@ export class ExecutionEnvironment {
     containerCommand.push(
       ...['-v', `${workspaceFolderPath}:${workspaceFolderPath}`]
     );
-    if (mountPaths) {
-      for (const mountPath of mountPaths || []) {
-        const volumeMountPath = `${mountPath}:${mountPath}`;
-        if (containerCommand.includes(volumeMountPath)) {
-          continue;
-        }
-        containerCommand.push('-v', volumeMountPath);
+
+    for (const mountPath of mountPaths || []) {
+      const volumeMountPath = `${mountPath}:${mountPath}`;
+      if (containerCommand.includes(volumeMountPath)) {
+        continue;
       }
+      containerCommand.push('-v', volumeMountPath);
     }
+
     if (this._container_engine === 'podman') {
       // container namespace stuff
       containerCommand.push('--group-add=root');

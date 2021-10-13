@@ -2,13 +2,16 @@
 import * as path from 'path';
 import { ExtensionSettings } from '../interfaces/extensionSettings';
 
+/**
+ * A method to return the path to the provided executable
+ * @param name String representing the name of the ansible executable
+ * @param settings The settings received from client
+ * @returns Complete path of the executable (string) if name starting with `ansible-` else the executable path itself
+ */
 export function getAnsibleCommandExecPath(
   name: string,
   settings: ExtensionSettings
 ): string {
-  if (!name.startsWith('ansible')) {
-    return name;
-  }
   return name === 'ansible-lint'
     ? settings.ansibleLint.path
     : path.join(path.dirname(settings.ansible.path), name);
