@@ -1,7 +1,7 @@
 import { URI } from 'vscode-uri';
 import { Connection } from 'vscode-languageserver';
 import { withInterpreter, asyncExec } from './misc';
-import { getAnsibleCommandExecPath } from './execPath'
+import { getAnsibleCommandExecPath } from './execPath';
 import { WorkspaceFolderContext } from '../services/workspaceManager';
 import { ExtensionSettings } from '../interfaces/extensionSettings';
 
@@ -72,5 +72,29 @@ export class CommandRunner {
     });
 
     return result;
+  }
+
+  /**
+   * A method to return the path to the provided executable
+   * @param executable String representing the name of the executable
+   * @returns Complete path of the executable (string) or undefined depending upon the presence of the executable
+   */
+  public async getExecutablePath(
+    executable: string
+  ): Promise<string> | undefined {
+    try {
+      const executablePath = await this.runCommand('which', executable);
+      return executablePath.stdout.trim();
+    } catch (error) {
+      console.log(error);
+    }
+
+    try {
+      const executablePath = await this.runCommand('whereis', executable);
+      const outParts = executablePath.stdout.split(':');
+      return outParts.length >= 2 ? outParts[1].trim() : undefined;
+    } catch (error) {
+      console.log(error);
+    }
   }
 }
