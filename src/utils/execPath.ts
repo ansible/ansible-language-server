@@ -6,7 +6,7 @@ import { ExtensionSettings } from '../interfaces/extensionSettings';
  * A method to return the path to the provided executable
  * @param name String representing the name of the ansible executable
  * @param settings The settings received from client
- * @returns Complete path of the executable (string) if name starting with `ansible-` else the executable path itself
+ * @returns Complete path of the ansible executable (string)
  */
 export function getAnsibleCommandExecPath(
   name: string,
