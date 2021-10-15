@@ -99,11 +99,10 @@ jobs:
     - name: Set up versioning prerequisites
       if: >-
         steps.request-check.outputs.release-requested != 'true'
-      run: >-
-        python -m
-        pip install
-        --user
-        dunamai
+      run: |
+        python -m pip config set global.disable-pip-version-check true
+        python -m pip install --user --upgrade pip
+        python -m pip install --user dunamai
       shell: bash
     - name: Set the current dist version
       if: steps.request-check.outputs.release-requested != 'true'
@@ -152,7 +151,9 @@ jobs:
       uses: actions/setup-node@v2
     - name: Install dependencies
       run: |
-        pip3 install -r test-requirements.txt
+        python -m pip config set global.disable-pip-version-check true
+        python -m pip install --user --upgrade pip
+        python -m pip install -r test-requirements.txt
         npm ci
     - name: npm run lint
       run: npm run lint
@@ -211,26 +212,39 @@ jobs:
     - build
     - pre-setup  # transitive, for accessing settings
 
-    runs-on: ${{ matrix.os }}-latest
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
-        experimental:
-        - false
-        node-version:
-        - 16.x
-        - 14.x
-        - 12.x
-        os:
-        - Ubuntu
-        - macOS
         include:
-        - experimental: true
-          node-version: 16
-          os: Windows
-        - experimental: true
+        # linux
+        - name: test-node12-linux
           node-version: 12
-          os: Windows
+          os: ubuntu-latest
+        - name: test-node14-linux
+          node-version: 14
+          os: ubuntu-latest
+        - name: test-node16-linux
+          node-version: 16
+          os: ubuntu-latest
+        # macos
+        - name: test-node12-macos
+          node-version: 12
+          os: macos-11
+        - name: test-node14-macos
+          node-version: 14
+          os: macos-11
+        - name: test-node16-macos
+          node-version: 16
+          os: macos-11
+        # windows
+        - name: test-node12-windows
+          node-version: 12
+          os: windows-latest
+        - name: test-node16-windows
+          node-version: 16
+          os: windows-latest
 
     continue-on-error: >-
       ${{
