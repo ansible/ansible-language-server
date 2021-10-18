@@ -27,7 +27,7 @@ following projects:
    npm run compile
    ```
 
-5. The new built server is now located in ./out/server/src/server.js.
+5. The newly built server is now located in ./out/server/src/server.js.
 
    ```bash
    node <Ansible Language Server Location>/out/server/src/server.js --stdio
@@ -47,14 +47,15 @@ curly braces.
 
 > The screenshots and animations presented in this README have been taken using
 > the One Dark Pro theme. The default VS Code theme will not show the syntax
-> elements as distinctly, unless customized. Virtually any theme other than
+> elements as distinctly unless customized. Virtually any theme other than
 > default will do better.
 
 ### Validation
 
 ![YAML validation](images/yaml-validation.gif)
 
-While you type, the syntax of your Ansible scripts is verified and any feedback is provided instantaneously.
+While you type, the syntax of your Ansible scripts is verified and any feedback
+is provided instantaneously.
 
 #### Integration with ansible-lint
 
@@ -72,7 +73,8 @@ are shown as warnings instead.
 
 ***Note***
 
-If `ansible-lint` is not installed/found or running `ansible-lint` results in error it will fallback to `ansible --syntax-check` for validation.
+If `ansible-lint` is not installed/found or running `ansible-lint` results in
+error it will fallback to `ansible --syntax-check` for validation.
 
 ### Smart autocompletion
 
@@ -83,7 +85,8 @@ etc. and provides suggestions accordingly. There are also a few other rules that
 improve user experience:
 
 * the `name` property is always suggested first
-* on module options, the required properties are shown first, and aliases are shown last, otherwise ordering from the documentation is preserved
+* on module options, the required properties are shown first, and aliases are
+  shown last, otherwise ordering from the documentation is preserved
 * FQCNs (fully qualified collection names) are inserted only when necessary;
   collections configured with the
   [`collections` keyword]([LINK](https://docs.ansible.com/ansible/latest/user_guide/collections_using.html#simplifying-module-names-with-the-collections-keyword))
@@ -93,9 +96,10 @@ improve user experience:
 
 ![Easier Jinja expression typing](images/jinja-expression.gif)
 
-When writing a Jinja expression, you only need to type `"{{ `, and it will be
-mirrored behind the cursor (including the space). You can also select the whole
-expression and press `space` to put spaces on both sides of the expression.
+When writing a Jinja expression, you only need to type `"{{<space>`, and it
+will be mirrored behind the cursor (including the space). You can also select
+the whole expression and press `space` to put spaces on both sides of the
+expression.
 
 ### Documentation reference
 
@@ -133,11 +137,15 @@ The following settings are supported.
   `docker`. For `auto` it will look for `podman` then `docker`.
 * `ansible.executionEnvironment.enabled`: Enable or disable the use of an
    execution environment.
-* `ansible.executionEnvironment.image`: Specify the name of the execution environment image.
-* `ansible.executionEnvironment.pullPolicy`: Specify the image pull policy. Valid values are `always`,
-  `missing`, `never` and `tag`. Setting `always` will always pull the image when extension is activated or reloaded.
-  Setting `missing` will pull if not locally available. Setting `never` will never pull the image and setting
-  tag will always pull if the image tag is 'latest', otherwise pull if not locally available.
+* `ansible.executionEnvironment.image`: Specify the name of the execution
+  environment image.
+* `ansible.executionEnvironment.pullPolicy`: Specify the image pull policy.
+  Valid values are `always`,
+  `missing`, `never` and `tag`. Setting `always` will always pull the image
+  when extension is activated or reloaded.
+  Setting `missing` will pull if not locally available. Setting `never` will
+  never pull the image and setting tag will always pull if the image tag is
+  'latest', otherwise pull if not locally available.
 * `ansible.python.interpreterPath`: Path to the `python`/`python3` executable.
   This setting may be used to make the extension work with `ansible` and
   `ansible-lint` installations in a Python virtual environment.
@@ -155,7 +163,8 @@ The following settings are supported.
 For Windows users, this extension works perfectly well with extensions such as
 `Remote - WSL` and `Remote - Containers`.
 
-> If you have any other extension providing language support for Ansible, you might need to uninstall it first.
+> If you have any other extension providing language support for Ansible, you
+  might need to uninstall it first.
 
 ## Known limitations
 
