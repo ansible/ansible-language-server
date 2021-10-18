@@ -2,6 +2,8 @@
 
 ## Setting up development environment
 
+A demo of the setup can be found [on youtube](https://youtu.be/LsvWsX7Mbo8).
+
 It is recommended to work on the forked copy of this repository from your github account to raise pull requests.
 
 ```code
@@ -52,8 +54,6 @@ npm run compile:withserver
     "ansibleServer.trace.server": "verbose"
 }
 ```
-
-A demo of the setup can be found [on youtube](https://youtu.be/LsvWsX7Mbo8).
 
 ## Cleaning the output
 

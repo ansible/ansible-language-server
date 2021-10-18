@@ -110,18 +110,21 @@ The following settings are supported.
   `docker`. For `auto` it will look for `podman` then `docker`.
 * `ansible.executionEnvironment.enabled`: Enable or disable the use of an
    execution environment.
-* `ansible.executionEnvironment.image`: Specify the name of the execution environment image.
-* `ansible.executionEnvironment.pullPolicy`: Specify the image pull policy. Valid values are `always`,
-  `missing`, `never` and `tag`. Setting `always` will always pull the image when extension is activated or reloaded.
-  Setting `missing` will pull if not locally available. Setting `never` will never pull the image and setting
-  tag will always pull if the image tag is 'latest', otherwise pull if not locally available.
+* `ansible.executionEnvironment.image`: Specify the name of the execution
+  environment image.
+* `ansible.executionEnvironment.pullPolicy`: Specify the image pull policy.
+  Valid values are `always`,
+  `missing`, `never` and `tag`. Setting `always` will always pull the image
+  when extension is activated or reloaded.
+  Setting `missing` will pull if not locally available. Setting `never` will
+  never pull the image and setting tag will always pull if the image tag is
+  'latest', otherwise pull if not locally available.
 * `ansible.python.interpreterPath`: Path to the `python`/`python3` executable.
   This setting may be used to make the extension work with `ansible` and
   `ansible-lint` installations in a Python virtual environment.
 * `ansible.python.activationScript`: Path to a custom `activate` script, which
   will be used instead of the setting above to run in a Python virtual
   environment.
-
 
 ## Developer support
 
