@@ -59,3 +59,30 @@ A demo of the setup can be found [on youtube](https://youtu.be/LsvWsX7Mbo8).
 
 If you hit an odd compilation or debugger problem, don't hesitate to clean the
 output directory by running `npm run clean` under the `vscode-ansible` folder. You should also run it whenever you are switching between debug/compilation modes.
+
+### Building server locally
+
+1. Install prerequisites:
+   * latest [Visual Studio Code](https://code.visualstudio.com/)
+   * [Node.js](https://nodejs.org/) v12.0.0 or higher
+
+2. Fork and clone this repository
+
+3. Install the dependencies
+
+   ```bash
+   cd ansible-language-server
+   npm ci
+   ```
+
+4. Build the language server
+
+   ```bash
+   npm run compile
+   ```
+
+5. The new built server is now located in ./out/server/src/server.js.
+
+   ```bash
+   node <Ansible Language Server Location>/out/server/src/server.js --stdio
+   ```
