@@ -47,7 +47,7 @@ npm run compile:withserver
 * In the `Extension development Host` window add a new folder that has ansible files.
 
 * You can set the ansible-language-server settings by adding `.vscode/settings.json` file under the root folder. Example settings:
-  
+
 ```json
 {
     "ansible.python.interpreterPath": "<change to python3 executable path>",
