@@ -85,5 +85,5 @@ output directory by running `npm run clean` under the `vscode-ansible` folder. Y
 5. The newly built server is now located in ./out/server/src/server.js.
 
    ```bash
-   node <Ansible Language Server Location>/out/server/src/server.js --stdio
+   node ./out/server/src/server.js --stdio
    ```
