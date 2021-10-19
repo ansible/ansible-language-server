@@ -40,3 +40,16 @@ export interface IOption {
   versionAdded?: string;
   suboptions?: unknown;
 }
+
+export interface ISuboption {
+  name: string;
+  description?: IDescription;
+  required: boolean;
+  default?: unknown;
+  choices?: Array<unknown>;
+  type?: string;
+  elements?: string;
+  aliases?: Array<string>;
+  versionAdded?: string;
+  suboptions?: unknown;
+}
