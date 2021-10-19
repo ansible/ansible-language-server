@@ -253,6 +253,119 @@ export async function doCompletion(
           }
         }
       }
+
+      // Finally, check if we're looking for module options' suboptions
+      // In that case, the module option is a key of a map
+
+      const suboptionKeyPath: Node[] = new AncestryBuilder(path)
+        .parentOfKey()
+        .parent(YAMLMap)
+        .getKeyPath();
+
+      let keyPath: Node[] = suboptionKeyPath;
+      const keySequence: string[] = [];
+
+      //   Iterate till we reach the module name and cache the keys at every level
+      while (!isTaskParam(keyPath)) {
+        keySequence.push((keyPath[keyPath.length - 1] as Scalar).value);
+        keyPath = new AncestryBuilder(keyPath)
+          .parentOfKey()
+          .parent(YAMLMap)
+          .getKeyPath();
+      }
+
+      const moduleKey = (keyPath[keyPath.length - 1] as Scalar).value;
+
+      if (suboptionKeyPath) {
+        const suboptionKeyNode = suboptionKeyPath[suboptionKeyPath.length - 1];
+
+        if (suboptionKeyNode instanceof Scalar) {
+          let module;
+          if (moduleKey === 'args') {
+            module = await findProvidedModule(
+              parentKeyPath,
+              document,
+              docsLibrary
+            );
+          } else {
+            [module] = await docsLibrary.findModule(
+              moduleKey,
+              parentKeyPath,
+              document.uri
+            );
+          }
+
+          //   Build a chain with all the keys that lead to the suboption
+          let suboptionsChain = module.documentation.options.get(
+            keySequence[keySequence.length - 1]
+          ).suboptions;
+
+          //   Chaining is done keeping in mind that the last key in the action option field
+          for (let i = keySequence.length - 2; i >= 0; i--) {
+            suboptionsChain = suboptionsChain.get(keySequence[i]).suboptions;
+          }
+
+          if (module && module.documentation && suboptionsChain) {
+            const suboptionMap = (
+              new AncestryBuilder(suboptionKeyPath).parent(Pair).get() as Pair
+            ).value as YAMLMap;
+
+            // Find sub options that have been already provided by the user
+            const providedSuboptions = new Set(getYamlMapKeys(suboptionMap));
+
+            const remainingOptions = [...suboptionsChain.entries()].filter(
+              ([, specs]) => !providedSuboptions.has(specs.name)
+            );
+
+            const nodeRange = getNodeRange(node, document);
+
+            return remainingOptions
+              .map(([option, specs]) => {
+                return {
+                  name: option,
+                  specs: specs,
+                };
+              })
+              .map((option, index) => {
+                const details = getDetails(option.specs);
+                let priority;
+                if (isAlias(option)) {
+                  priority = priorityMap.aliasOption;
+                } else if (option.specs.required) {
+                  priority = priorityMap.requiredOption;
+                } else {
+                  priority = priorityMap.option;
+                }
+                const completionItem: CompletionItem = {
+                  label: option.name,
+                  detail: details,
+                  // using index preserves order from the specification
+                  // except when overridden by the priority
+                  sortText: priority.toString() + index.toString().padStart(3),
+                  kind: isAlias(option)
+                    ? CompletionItemKind.Reference
+                    : CompletionItemKind.Property,
+                  documentation: formatOption(option.specs),
+                  insertText: atEndOfLine(document, position)
+                    ? `${option.name}`
+                    : undefined,
+                };
+                const insertText = atEndOfLine(document, position)
+                  ? `${option.name}:`
+                  : option.name;
+                if (nodeRange) {
+                  completionItem.textEdit = {
+                    range: nodeRange,
+                    newText: insertText,
+                  };
+                } else {
+                  completionItem.insertText = insertText;
+                }
+                return completionItem;
+              });
+          }
+        }
+      }
     }
   }
   return null;
