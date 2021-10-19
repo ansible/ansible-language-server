@@ -128,7 +128,7 @@ The following settings are supported.
 
 ## Developer support
 
-For details on setting up development environment and debugging [refer](https://github.com/ansible/ansible-language-server/blob/main/docs/development.md)
+For details on setting up development environment and debugging [refer](https://github.com/ansible/ansible-language-server/blob/main/docs¸/development.md)
 
 ## Requirements
 
