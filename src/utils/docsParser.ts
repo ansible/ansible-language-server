@@ -7,6 +7,7 @@ import {
   IModuleDocumentation,
   IModuleMetadata,
   IOption,
+  ISuboption,
 } from '../interfaces/module';
 import { hasOwnProperty, isObject } from './misc';
 import {
@@ -116,7 +117,7 @@ export function processRawOptions(rawOptions: unknown): Map<string, IOption> {
           name: optionName,
           required: !!rawOption.required,
           default: rawOption.default,
-          suboptions: rawOption.suboptions,
+          suboptions: processRawSuboptions(rawOption.suboptions),
         };
         if (isIDescription(rawOption.description))
           optionDoc.description = rawOption.description;
@@ -139,6 +140,45 @@ export function processRawOptions(rawOptions: unknown): Map<string, IOption> {
     }
   }
   return options;
+}
+
+export function processRawSuboptions(
+  rawSuboptions: unknown
+): Map<string, ISuboption> {
+  const suboptions = new Map<string, ISuboption>();
+
+  if (isObject(rawSuboptions)) {
+    for (const [suboptionName, rawSuboption] of Object.entries(rawSuboptions)) {
+      if (isObject(rawSuboption)) {
+        const suboptionDoc: ISuboption = {
+          name: suboptionName,
+          required: !!rawSuboption.required,
+          default: rawSuboption.default,
+          suboptions: processRawSuboptions(rawSuboption.suboptions),
+        };
+        if (isIDescription(rawSuboption.description))
+          suboptionDoc.description = rawSuboption.description;
+        if (rawSuboption.choices instanceof Array)
+          suboptionDoc.choices = rawSuboption.choices;
+        if (typeof rawSuboption.type === 'string')
+          suboptionDoc.type = rawSuboption.type;
+        if (typeof rawSuboption.elements === 'string')
+          suboptionDoc.elements = rawSuboption.elements;
+        if (rawSuboption.aliases instanceof Array)
+          suboptionDoc.aliases = rawSuboption.aliases;
+        if (typeof rawSuboption.version_added === 'string')
+          suboptionDoc.versionAdded = rawSuboption.version_added;
+        suboptions.set(suboptionName, suboptionDoc);
+        if (suboptionDoc.aliases) {
+          for (const alias of suboptionDoc.aliases) {
+            suboptions.set(alias, suboptionDoc);
+          }
+        }
+      }
+    }
+  }
+
+  return suboptions;
 }
 
 function isIDescription(obj: unknown): obj is IDescription {
