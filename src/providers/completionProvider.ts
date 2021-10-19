@@ -163,8 +163,9 @@ export async function doCompletion(
         return completionItems;
       }
 
-      // Finally, check if we're looking for module options
+      // Check if we're looking for module options
       // In that case, the module name is a key of a map
+
       const parentKeyPath = new AncestryBuilder(path)
         .parentOfKey()
         .parent(YAMLMap)
@@ -187,6 +188,7 @@ export async function doCompletion(
               document.uri
             );
           }
+
           if (module && module.documentation) {
             const moduleOptions = module.documentation.options;
 
