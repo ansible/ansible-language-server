@@ -8,10 +8,11 @@ import {
   Location,
   Range,
 } from 'vscode-languageserver';
+import { playKeywords, taskKeywords } from '../utils/ansible';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { ValidationManager } from '../services/validationManager';
 import { WorkspaceFolderContext } from '../services/workspaceManager';
-import { parseAllDocuments } from '../utils/yaml';
+import { getPathAt, parseAllDocuments } from '../utils/yaml';
 import { CommandRunner } from '../utils/commandRunner';
 
 /**
@@ -47,6 +48,22 @@ export async function doValidate(
     );
     console.debug('Path for lint: ', lintAvailability);
 
+    const yamlDocs = parseAllDocuments(textDocument.getText());
+    const path = getPathAt(textDocument, { line: 1, character: 1 }, yamlDocs);
+
+    const playbookKeys = Object.keys(path[0].toJSON()[0]);
+    // const isPlaybook2 = 'hosts' in playbookKeys;
+    const playKeywordsList = [...playKeywords.keys()];
+    const taskKeywordsList = [...taskKeywords.keys()];
+
+    const filteredArray = playKeywordsList.filter(
+      (value) => !taskKeywordsList.includes(value)
+    );
+
+    const isPlaybook = playbookKeys.some((r) => filteredArray.includes(r));
+
+    // console.debug('overlapping keywords -> ', filteredArray);
+
     if (lintAvailability) {
       console.debug('Validating using ansible-lint');
       diagnosticsByFile = await context.ansibleLint.doValidate(textDocument);
@@ -63,9 +80,16 @@ export async function doValidate(
         );
       }
       console.debug('Validating using ansible syntax-check');
-      diagnosticsByFile = await context.ansiblePlaybook.doValidate(
-        textDocument
-      );
+
+      if (isPlaybook) {
+        console.log('is playbook...');
+        diagnosticsByFile = await context.ansiblePlaybook.doValidate(
+          textDocument
+        );
+      } else {
+        console.log('not a playbook...');
+        diagnosticsByFile = new Map();
+      }
     }
 
     if (!diagnosticsByFile.has(textDocument.uri)) {
