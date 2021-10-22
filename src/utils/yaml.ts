@@ -437,8 +437,6 @@ export function isPlaybook(textDocument: TextDocument): boolean {
   const yamlDocs = parseAllDocuments(textDocument.getText());
   const path = getPathAt(textDocument, { line: 1, character: 1 }, yamlDocs);
 
-  console.log('path -> ', path);
-
   //   Check if keys are present or not
   if (!path) {
     return false;
