@@ -11,6 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
+      - name: Install deps
+        run: |
+          npm config set fund false
+
       - name: Checkout ansible-language-server
         uses: actions/checkout@v2
 
@@ -32,8 +36,25 @@ jobs:
         run: npm link ..
         working-directory: vscode-ansible
 
+      - name: Display links
+        run: npm ls --link=true --depth=0
+        working-directory: vscode-ansible
+        continue-on-error: true
+
+      - name: Compile extension
+        run: npm ci && npm run compile
+        working-directory: vscode-ansible
+
+      - name: Display links
+        run: npm ls --link=true --depth=0
+        working-directory: vscode-ansible
+
       - name: Run ui-test with vscode-ansible
         uses: GabrielBB/xvfb-action@v1
         with:
           run: npm run ui-test
           working-directory: vscode-ansible
+
+      - name: Display links
+        run: npm ls --link=true --depth=0
+        working-directory: vscode-ansible
