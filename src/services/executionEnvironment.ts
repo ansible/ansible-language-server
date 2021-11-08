@@ -13,6 +13,7 @@ export class ExecutionEnvironment {
   private connection: Connection;
   private context: WorkspaceFolderContext;
   private useProgressTracker = false;
+  private successFileMarker = 'SUCCESS'
   private _container_engine: IContainerEngine;
   private _container_image: string;
   private _container_image_id: string;
@@ -118,7 +119,7 @@ export class ExecutionEnvironment {
         return;
       }
 
-      if (fs.existsSync(hostCacheBasePath)) {
+      if (this.isPluginDocCacheValid(hostCacheBasePath)) {
         ansibleConfig.collections_paths = this.updateCachePaths(
           ansibleConfig.collections_paths,
           hostCacheBasePath
@@ -175,6 +176,8 @@ export class ExecutionEnvironment {
           '**/modules'
         );
       }
+      // plugin cache successfully created
+      fs.closeSync(fs.openSync(path.join(hostCacheBasePath, this.successFileMarker), 'w'));
     } catch (error) {
       this.connection.window.showErrorMessage(
         `Exception in ExecutionEnvironment service while fetching docs: ${JSON.stringify(
@@ -306,7 +309,7 @@ export class ExecutionEnvironment {
           .slice(0, -1)
           .join(path.sep);
         fs.mkdirSync(destPath, { recursive: true });
-        const copyCommand = `docker cp ${containerName}:${srcPath} ${destPathFolder}`;
+        const copyCommand = `${this._container_engine} cp ${containerName}:${srcPath} ${destPathFolder}`;
         this.connection.console.log(
           `Copying plugins from container to local cache path ${copyCommand}`
         );
@@ -333,5 +336,10 @@ export class ExecutionEnvironment {
       }
     });
     return localCachePaths;
+  }
+
+  private isPluginDocCacheValid(hostCacheBasePath: string) {
+    const markerFilePath = path.join(hostCacheBasePath, this.successFileMarker)
+    return true ? fs.existsSync(markerFilePath) : false
   }
 }
