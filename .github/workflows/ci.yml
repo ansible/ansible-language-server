@@ -209,6 +209,9 @@ jobs:
         name: npm-package-tarball
         path: ${{ needs.pre-setup.outputs.tarball-artifact-name }}
 
+    - name: Check if git reports dirty
+      run: git diff --exit-code
+
   # vscode:
   #   uses: .github/workflows/vscode.yml@main
 
