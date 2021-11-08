@@ -267,10 +267,10 @@ export async function doCompletion(
 
       //   Iterate till we reach the module name and cache the keys at every level
       while (!isTaskParam(keyPath)) {
-        keySequence.push((keyPath[keyPath.length - 1] as Scalar).value);
+        keySequence.push((keyPath[keyPath.length - 1] as Scalar).value); // TODO: push value and type (map or dict)
         keyPath = new AncestryBuilder(keyPath)
           .parentOfKey()
-          .parent(YAMLMap)
+          .parent(YAMLMap) // TODO: and YAMLSeq (based on condition)
           .getKeyPath();
       }
 
