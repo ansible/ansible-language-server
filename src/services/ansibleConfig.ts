@@ -29,6 +29,15 @@ export class AnsibleConfig {
         settings
       );
 
+      // TODO: remove this once we implement https://github.com/ansible/vscode-ansible/issues/312
+      // Temporary measure for displaying info that may be used for
+      // debugging execution failures for extenal commands
+      const debugInfoResult = await commandRunner.runCommand(
+        'echo',
+        'PATH="$PATH"'
+      );
+      this.connection.console.log(debugInfoResult.stdout);
+
       // get Ansible configuration
       const ansibleConfigResult = await commandRunner.runCommand(
         'ansible-config',
