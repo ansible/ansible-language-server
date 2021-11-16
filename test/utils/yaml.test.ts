@@ -2,7 +2,6 @@ import { expect } from 'chai';
 import { promises as fs } from 'fs';
 import * as path from 'path';
 import { TextDocument } from 'vscode-languageserver-textdocument';
-import { parseAllDocuments } from 'yaml';
 import { Node, Scalar, YAMLMap, YAMLSeq } from 'yaml/types';
 import {
   AncestryBuilder,
@@ -12,6 +11,7 @@ import {
   isPlayParam,
   isRoleParam,
   isTaskParam,
+  parseAllDocuments,
 } from '../../src/utils/yaml';
 
 async function getYamlDoc(yamlFile: string) {
