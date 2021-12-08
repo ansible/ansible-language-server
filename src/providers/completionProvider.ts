@@ -218,7 +218,7 @@ export async function doCompletion(
                 : undefined,
             };
             const insertText = atEndOfLine(document, position)
-              ? `${option.name}:`
+              ? returnForList(option.specs)
               : option.name;
             if (nodeRange) {
               completionItem.textEdit = {
@@ -369,4 +369,12 @@ function atEndOfLine(document: TextDocument, position: Position): boolean {
     document.offsetAt(position)
   ];
   return charAfterCursor === '\n' || charAfterCursor === '\r';
+}
+
+function returnForList(option: IOption) {
+  if (option.type === 'list') {
+    return `${option.name}:\r\t- `;
+  } else {
+    return `${option.name}:`;
+  }
 }
