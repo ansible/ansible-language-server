@@ -31,7 +31,7 @@ export class CommandRunner {
   }> {
     let executablePath: string;
     let command: string;
-    let runEnv: NodeJS.ProcessEnv | undefined;
+    let runEnv: NodeJS.ProcessEnv = process.env;
     const isEEEnabled = this.settings.executionEnvironment.enabled;
     const interpreterPath = isEEEnabled
       ? 'python3'
@@ -59,12 +59,18 @@ export class CommandRunner {
         `${executable} ${args}`,
         mountPaths
       );
-      runEnv = undefined;
     }
+    runEnv['ANSIBLE_FORCE_COLOR'] = '0';
 
-    const currentWorkingDirectory = workingDirectory
-      ? workingDirectory
-      : URI.parse(this.context.workspaceFolder.uri).path;
+    let currentWorkingDirectory = workingDirectory;
+    if (!workingDirectory && this.context?.workspaceFolder.uri) {
+      currentWorkingDirectory = URI.parse(
+        this.context?.workspaceFolder.uri
+      )?.path;
+    }
+    if (!currentWorkingDirectory) {
+      currentWorkingDirectory = process.cwd();
+    }
     const result = await asyncExec(command, {
       encoding: 'utf-8',
       cwd: currentWorkingDirectory,
