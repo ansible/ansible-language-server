@@ -15,5 +15,9 @@ overrides:
       parser: json5
       quoteProps: preserve
       singleQuote: false
+  - files:
+      - '*.md'
+    options:
+      proseWrap: always
 semi: true
 singleQuote: true

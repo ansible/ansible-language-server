@@ -82,7 +82,7 @@ repos:
     rev: "v2.5.1"
     hooks:
       - id: prettier
-        types: ["json"]
+        types_or: ["markdown", "json"]
         exclude: >
           (?x)^(
             ansible-language-configuration.json|
