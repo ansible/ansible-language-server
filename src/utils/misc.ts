@@ -49,12 +49,12 @@ export function withInterpreter(
   args: string,
   interpreterPath: string,
   activationScript: string
-): [string, NodeJS.ProcessEnv | undefined] {
+): [string, NodeJS.ProcessEnv] {
   let command = `${executable} ${args}`; // base case
 
   if (activationScript) {
     command = `bash -c 'source ${activationScript} && ${executable} ${args}'`;
-    return [command, undefined];
+    return [command, {}];
   }
 
   if (interpreterPath) {
@@ -78,6 +78,6 @@ export function withInterpreter(
 
     return [command, newEnv];
   } else {
-    return [command, undefined];
+    return [command, process.env];
   }
 }

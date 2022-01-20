@@ -31,7 +31,7 @@ export class CommandRunner {
   }> {
     let executablePath: string;
     let command: string;
-    let runEnv: NodeJS.ProcessEnv | undefined;
+    let runEnv: NodeJS.ProcessEnv = {};
     const isEEEnabled = this.settings.executionEnvironment.enabled;
     const interpreterPath = isEEEnabled
       ? 'python3'
@@ -59,7 +59,6 @@ export class CommandRunner {
         `${executable} ${args}`,
         mountPaths
       );
-      runEnv = undefined;
     }
 
     const currentWorkingDirectory = workingDirectory
