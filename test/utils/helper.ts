@@ -4,11 +4,11 @@ import { promises as fs } from 'fs';
 
 
 export async function getDoc(filename: string): Promise<TextDocument> {
-  const yaml = await fs.readFile(
+  const file = await fs.readFile(
     path.resolve('test', 'data', filename),
     {
       encoding: 'utf8',
     }
   );
-  return TextDocument.create('uri', 'ansible', 1, yaml);
+  return TextDocument.create('uri', 'ansible', 1, file);
 }
