@@ -122,7 +122,7 @@ The following settings are supported.
   environment image. Default is `quay.io/ansible/creator-ee:latest`.
 * `ansible.executionEnvironment.pullPolicy`: Specify the image pull policy.
   Valid values are `always`, `missing`, `never` and `tag`. Setting `always` will
-  always pull the image when extension is activated or reloaded. Default is `missing`.  
+  always pull the image when extension is activated or reloaded. Default is `missing`.
   Setting `missing` will pull if not locally available. Setting `never` will
   never pull the image and setting tag will always pull if the image tag is
   'latest', otherwise pull if not locally available.
