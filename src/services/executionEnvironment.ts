@@ -270,8 +270,8 @@ export class ExecutionEnvironment {
     searchPath: string,
     pluginFolderPath: string
   ): boolean {
-    const completeSearchPath = path.join(searchPath, pluginFolderPath)
-    const command = `${this._container_engine} exec ${containerName} ls ${completeSearchPath}`;
+    const completeSearchPath = path.join(searchPath, pluginFolderPath);
+    const command = `${this._container_engine} exec ${containerName} echo ${completeSearchPath}`;
     try {
       this.connection.console.info(`Executing command ${command}`);
       const result = child_process
