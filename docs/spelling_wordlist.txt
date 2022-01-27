@@ -1,2 +1,4 @@
 Ansible
 ansible
+stderr
+stdout

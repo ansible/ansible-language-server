@@ -4,6 +4,7 @@ import { withInterpreter, asyncExec } from './misc';
 import { getAnsibleCommandExecPath } from './execPath';
 import { WorkspaceFolderContext } from '../services/workspaceManager';
 import { ExtensionSettings } from '../interfaces/extensionSettings';
+import stripAnsi from '@electerm/strip-ansi';
 
 export class CommandRunner {
   private connection: Connection;
@@ -24,7 +25,8 @@ export class CommandRunner {
     executable: string,
     args: string,
     workingDirectory?: string,
-    mountPaths?: Set<string>
+    mountPaths?: Set<string>,
+    keepAnsi = false
   ): Promise<{
     stdout: string;
     stderr: string;
@@ -71,6 +73,10 @@ export class CommandRunner {
       env: runEnv,
     });
 
+    if (!keepAnsi) {
+      result.stdout = stripAnsi(result.stdout);
+      result.stderr = stripAnsi(result.stderr);
+    }
     return result;
   }
 
