@@ -6,7 +6,8 @@ export async function getDoc(filename: string): Promise<TextDocument> {
   const file = await fs.readFile(path.resolve('test', 'data', filename), {
     encoding: 'utf8',
   });
-  return TextDocument.create('uri', 'ansible', 1, file);
+  const docUri = path.resolve('test', 'data', filename).toString();
+  return TextDocument.create(docUri, 'ansible', 1, file);
 }
 
 export function isWindows(): boolean {
