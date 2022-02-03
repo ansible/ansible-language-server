@@ -442,6 +442,8 @@ jobs:
           node-version: 16
           os: macos-11
         # windows
+        # TODO: revisit this after windows + wsl2 node 
+        # is enabled in CI
         # - name: test-node12-windows
         #   node-version: 12
         #   os: windows-latest
