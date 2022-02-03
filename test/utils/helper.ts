@@ -17,6 +17,10 @@ export function isWindows(): boolean {
   return process.platform === 'win32';
 }
 
+/**
+ * A function that initiates the connection object with ipc that can be used to create a workspace manager for testing purposes
+ * @returns {WorkspaceManager} object to serve as a workspace manager for testing purposes
+ */
 export function createTestWorkspaceManager(): WorkspaceManager {
   process.argv.push('--node-ipc');
   const connection = createConnection();
