@@ -7,7 +7,11 @@ import { createConnection } from 'vscode-languageserver/node';
 const FIXTURES_BASE_PATH = path.join('test', 'fixtures');
 
 export function setFixtureAnsibleCollectionPathEnv(): void {
-  process.env.ANSIBLE_COLLECTIONS_PATHS = path.resolve(FIXTURES_BASE_PATH, 'common', 'collections')
+  process.env.ANSIBLE_COLLECTIONS_PATHS = path.resolve(
+    FIXTURES_BASE_PATH,
+    'common',
+    'collections'
+  );
 }
 
 export async function getDoc(filename: string): Promise<TextDocument> {

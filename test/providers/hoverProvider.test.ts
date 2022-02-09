@@ -1,9 +1,13 @@
 import { expect } from 'chai';
-import { createTestWorkspaceManager, getDoc, setFixtureAnsibleCollectionPathEnv } from '../helper';
+import {
+  createTestWorkspaceManager,
+  getDoc,
+  setFixtureAnsibleCollectionPathEnv,
+} from '../helper';
 import { doHover } from '../../src/providers/hoverProvider';
 import { Position } from 'vscode-languageserver';
 
-setFixtureAnsibleCollectionPathEnv()
+setFixtureAnsibleCollectionPathEnv();
 
 describe('doHover()', () => {
   const workspaceManager = createTestWorkspaceManager();
