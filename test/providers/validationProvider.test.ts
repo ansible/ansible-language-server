@@ -39,7 +39,6 @@ describe('doValidate()', () => {
           diagnosticReport: [
             {
               severity: 1,
-              // eslint-disable-next-line quotes
               message: 'Empty playbook',
               range: {
                 start: { line: 0, character: 0 } as Position,
