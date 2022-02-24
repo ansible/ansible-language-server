@@ -63,17 +63,23 @@ describe('doValidate()', () => {
             textDoc
           );
 
-          expect(actualDiagnostics.size).to.equal(diagnosticReport.length);
+          if (actualDiagnostics.size !== 0) {
+            expect(
+              actualDiagnostics.get(`file://${textDoc.uri}`).length
+            ).to.equal(diagnosticReport.length);
 
-          Array.from(actualDiagnostics.values()).forEach((diag, i) => {
-            const actDiag = diag[i];
-            const expDiag = diagnosticReport[i];
+            actualDiagnostics
+              .get(`file://${textDoc.uri}`)
+              .forEach((diag, i) => {
+                const actDiag = diag;
+                const expDiag = diagnosticReport[i];
 
-            expect(actDiag.message).include(expDiag.message);
-            expect(actDiag.range).to.deep.equal(expDiag.range);
-            expect(actDiag.severity).to.equal(expDiag.severity);
-            expect(actDiag.source).to.equal(expDiag.source);
-          });
+                expect(actDiag.message).include(expDiag.message);
+                expect(actDiag.range).to.deep.equal(expDiag.range);
+                expect(actDiag.severity).to.equal(expDiag.severity);
+                expect(actDiag.source).to.equal(expDiag.source);
+              });
+          }
         });
       });
     });
