@@ -141,13 +141,17 @@ describe('doValidate()', () => {
     describe('Diagnostics using ansible-playbook --syntax-check', () => {
       const tests = [
         {
-          name: 'no host',
-          file: 'diagnostics/noHost.yml',
+          name: 'no specific ansible lint errors',
+          file: 'diagnostics/lint_errors.yml',
+          diagnosticReport: [],
+        },
+        {
+          name: 'empty playbook',
+          file: 'diagnostics/empty.yml',
           diagnosticReport: [
             {
               severity: 1,
-              // eslint-disable-next-line quotes
-              message: "the field 'hosts' is required but was not set",
+              message: 'Empty playbook',
               range: {
                 start: { line: 0, character: 0 } as Position,
                 end: {
@@ -160,12 +164,13 @@ describe('doValidate()', () => {
           ],
         },
         {
-          name: 'empty playbook',
-          file: 'diagnostics/empty.yml',
+          name: 'no host',
+          file: 'diagnostics/noHost.yml',
           diagnosticReport: [
             {
               severity: 1,
-              message: 'Empty playbook',
+              // eslint-disable-next-line quotes
+              message: "the field 'hosts' is required but was not set",
               range: {
                 start: { line: 0, character: 0 } as Position,
                 end: {
