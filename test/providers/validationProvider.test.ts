@@ -1,7 +1,11 @@
 import { expect } from 'chai';
-import { Position } from 'vscode';
-import { getYamlValidation } from '../../src/providers/validationProvider';
+import { Position } from 'vscode-languageserver';
 import {
+  doValidate,
+  getYamlValidation,
+} from '../../src/providers/validationProvider';
+import {
+  createTestValidationManager,
   createTestWorkspaceManager,
   getDoc,
   setFixtureAnsibleCollectionPathEnv,
@@ -11,6 +15,17 @@ setFixtureAnsibleCollectionPathEnv();
 
 describe('doValidate()', () => {
   const workspaceManager = createTestWorkspaceManager();
+  const validationManager = createTestValidationManager();
+
+  describe('Get validation only from cache', () => {
+    it('should provide no diagnostics', async function () {
+      const textDoc = await getDoc('diagnostics/lint_errors.yml');
+
+      const actualDiagnostics = await doValidate(textDoc, validationManager);
+
+      expect(actualDiagnostics.size).to.equal(0);
+    });
+  });
 
   describe('Ansible diagnostics', () => {
     describe('Diagnostics using ansible-lint', () => {
@@ -114,11 +129,16 @@ describe('doValidate()', () => {
           const textDoc = await getDoc(file);
           const context = workspaceManager.getContext(textDoc.uri);
 
-          const actualDiagnostics = await context.ansibleLint.doValidate(
-            textDoc
+          const actualDiagnostics = await doValidate(
+            textDoc,
+            validationManager,
+            false,
+            context
           );
 
-          if (actualDiagnostics !== -1 && actualDiagnostics.size !== 0) {
+          if (diagnosticReport.length === 0) {
+            expect(actualDiagnostics.has(`file://${textDoc.uri}`)).to.be.false;
+          } else {
             expect(
               actualDiagnostics.get(`file://${textDoc.uri}`).length
             ).to.equal(diagnosticReport.length);
@@ -138,7 +158,8 @@ describe('doValidate()', () => {
         });
       });
     });
-    describe('Diagnostics using ansible-playbook --syntax-check', () => {
+
+    describe('Diagnostics after falling back to --syntax-check due to change in settings', () => {
       const tests = [
         {
           name: 'no specific ansible lint errors',
@@ -148,20 +169,7 @@ describe('doValidate()', () => {
         {
           name: 'empty playbook',
           file: 'diagnostics/empty.yml',
-          diagnosticReport: [
-            {
-              severity: 1,
-              message: 'Empty playbook',
-              range: {
-                start: { line: 0, character: 0 } as Position,
-                end: {
-                  line: 0,
-                  character: Number.MAX_SAFE_INTEGER,
-                } as Position,
-              },
-              source: 'Ansible',
-            },
-          ],
+          diagnosticReport: [],
         },
         {
           name: 'no host',
@@ -189,11 +197,86 @@ describe('doValidate()', () => {
           const textDoc = await getDoc(file);
           const context = workspaceManager.getContext(textDoc.uri);
 
-          const actualDiagnostics = await context.ansiblePlaybook.doValidate(
-            textDoc
+          //   Update setting to disable ansible-lint
+          const docSettings = context.documentSettings.get(textDoc.uri);
+          (await docSettings).ansibleLint.enabled = false;
+
+          const actualDiagnostics = await doValidate(
+            textDoc,
+            validationManager,
+            false,
+            context
           );
 
-          if (actualDiagnostics.size !== 0) {
+          if (diagnosticReport.length === 0) {
+            expect(actualDiagnostics.has(`file://${textDoc.uri}`)).to.be.false;
+          } else {
+            expect(
+              actualDiagnostics.get(`file://${textDoc.uri}`).length
+            ).to.equal(diagnosticReport.length);
+
+            actualDiagnostics
+              .get(`file://${textDoc.uri}`)
+              .forEach((diag, i) => {
+                const actDiag = diag;
+                const expDiag = diagnosticReport[i];
+
+                expect(actDiag.message).include(expDiag.message);
+                expect(actDiag.range).to.deep.equal(expDiag.range);
+                expect(actDiag.severity).to.equal(expDiag.severity);
+                expect(actDiag.source).to.equal(expDiag.source);
+              });
+          }
+        });
+      });
+    });
+    describe('Diagnostics after falling back to --syntax-check due to unavailability of ansible-lint', () => {
+      const tests = [
+        {
+          name: 'no specific ansible lint errors',
+          file: 'diagnostics/lint_errors.yml',
+          diagnosticReport: [],
+        },
+        {
+          name: 'no host',
+          file: 'diagnostics/noHost.yml',
+          diagnosticReport: [
+            {
+              severity: 1,
+              // eslint-disable-next-line quotes
+              message: "the field 'hosts' is required but was not set",
+              range: {
+                start: { line: 0, character: 0 } as Position,
+                end: {
+                  line: 0,
+                  character: Number.MAX_SAFE_INTEGER,
+                } as Position,
+              },
+              source: 'Ansible',
+            },
+          ],
+        },
+      ];
+
+      tests.forEach(({ name, file, diagnosticReport }) => {
+        it(`should provide diagnostics for ${name}`, async function () {
+          const textDoc = await getDoc(file);
+          const context = workspaceManager.getContext(textDoc.uri);
+
+          //   Update setting to disable ansible-lint
+          const docSettings = context.documentSettings.get(textDoc.uri);
+          (await docSettings).ansibleLint.path = 'invalid-ansible-lint-path';
+
+          const actualDiagnostics = await doValidate(
+            textDoc,
+            validationManager,
+            false,
+            context
+          );
+
+          if (diagnosticReport.length === 0) {
+            expect(actualDiagnostics.has(`file://${textDoc.uri}`)).to.be.false;
+          } else {
             expect(
               actualDiagnostics.get(`file://${textDoc.uri}`).length
             ).to.equal(diagnosticReport.length);
