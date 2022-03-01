@@ -10,7 +10,7 @@ import {
   isTaskParam,
   parseAllDocuments,
 } from '../../src/utils/yaml';
-import { getDoc, isWindows } from './helper';
+import { getDoc, isWindows } from '../helper';
 
 async function getPathInFile(
   yamlFile: string,
@@ -27,11 +27,10 @@ async function getPathInFile(
 }
 
 describe('yaml', () => {
-
   beforeEach(function () {
     const brokenTests = new Map([
       // ['<testName>', '<url-of-tracking-issue>'],
-    ])
+    ]);
     const reason = brokenTests.get(this.currentTest.title);
     if (isWindows() && reason) {
       const msg = `Marked ${this.currentTest.title} as pending due to ${reason}`;

@@ -82,23 +82,16 @@ repos:
     rev: "v2.5.1"
     hooks:
       - id: prettier
-        types: ["json"]
-        exclude: >
-          (?x)^(
-            ansible-language-configuration.json|
-            jinja-language-configuration.json|
-            syntaxes/external/jinja.tmLanguage.json
-          )$
   - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.30.0
+    rev: v0.31.0
     hooks:
-    - id: markdownlint
-      exclude: >
-        (?x)^
-          docs/changelog-fragments\.d/\d+\.\w+\.md
-        $
+      - id: markdownlint
+        exclude: >
+          (?x)^
+            docs/changelog-fragments\.d/\d+\.\w+\.md
+          $
   - repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v8.6.0
+    rev: v8.8.0
     hooks:
       - id: eslint
         args:
