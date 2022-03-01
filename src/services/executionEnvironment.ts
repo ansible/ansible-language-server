@@ -276,7 +276,7 @@ export class ExecutionEnvironment {
     searchPath: string,
     pluginFolderPath: string
   ): boolean {
-    const completeSearchPath = path.join(searchPath, pluginFolderPath)
+    const completeSearchPath = path.join(searchPath, pluginFolderPath);
     const command = `${this._container_engine} exec ${containerName} ls ${completeSearchPath}`;
     try {
       this.connection.console.info(`Executing command ${command}`);
@@ -285,7 +285,7 @@ export class ExecutionEnvironment {
           encoding: 'utf-8',
         })
         .trim();
-      return (result.trim() !== '');
+      return result.trim() !== '';
     } catch (error) {
       this.connection.console.error(error);
       return false;
