@@ -23,18 +23,16 @@ https://github.com/ansible/ansible-language-server/tree/main/docs/changelog-frag
 
 <!-- towncrier release notes start -->
 
-
 ## v0.5.1 (2022-03-01)
 
 ### Bugfixes
 
-* Ensure that Ansible calls do not return ANSI escapes, so we can parse them.
+- Ensure that Ansible calls do not return ANSI escapes, so we can parse them.
   [vscode-ansible#373] -- by {user}`ssbarnea`
 
-  [vscode-ansible#373]: https://github.com/ansible/vscode-ansible/issues/373
-
-  ({issue}`236`)
-
+  [vscode-ansible#373]:
+    https://github.com/ansible/vscode-ansible/issues/373
+    '{issue}`236`'
 
 ## v0.5.0 (2022-03-01)
 
