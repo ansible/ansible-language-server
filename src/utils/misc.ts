@@ -5,8 +5,8 @@ import { TextDocument } from 'vscode-languageserver-textdocument';
 import { Range } from 'vscode-languageserver-types';
 import * as path from 'path';
 
-export async function fileExists(fileUri: string): Promise<boolean> {
-  return !!(await fs.stat(fileUri).catch(() => false));
+export async function fileExists(filePath: string): Promise<boolean> {
+  return !!(await fs.stat(filePath).catch(() => false));
 }
 
 export const asyncExec = promisify(child_process.exec);
