@@ -95,33 +95,24 @@ export class AnsibleLint {
         ansibleLintConfigPath
       );
 
+      if (progressTracker) {
+        progressTracker.begin('ansible-lint', undefined, 'Processing files...');
+      }
+
       const commandRunner = new CommandRunner(
         this.connection,
         this.context,
         settings
       );
 
+      let result;
       try {
-        if (progressTracker) {
-          progressTracker.begin(
-            'ansible-lint',
-            undefined,
-            'Processing files...'
-          );
-        }
-
         // get Ansible configuration
-        const result = await commandRunner.runCommand(
+        result = await commandRunner.runCommand(
           'ansible-lint',
           `${linterArguments} "${docPath}"`,
           workingDirectory,
           mountPaths
-        );
-
-        diagnostics = this.processReport(
-          result.stdout,
-          await ansibleLintConfigPromise,
-          workingDirectory
         );
 
         if (result.stderr) {
@@ -153,6 +144,12 @@ export class AnsibleLint {
           return -1;
         }
       }
+
+      diagnostics = this.processReport(
+        result.stdout,
+        await ansibleLintConfigPromise,
+        workingDirectory
+      );
 
       if (progressTracker) {
         progressTracker.done();
