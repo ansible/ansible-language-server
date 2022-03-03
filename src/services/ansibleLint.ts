@@ -62,6 +62,7 @@ export class AnsibleLint {
       return;
     } else {
       let linterArguments = settings.ansibleLint.arguments ?? '';
+      console.log('ansible-lint arguments (before 2): ', linterArguments);
 
       // Determine linter config file
       let ansibleLintConfigPath = linterArguments.match(
@@ -79,7 +80,9 @@ export class AnsibleLint {
           mountPaths.add(path.dirname(ansibleLintConfigPath));
         }
       }
+      console.log('ansible-lint arguments (before): ', linterArguments);
       linterArguments = `${linterArguments} --offline --nocolor -f codeclimate`;
+      console.log('ansible-lint arguments: ', linterArguments);
 
       const docPath = URI.parse(textDocument.uri).path;
       mountPaths.add(path.dirname(docPath));
@@ -131,27 +134,23 @@ export class AnsibleLint {
             stdout: string;
             stderr: string;
           };
-          if (execError.code === 2) {
-            diagnostics = this.processReport(
-              execError.stdout,
-              await ansibleLintConfigPromise,
-              workingDirectory
-            );
-          } else {
-            if (progressTracker) {
-              progressTracker.done();
-            }
-            this.connection.window.showErrorMessage(execError.message);
-            return -1;
-          }
 
           if (execError.stderr) {
             this.connection.console.info(`[ansible-lint] ${execError.stderr}`);
           }
+          if (progressTracker) {
+            progressTracker.done();
+          }
+
+          this.connection.window.showErrorMessage(execError.message);
+          return -1;
         } else {
-          this.connection.console.error(
-            `Exception in AnsibleLint service: ${JSON.stringify(error)}`
-          );
+          const exceptionString = `Exception in AnsibleLint service: ${JSON.stringify(
+            error
+          )}`;
+          this.connection.console.error(exceptionString);
+          this.connection.window.showErrorMessage(exceptionString);
+          return -1;
         }
       }
 
