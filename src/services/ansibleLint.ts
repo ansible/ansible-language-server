@@ -62,7 +62,6 @@ export class AnsibleLint {
       return;
     } else {
       let linterArguments = settings.ansibleLint.arguments ?? '';
-      console.log('ansible-lint arguments (before 2): ', linterArguments);
 
       // Determine linter config file
       let ansibleLintConfigPath = linterArguments.match(
@@ -80,9 +79,7 @@ export class AnsibleLint {
           mountPaths.add(path.dirname(ansibleLintConfigPath));
         }
       }
-      console.log('ansible-lint arguments (before): ', linterArguments);
       linterArguments = `${linterArguments} --offline --nocolor -f codeclimate`;
-      console.log('ansible-lint arguments: ', linterArguments);
 
       const docPath = URI.parse(textDocument.uri).path;
       mountPaths.add(path.dirname(docPath));
