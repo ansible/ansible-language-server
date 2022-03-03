@@ -1,13 +1,12 @@
 import * as child_process from 'child_process';
 import { promises as fs } from 'fs';
-import { URL } from 'url';
 import { promisify } from 'util';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { Range } from 'vscode-languageserver-types';
 import * as path from 'path';
 
-export async function fileExists(fileUri: string): Promise<boolean> {
-  return !!(await fs.stat(new URL(fileUri)).catch(() => false));
+export async function fileExists(filePath: string): Promise<boolean> {
+  return !!(await fs.stat(filePath).catch(() => false));
 }
 
 export const asyncExec = promisify(child_process.exec);
@@ -50,6 +49,10 @@ export function withInterpreter(
 ): [string, NodeJS.ProcessEnv | undefined] {
   let command = `${executable} ${args}`; // base case
 
+  const newEnv = Object.assign({}, process.env, {
+    ANSIBLE_FORCE_COLOR: '0', // ensure output is parseable (no ANSI)
+  });
+
   if (activationScript) {
     command = `bash -c 'source ${activationScript} && ${executable} ${args}'`;
     return [command, undefined];
@@ -67,15 +70,20 @@ export function withInterpreter(
     }
 
     // emulating virtual environment activation script
-    const envOverride = {
-      VIRTUAL_ENV: virtualEnv,
-      PATH: `${pathEntry}:${process.env.PATH}`,
-    };
-    const newEnv = Object.assign({}, process.env, envOverride);
+    newEnv['VIRTUAL_ENV'] = virtualEnv;
+    newEnv['PATH'] = `${pathEntry}:${process.env.PATH}`;
     delete newEnv.PYTHONHOME;
+  }
+  return [command, newEnv];
+}
 
-    return [command, newEnv];
-  } else {
-    return [command, undefined];
+/**
+ * Returns errors messages when LS is run on unsupported platform, or undefined
+ * when all is fine.
+ */
+export function getUnsupportedError(): string | undefined {
+  // win32 applies to x64 arch too, is the platform name
+  if (process.platform === 'win32') {
+    return 'Ansible Language Server can only run inside WSL on Windows. Refer to vscode documentation for more details.';
   }
 }
