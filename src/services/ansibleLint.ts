@@ -107,14 +107,19 @@ export class AnsibleLint {
         settings
       );
 
-      let result;
       try {
         // get Ansible configuration
-        result = await commandRunner.runCommand(
+        const result = await commandRunner.runCommand(
           'ansible-lint',
           `${linterArguments} "${docPath}"`,
           workingDirectory,
           mountPaths
+        );
+
+        diagnostics = this.processReport(
+          result.stdout,
+          await ansibleLintConfigPromise,
+          workingDirectory
         );
 
         if (result.stderr) {
@@ -128,13 +133,23 @@ export class AnsibleLint {
             stderr: string;
           };
 
-          if (execError.stderr) {
-            this.connection.console.info(`[ansible-lint] ${execError.stderr}`);
-          }
+          if (execError.stdout.includes('[syntax-check]')) {
+            diagnostics = this.processReport(
+              execError.stdout,
+              await ansibleLintConfigPromise,
+              workingDirectory
+            );
+          } else {
+            if (execError.stderr) {
+              this.connection.console.info(
+                `[ansible-lint] ${execError.stderr}`
+              );
+            }
 
-          progressTracker.done();
-          this.connection.window.showErrorMessage(execError.message);
-          return -1;
+            progressTracker.done();
+            this.connection.window.showErrorMessage(execError.message);
+            return -1;
+          }
         } else {
           const exceptionString = `Exception in AnsibleLint service: ${JSON.stringify(
             error
@@ -146,12 +161,6 @@ export class AnsibleLint {
           return -1;
         }
       }
-
-      diagnostics = this.processReport(
-        result.stdout,
-        await ansibleLintConfigPromise,
-        workingDirectory
-      );
 
       progressTracker.done();
     }
