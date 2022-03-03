@@ -130,7 +130,7 @@ export class AnsibleLint {
             stderr: string;
           };
 
-          if (execError.stdout.includes('[syntax-check]')) {
+          if (execError.stdout) {
             diagnostics = this.processReport(
               execError.stdout,
               await ansibleLintConfigPromise,
