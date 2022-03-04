@@ -29,18 +29,25 @@ jobs:
         with:
           node-version: 16
 
-      - name: Link ansible-language-server into vscode-ansible
+      - name: Compile ansible-language-server
+        run: |
+          set -ex
+          npm ci
+          npm run compile
+
+      - name: Compile vscode-ansible with unreleased ansible-language-server
         run: |
           set -ex
           mv vscode-ansible ..
           pushd ../vscode-ansible
+          npm ci
           npm install --save ../ansible-language-server
+          npm run webpack
           popd
 
-      - name: >-
-          Run test-ui with vscode-ansible
+      - name: Run test-ui with vscode-ansible
         uses: GabrielBB/xvfb-action@v1
         with:
-          run: >-
-            npm run test-ui
+          # warn: this action can only run one command
+          run: npm run test-ui
           working-directory: ../vscode-ansible
