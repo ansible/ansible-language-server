@@ -179,10 +179,6 @@ export class AnsibleLint {
     try {
       const report = JSON.parse(result);
       if (report instanceof Array) {
-        if (report.length === 0) {
-          this.connection.console.warn('[ansible-lint] No problems reported');
-          return diagnostics;
-        }
         for (const item of report) {
           if (
             typeof item.check_name === 'string' &&
