@@ -71,6 +71,8 @@ withserver
 wordwrap
 workdir
 xvfb
+stdout
+stderr
 
 # names and usernames:
 Ganesh
