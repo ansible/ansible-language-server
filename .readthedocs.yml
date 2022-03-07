@@ -32,7 +32,7 @@ build:
 # to build docs
 python:
   install:
-  - requirements: docs/requirements.txt
+  - requirements: requirements.txt
   system_packages: false
 
 ...

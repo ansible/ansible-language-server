@@ -21,7 +21,7 @@ process locally by executing:
 ```shell-session
 $ tox -e build-docs
 build-docs create: .tox/build-docs
-build-docs installdeps: -r docs/requirements.txt
+build-docs installdeps: -r requirements.txt
 ...
 
 ========================================================================================================================
