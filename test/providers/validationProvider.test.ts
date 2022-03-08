@@ -293,6 +293,73 @@ describe('doValidate()', () => {
                 expect(actDiag.source).to.equal(expDiag.source);
               });
           }
+    describe('Diagnostics after falling back to --syntax-check due to failure in execution of ansible-lint command', () => {
+      const tests = [
+        {
+          name: 'no specific ansible lint errors',
+          file: 'diagnostics/lint_errors.yml',
+          diagnosticReport: [],
+        },
+        {
+          name: 'no host',
+          file: 'diagnostics/noHost.yml',
+          diagnosticReport: [
+            {
+              severity: 1,
+              // eslint-disable-next-line quotes
+              message: "the field 'hosts' is required but was not set",
+              range: {
+                start: { line: 0, character: 0 } as Position,
+                end: {
+                  line: 0,
+                  character: Number.MAX_SAFE_INTEGER,
+                } as Position,
+              },
+              source: 'Ansible',
+            },
+          ],
+        },
+      ];
+
+      tests.forEach(({ name, file, diagnosticReport }) => {
+        it(`should provide diagnostics for ${name}`, async function () {
+          const textDoc = await getDoc(file);
+          const context = workspaceManager.getContext(textDoc.uri);
+
+          //   Update setting to make the ansible-lint command fail
+          const docSettings = context.documentSettings.get(textDoc.uri);
+          const cachedDefaultSetting = (await docSettings).ansibleLint
+            .arguments;
+          (await docSettings).ansibleLint.arguments = '-f asds';
+
+          const actualDiagnostics = await doValidate(
+            textDoc,
+            validationManager,
+            false,
+            context
+          );
+
+          if (diagnosticReport.length === 0) {
+            expect(actualDiagnostics.has(`file://${textDoc.uri}`)).to.be.false;
+          } else {
+            expect(
+              actualDiagnostics.get(`file://${textDoc.uri}`).length
+            ).to.equal(diagnosticReport.length);
+
+            actualDiagnostics
+              .get(`file://${textDoc.uri}`)
+              .forEach((diag, i) => {
+                const actDiag = diag;
+                const expDiag = diagnosticReport[i];
+
+                expect(actDiag.message).include(expDiag.message);
+                expect(actDiag.range).to.deep.equal(expDiag.range);
+                expect(actDiag.severity).to.equal(expDiag.severity);
+                expect(actDiag.source).to.equal(expDiag.source);
+              });
+          }
+
+          (await docSettings).ansibleLint.arguments = cachedDefaultSetting;
         });
       });
     });
