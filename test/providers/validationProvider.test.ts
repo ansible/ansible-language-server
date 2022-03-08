@@ -341,7 +341,7 @@ describe('doValidate()', () => {
           const docSettings = context.documentSettings.get(textDoc.uri);
           const cachedDefaultSetting = (await docSettings).ansibleLint
             .arguments;
-          (await docSettings).ansibleLint.arguments = '-f asds';
+          (await docSettings).ansibleLint.arguments = '-f invalid_argument';
 
           const actualDiagnostics = await doValidate(
             textDoc,
