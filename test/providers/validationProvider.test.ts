@@ -199,6 +199,7 @@ describe('doValidate()', () => {
 
           //   Update setting to disable ansible-lint
           const docSettings = context.documentSettings.get(textDoc.uri);
+          const cachedDefaultSetting = (await docSettings).ansibleLint.enabled;
           (await docSettings).ansibleLint.enabled = false;
 
           const actualDiagnostics = await doValidate(
@@ -227,6 +228,8 @@ describe('doValidate()', () => {
                 expect(actDiag.source).to.equal(expDiag.source);
               });
           }
+
+          (await docSettings).ansibleLint.enabled = cachedDefaultSetting;
         });
       });
     });
@@ -265,6 +268,7 @@ describe('doValidate()', () => {
 
           //   Update setting to disable ansible-lint
           const docSettings = context.documentSettings.get(textDoc.uri);
+          const cachedDefaultSetting = (await docSettings).ansibleLint.path;
           (await docSettings).ansibleLint.path = 'invalid-ansible-lint-path';
 
           const actualDiagnostics = await doValidate(
@@ -293,6 +297,13 @@ describe('doValidate()', () => {
                 expect(actDiag.source).to.equal(expDiag.source);
               });
           }
+
+          // Revert setting
+          (await docSettings).ansibleLint.path = cachedDefaultSetting;
+        });
+      });
+    });
+
     describe('Diagnostics after falling back to --syntax-check due to failure in execution of ansible-lint command', () => {
       const tests = [
         {
