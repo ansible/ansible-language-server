@@ -37,6 +37,11 @@ export function createTestWorkspaceManager(): WorkspaceManager {
   const connection = createConnection();
   const workspaceManager = new WorkspaceManager(connection);
 
+  workspaceManager.clientCapabilities.window = {
+    showMessage: { messageActionItem: { additionalPropertiesSupport: false } },
+    showDocument: { support: true },
+    workDoneProgress: true,
+  };
   return workspaceManager;
 }
 
