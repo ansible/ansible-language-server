@@ -14,5 +14,3 @@
 
     - name: this would typically fire deprecated-command-syntax
       command: warn=no chmod 644 X
-
-
