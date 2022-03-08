@@ -42,6 +42,8 @@ export function createTestWorkspaceManager(): WorkspaceManager {
     showDocument: { support: true },
     workDoneProgress: true,
   };
+
+  connection.listen();
   return workspaceManager;
 }
 
@@ -54,5 +56,6 @@ export function createTestValidationManager(): ValidationManager {
   );
   const validationManager = new ValidationManager(connection, documents);
 
+  connection.listen();
   return validationManager;
 }
