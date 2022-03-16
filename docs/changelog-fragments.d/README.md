@@ -68,4 +68,4 @@ See `pyproject.toml` for all available categories
 
 [myst-md]: https://myst-parser.rtfd.io/en/latest/syntax/syntax.html
 [towncrier-philosophy]:
-  https://towncrier.rtfd.io/en/actual-freaking-docs/#philosophy
+  https://towncrier.readthedocs.io/en/latest/#philosophy
