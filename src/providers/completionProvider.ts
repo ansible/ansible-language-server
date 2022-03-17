@@ -185,6 +185,15 @@ export async function doCompletion(
 
         const nodeRange = getNodeRange(node, document);
 
+        const cursorAtEndOfLine = atEndOfLine(document, position);
+        let textEdit: TextEdit | undefined;
+        if (nodeRange) {
+          textEdit = {
+            range: nodeRange,
+            newText: '', // placeholder
+          };
+        }
+
         return remainingOptions
           .map(([option, specs]) => {
             return {
@@ -213,20 +222,14 @@ export async function doCompletion(
                 ? CompletionItemKind.Reference
                 : CompletionItemKind.Property,
               documentation: formatOption(option.specs),
-              insertText: atEndOfLine(document, position)
-                ? `${option.name}:`
-                : undefined,
+              data: {
+                documentUri: document.uri, // preserve document URI for completion request
+                type: option.specs.type,
+                atEndOfLine: cursorAtEndOfLine,
+              },
             };
-            const insertText = atEndOfLine(document, position)
-              ? returnForList(option.specs)
-              : option.name;
             if (nodeRange) {
-              completionItem.textEdit = {
-                range: nodeRange,
-                newText: insertText,
-              };
-            } else {
-              completionItem.insertText = insertText;
+              completionItem.textEdit = textEdit;
             }
             return completionItem;
           });
@@ -342,7 +345,7 @@ export async function doCompletionResolve(
 
       const insertName = useFqcn ? completionItem.data.moduleFqcn : name;
       const insertText = completionItem.data.atEndOfLine
-        ? `${insertName}:`
+        ? `${insertName}:\r\t`
         : insertName;
 
       if (completionItem.textEdit) {
@@ -357,6 +360,20 @@ export async function doCompletionResolve(
       );
     }
   }
+
+  if (completionItem.data?.type) {
+    // resolve completion for a module option or sub-option
+
+    const insertText = completionItem.data.atEndOfLine
+      ? `${completionItem.label}:${resolveSuffix(completionItem.data.type)}`
+      : `${completionItem.label}:`;
+
+    if (completionItem.textEdit) {
+      completionItem.textEdit.newText = insertText;
+    } else {
+      completionItem.insertText = insertText;
+    }
+  }
   return completionItem;
 }
 
@@ -368,13 +385,23 @@ function atEndOfLine(document: TextDocument, position: Position): boolean {
   const charAfterCursor = `${document.getText()}\n`[
     document.offsetAt(position)
   ];
-  return charAfterCursor === "\n" || charAfterCursor === "\r";
+  return charAfterCursor === '\n' || charAfterCursor === '\r';
 }
 
-function returnForList(option: IOption) {
-  if (option.type === 'list') {
-    return `${option.name}:\r\t- `;
-  } else {
-    return `${option.name}:`;
+function resolveSuffix(optionType) {
+  let returnSuffix: string;
+
+  switch (optionType) {
+    case 'list':
+      returnSuffix = '\r\t- ';
+      break;
+    case 'dict':
+      returnSuffix = '\r\t';
+      break;
+    default:
+      returnSuffix = ' ';
+      break;
   }
+
+  return returnSuffix;
 }
