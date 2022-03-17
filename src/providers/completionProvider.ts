@@ -345,7 +345,7 @@ export async function doCompletionResolve(
 
       const insertName = useFqcn ? completionItem.data.moduleFqcn : name;
       const insertText = completionItem.data.atEndOfLine
-        ? `${insertName}:\r\t`
+        ? `${insertName}:\r\t\t`
         : insertName;
 
       if (completionItem.textEdit) {
@@ -396,7 +396,7 @@ function resolveSuffix(optionType) {
       returnSuffix = '\r\t- ';
       break;
     case 'dict':
-      returnSuffix = '\r\t';
+      returnSuffix = '\r\t\t';
       break;
     default:
       returnSuffix = ' ';
