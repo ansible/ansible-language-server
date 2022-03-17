@@ -29,22 +29,24 @@ jobs:
         with:
           node-version: 16
 
-      - name: Compile language server
-        run: npm ci && npm run compile
-
-      - name: Link ansible-language-server into vscode-ansible
+      - name: Inject unreleased ansible-language-server into vscode-ansible extension
+        # do not try to use command below as vsce package is unable to work with symlinked modules:
+        # npm install --save ../ansible-language-server
         run: |
           set -ex
           mv vscode-ansible ..
           pushd ../vscode-ansible
-          npm link --save ../ansible-language-server
-          npm ls --depth=0 --link=true
-          popd
+          npm ci  # Install vscode-ansible dependencies
+          rm -rf node_modules/@ansible/ansible-language-server
+          cp -r ../ansible-language-server node_modules/@ansible/ansible-language-server
+          npm ls
+          # npm install --save ../ansible-language-server
+          npm run package
 
       - name: >-
-          Run test:ui with vscode-ansible
+          Run test-ui with vscode-ansible
         uses: GabrielBB/xvfb-action@v1
         with:
           run: >-
-            npm run test:ui
+            npm run test-ui
           working-directory: ../vscode-ansible

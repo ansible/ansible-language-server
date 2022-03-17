@@ -1,21 +1,22 @@
-import { ExecException } from 'child_process';
-import { promises as fs } from 'fs';
-import * as path from 'path';
-import { URI } from 'vscode-uri';
+import { ExecException } from "child_process";
+import { promises as fs } from "fs";
+import * as path from "path";
+import { URI } from "vscode-uri";
 import {
   Connection,
   Diagnostic,
   DiagnosticSeverity,
   DidChangeWatchedFilesParams,
+  integer,
   Position,
   Range,
-} from 'vscode-languageserver';
-import { TextDocument } from 'vscode-languageserver-textdocument';
-import { parseAllDocuments } from 'yaml';
-import { IAnsibleLintConfig } from '../interfaces/ansibleLintConfig';
-import { fileExists, hasOwnProperty } from '../utils/misc';
-import { WorkspaceFolderContext } from './workspaceManager';
-import { CommandRunner } from '../utils/commandRunner';
+} from "vscode-languageserver";
+import { TextDocument } from "vscode-languageserver-textdocument";
+import { parseAllDocuments } from "yaml";
+import { IAnsibleLintConfig } from "../interfaces/ansibleLintConfig";
+import { fileExists, hasOwnProperty } from "../utils/misc";
+import { WorkspaceFolderContext } from "./workspaceManager";
+import { CommandRunner } from "../utils/commandRunner";
 
 /**
  * Acts as and interface to ansible-lint and a cache of its output.
@@ -57,11 +58,11 @@ export class AnsibleLint {
 
     if (!settings.ansibleLint.enabled) {
       console.debug(
-        'Ansible-lint is disabled. Falling back to ansible syntax-check'
+        "Ansible-lint is disabled. Falling back to ansible syntax-check"
       );
       return;
     } else {
-      let linterArguments = settings.ansibleLint.arguments ?? '';
+      let linterArguments = settings.ansibleLint.arguments ?? "";
 
       // Determine linter config file
       let ansibleLintConfigPath = linterArguments.match(
@@ -83,14 +84,20 @@ export class AnsibleLint {
 
       const docPath = URI.parse(textDocument.uri).path;
       mountPaths.add(path.dirname(docPath));
-      let progressTracker;
-      if (this.useProgressTracker) {
-        progressTracker = await this.connection.window.createWorkDoneProgress();
-      }
+
+      const progressTracker = this.useProgressTracker
+        ? await this.connection.window.createWorkDoneProgress()
+        : {
+            begin: () => {}, // eslint-disable-line @typescript-eslint/no-empty-function
+            done: () => {}, // eslint-disable-line @typescript-eslint/no-empty-function
+          };
+
       const ansibleLintConfigPromise = this.getAnsibleLintConfig(
         workingDirectory,
         ansibleLintConfigPath
       );
+
+      progressTracker.begin("ansible-lint", undefined, "Processing files...");
 
       const commandRunner = new CommandRunner(
         this.connection,
@@ -99,17 +106,9 @@ export class AnsibleLint {
       );
 
       try {
-        if (progressTracker) {
-          progressTracker.begin(
-            'ansible-lint',
-            undefined,
-            'Processing files...'
-          );
-        }
-
         // get Ansible configuration
         const result = await commandRunner.runCommand(
-          'ansible-lint',
+          "ansible-lint",
           `${linterArguments} "${docPath}"`,
           workingDirectory,
           mountPaths
@@ -131,33 +130,37 @@ export class AnsibleLint {
             stdout: string;
             stderr: string;
           };
-          if (execError.code === 2) {
+
+          if (execError.stdout) {
             diagnostics = this.processReport(
               execError.stdout,
               await ansibleLintConfigPromise,
               workingDirectory
             );
           } else {
-            if (progressTracker) {
-              progressTracker.done();
+            if (execError.stderr) {
+              this.connection.console.info(
+                `[ansible-lint] ${execError.stderr}`
+              );
             }
+
+            progressTracker.done();
             this.connection.window.showErrorMessage(execError.message);
             return -1;
           }
-
-          if (execError.stderr) {
-            this.connection.console.info(`[ansible-lint] ${execError.stderr}`);
-          }
         } else {
-          this.connection.console.error(
-            `Exception in AnsibleLint service: ${JSON.stringify(error)}`
-          );
+          const exceptionString = `Exception in AnsibleLint service: ${JSON.stringify(
+            error
+          )}`;
+
+          progressTracker.done();
+          this.connection.console.error(exceptionString);
+          this.connection.window.showErrorMessage(exceptionString);
+          return -1;
         }
       }
 
-      if (progressTracker) {
-        progressTracker.done();
-      }
+      progressTracker.done();
     }
     return diagnostics;
   }
@@ -170,7 +173,7 @@ export class AnsibleLint {
     const diagnostics: Map<string, Diagnostic[]> = new Map();
     if (!result) {
       this.connection.console.warn(
-        'Standard output from ansible-lint is suspiciously empty.'
+        "Standard output from ansible-lint is suspiciously empty."
       );
       return diagnostics;
     }
@@ -179,12 +182,12 @@ export class AnsibleLint {
       if (report instanceof Array) {
         for (const item of report) {
           if (
-            typeof item.check_name === 'string' &&
+            typeof item.check_name === "string" &&
             item.location &&
-            typeof item.location.path === 'string' &&
+            typeof item.location.path === "string" &&
             item.location.lines &&
             (item.location.lines.begin ||
-              typeof item.location.lines.begin === 'number')
+              typeof item.location.lines.begin === "number")
           ) {
             const begin_line =
               item.location.lines.begin.line || item.location.lines.begin || 1;
@@ -195,7 +198,7 @@ export class AnsibleLint {
             };
             const end: Position = {
               line: begin_line - 1,
-              character: Number.MAX_SAFE_INTEGER,
+              character: integer.MAX_VALUE,
             };
             const range: Range = {
               start: start,
@@ -238,15 +241,15 @@ export class AnsibleLint {
               message: message,
               range: range || Range.create(0, 0, 0, 0),
               severity: severity,
-              source: 'Ansible',
+              source: "Ansible",
             });
           }
         }
       }
     } catch (error) {
       this.connection.window.showErrorMessage(
-        'Could not parse ansible-lint output. Please check your ansible-lint installation & configuration.' +
-          ' More info in `Ansible Server` output.'
+        "Could not parse ansible-lint output. Please check your ansible-lint installation & configuration." +
+          " More info in `Ansible Server` output."
       );
       let message: string;
       if (error instanceof Error) {
@@ -294,16 +297,16 @@ export class AnsibleLint {
     };
     try {
       const configContents = await fs.readFile(configPath, {
-        encoding: 'utf8',
+        encoding: "utf8",
       });
       parseAllDocuments(configContents).forEach((configDoc) => {
         const configObject: unknown = configDoc.toJSON();
         if (
-          hasOwnProperty(configObject, 'warn_list') &&
+          hasOwnProperty(configObject, "warn_list") &&
           configObject.warn_list instanceof Array
         ) {
           for (const warn_item of configObject.warn_list) {
-            if (typeof warn_item === 'string') {
+            if (typeof warn_item === "string") {
               config.warnList.add(warn_item);
             }
           }
@@ -320,14 +323,14 @@ export class AnsibleLint {
   ): Promise<string | undefined> {
     // find configuration path
     let configPath;
-    const pathArray = uri.split('/');
+    const pathArray = uri.split("/");
 
     // Find first configuration file going up until workspace root
     for (let index = pathArray.length - 1; index >= 0; index--) {
       const candidatePath = pathArray
         .slice(0, index)
-        .concat('.ansible-lint')
-        .join('/');
+        .concat(".ansible-lint")
+        .join("/");
       if (!candidatePath.startsWith(this.context.workspaceFolder.uri)) {
         // we've gone out of the workspace folder
         break;

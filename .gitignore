@@ -11,3 +11,5 @@ vscode-ansible
 .tox
 .python-version
 __pycache__
+.temp
+UNKNOWN.egg-info

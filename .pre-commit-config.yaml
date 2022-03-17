@@ -10,6 +10,7 @@ ci:
   skip:
     # https://github.com/pre-commit-ci/issues/issues/55
     - npm-ci
+    - codecov
 repos:
   - repo: local
     hooks:
@@ -38,8 +39,23 @@ repos:
         language: system
         pass_filenames: false
         always_run: true
+      - id: codecov
+        name: Check codecov.yml
+        # https://superuser.com/a/1587813/3004
+        entry: >
+          bash -c '[ $(
+          curl --silent -o /dev/stderr -w "%{http_code}" -X POST --data-binary @codecov.yml https://codecov.io/validate
+          ) -eq 200 ]'
+        language: system
+        files: "codecov.yml"
+        pass_filenames: false
+  - repo: https://github.com/streetsidesoftware/cspell-cli
+    rev: v5.8.4
+    hooks:
+      - id: cspell
+        name: Spell check with cspell
   - repo: https://github.com/pre-commit/pre-commit-hooks.git
-    rev: v4.0.1
+    rev: v4.1.0
     hooks:
       - id: end-of-file-fixer
         exclude: >
@@ -66,16 +82,21 @@ repos:
 
       - id: debug-statements
         language_version: python3
-  - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.29.0
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    # keep it before markdownlint and eslint
+    rev: "v2.5.1"
     hooks:
-    - id: markdownlint
-      exclude: >
-        (?x)^
-          docs/changelog-fragments\.d/\d+\.\w+\.md
-        $
+      - id: prettier
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.31.1
+    hooks:
+      - id: markdownlint
+        exclude: >
+          (?x)^
+            docs/changelog-fragments\.d/\d+\.\w+\.md
+          $
   - repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v8.2.0
+    rev: v8.10.0
     hooks:
       - id: eslint
         args:

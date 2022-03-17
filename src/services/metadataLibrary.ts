@@ -1,10 +1,10 @@
-import { promises as fs } from 'fs';
-import { URL } from 'url';
-import { Connection } from 'vscode-languageserver';
-import { DidChangeWatchedFilesParams } from 'vscode-languageserver-protocol';
-import { parseAllDocuments } from 'yaml';
-import { IDocumentMetadata } from '../interfaces/documentMeta';
-import { fileExists, hasOwnProperty } from '../utils/misc';
+import { promises as fs } from "fs";
+import { Connection } from "vscode-languageserver";
+import { DidChangeWatchedFilesParams } from "vscode-languageserver-protocol";
+import { URI } from "vscode-uri";
+import { parseAllDocuments } from "yaml";
+import { IDocumentMetadata } from "../interfaces/documentMeta";
+import { fileExists, hasOwnProperty } from "../utils/misc";
 export class MetadataLibrary {
   private connection: Connection;
 
@@ -43,15 +43,15 @@ export class MetadataLibrary {
    */
   private getAnsibleMetadataUri(uri: string): string | undefined {
     let metaPath;
-    const pathArray = uri.split('/');
+    const pathArray = uri.split("/");
 
     // Find first
     for (let index = pathArray.length - 1; index >= 0; index--) {
-      if (pathArray[index] === 'tasks') {
+      if (pathArray[index] === "tasks") {
         metaPath = pathArray
           .slice(0, index)
-          .concat('meta', 'main.yml')
-          .join('/');
+          .concat("meta", "main.yml")
+          .join("/");
       }
     }
     return metaPath;
@@ -64,19 +64,20 @@ export class MetadataLibrary {
       source: metadataUri,
       collections: new Array<string>(),
     };
-    if (await fileExists(metadataUri)) {
+    const metadataFilePath = URI.parse(metadataUri).path;
+    if (await fileExists(metadataFilePath)) {
       try {
-        const metaContents = await fs.readFile(new URL(metadataUri), {
-          encoding: 'utf8',
+        const metaContents = await fs.readFile(metadataFilePath, {
+          encoding: "utf8",
         });
         parseAllDocuments(metaContents).forEach((metaDoc) => {
           const metaObject: unknown = metaDoc.toJSON();
           if (
-            hasOwnProperty(metaObject, 'collections') &&
+            hasOwnProperty(metaObject, "collections") &&
             metaObject.collections instanceof Array
           ) {
             metaObject.collections.forEach((collection) => {
-              if (typeof collection === 'string') {
+              if (typeof collection === "string") {
                 metadata.collections.push(collection);
               }
             });

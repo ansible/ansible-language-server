@@ -1,20 +1,20 @@
-import * as _ from 'lodash';
+import * as _ from "lodash";
 import {
   ClientCapabilities,
   Connection,
   DidChangeWatchedFilesParams,
   WorkspaceFolder,
   WorkspaceFoldersChangeEvent,
-} from 'vscode-languageserver';
-import { AnsibleConfig } from './ansibleConfig';
-import { AnsibleLint } from './ansibleLint';
-import { AnsiblePlaybook } from './ansiblePlaybook';
-import { DocsLibrary } from './docsLibrary';
-import { ExecutionEnvironment } from './executionEnvironment';
-import { MetadataLibrary } from './metadataLibrary';
-import { SettingsManager } from './settingsManager';
-import * as path from 'path';
-import { URI } from 'vscode-uri';
+} from "vscode-languageserver";
+import { AnsibleConfig } from "./ansibleConfig";
+import { AnsibleLint } from "./ansibleLint";
+import { AnsiblePlaybook } from "./ansiblePlaybook";
+import { DocsLibrary } from "./docsLibrary";
+import { ExecutionEnvironment } from "./executionEnvironment";
+import { MetadataLibrary } from "./metadataLibrary";
+import { SettingsManager } from "./settingsManager";
+import * as path from "path";
+import { URI } from "vscode-uri";
 
 /**
  * Holds the overall context for the whole workspace.
@@ -76,19 +76,23 @@ export class WorkspaceManager {
       }
     }
     /* *
-    * If control reaches at this point it indicates an individual file is
-    * opened in client without any workspace.
-    * Set the workspace to directory of the file pointed by uri.
-    */
-    const documentFolderPathParts = uri.split(path.sep)
-    documentFolderPathParts.pop()
+     * If control reaches at this point it indicates an individual file is
+     * opened in client without any workspace.
+     * Set the workspace to directory of the file pointed by uri.
+     */
+    const documentFolderPathParts = uri.split(path.sep);
+    documentFolderPathParts.pop();
     const workspaceFolder: WorkspaceFolder = {
-      'uri': documentFolderPathParts.join(path.sep),
-      'name': documentFolderPathParts[documentFolderPathParts.length - 1]
-    }
+      uri: documentFolderPathParts.join(path.sep),
+      name: documentFolderPathParts[documentFolderPathParts.length - 1],
+    };
 
-    this.connection.console.log(`workspace folder explicitly set to ${URI.parse(workspaceFolder.uri).path}`);
-    return workspaceFolder
+    this.connection.console.log(
+      `workspace folder explicitly set to ${
+        URI.parse(workspaceFolder.uri).path
+      }`
+    );
+    return workspaceFolder;
   }
 
   public handleWorkspaceChanged(event: WorkspaceFoldersChangeEvent): void {

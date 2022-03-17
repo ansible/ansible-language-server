@@ -6,5 +6,18 @@ overrides:
       - '*.yml'
     options:
       singleQuote: false
+  - # json with comments
+    files:
+      - '.vscode/*.json'
+      - 'scripts/*.json'
+      - 'tsconfig.json'
+    options:
+      parser: json5
+      quoteProps: preserve
+      singleQuote: false
+  - files:
+      - '*.md'
+    options:
+      # compatibility with markdownlint
+      proseWrap: always
 semi: true
-singleQuote: true
