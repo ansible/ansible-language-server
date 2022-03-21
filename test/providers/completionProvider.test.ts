@@ -42,10 +42,10 @@ describe("doCompletion()", () => {
           triggerCharacter
         );
 
-        filteredCompletion.forEach((item) => {
-          item.item ? console.log(item.item.label) : console.log(item.label);
-        });
-        console.log("\n");
+        // filteredCompletion.forEach((item) => {
+        //   item.item ? console.log(item.item.label) : console.log(item.label);
+        // });
+        // console.log("\n");
 
         if (!completion) {
           expect(filteredCompletion.length).be.equal(0);
@@ -88,11 +88,6 @@ describe("doCompletion()", () => {
           triggerCharacter
         );
 
-        filteredCompletion.forEach((item) => {
-          item.item ? console.log(item.item.label) : console.log(item.label);
-        });
-        console.log("\n");
-
         if (!completion) {
           expect(filteredCompletion.length).be.equal(0);
         } else {
@@ -134,11 +129,6 @@ describe("doCompletion()", () => {
           triggerCharacter
         );
 
-        filteredCompletion.forEach((item) => {
-          item.item ? console.log(item.item.label) : console.log(item.label);
-        });
-        console.log("\n");
-
         if (!completion) {
           expect(filteredCompletion.length).be.equal(0);
         } else {
@@ -179,11 +169,6 @@ describe("doCompletion()", () => {
           actualCompletion,
           triggerCharacter
         );
-
-        filteredCompletion.forEach((item) => {
-          item.item ? console.log(item.item.label) : console.log(item.label);
-        });
-        console.log("\n");
 
         if (!completion) {
           expect(filteredCompletion.length).be.equal(0);
@@ -261,11 +246,6 @@ describe("doCompletion()", () => {
           triggerCharacter
         );
 
-        filteredCompletion.forEach((item) => {
-          item.item ? console.log(item.item.label) : console.log(item.label);
-        });
-        console.log("\n");
-
         if (!completion) {
           expect(filteredCompletion.length).be.equal(0);
         } else {
@@ -331,11 +311,6 @@ describe("doCompletion()", () => {
           triggerCharacter
         );
 
-        filteredCompletion.forEach((item) => {
-          item.item ? console.log(item.item.label) : console.log(item.label);
-        });
-        console.log("\n");
-
         if (!completion) {
           expect(filteredCompletion.length).be.equal(0);
         } else {
@@ -397,11 +372,6 @@ describe("doCompletion()", () => {
           actualCompletion,
           triggerCharacter
         );
-
-        filteredCompletion.forEach((item) => {
-          item.item ? console.log(item.item.label) : console.log(item.label);
-        });
-        console.log("\n");
 
         if (!completion) {
           expect(filteredCompletion.length).be.equal(0);
