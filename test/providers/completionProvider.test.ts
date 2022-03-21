@@ -197,7 +197,7 @@ describe("doCompletion()", () => {
         completion: "ansible.builtin.ping",
       },
       {
-        name: "for `ansible.builtin.debug` with `debu`",
+        name: "for `ansible.builtin.debug` with `debu`", // cspell: ignore debu
         position: { line: 7, character: 8 } as Position,
         triggerCharacter: "debu",
         completion: "ansible.builtin.debug",
