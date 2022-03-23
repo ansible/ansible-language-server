@@ -4,20 +4,20 @@ import {
   MarkupContent,
   Range,
   TextEdit,
-} from 'vscode-languageserver';
-import { Position, TextDocument } from 'vscode-languageserver-textdocument';
-import { Node, Scalar, YAMLMap } from 'yaml/types';
-import { IOption } from '../interfaces/module';
-import { WorkspaceFolderContext } from '../services/workspaceManager';
+} from "vscode-languageserver";
+import { Position, TextDocument } from "vscode-languageserver-textdocument";
+import { Node, Scalar, YAMLMap } from "yaml/types";
+import { IOption } from "../interfaces/module";
+import { WorkspaceFolderContext } from "../services/workspaceManager";
 import {
   blockKeywords,
   playKeywords,
   playWithoutTaskKeywords,
   roleKeywords,
   taskKeywords,
-} from '../utils/ansible';
-import { formatModule, formatOption, getDetails } from '../utils/docsFormatter';
-import { insert, toLspRange } from '../utils/misc';
+} from "../utils/ansible";
+import { formatModule, formatOption, getDetails } from "../utils/docsFormatter";
+import { insert, toLspRange } from "../utils/misc";
 import {
   AncestryBuilder,
   findProvidedModule,
@@ -31,7 +31,7 @@ import {
   isTaskParam,
   parseAllDocuments,
   getPossibleOptionsForPath,
-} from '../utils/yaml';
+} from "../utils/yaml";
 
 const priorityMap = {
   nameKeyword: 1,
@@ -55,7 +55,7 @@ export async function doCompletion(
   // This is particularly important when parser has nothing more than
   // indentation to determine the scope of the current line. `_:` is ok here,
   // since we expect to work on a Pair level
-  preparedText = insert(preparedText, offset, '_:');
+  preparedText = insert(preparedText, offset, "_:");
   const yamlDocs = parseAllDocuments(preparedText);
 
   const useFqcn = (await context.documentSettings.get(document.uri)).ansible
@@ -112,7 +112,7 @@ export async function doCompletion(
               document,
               position,
               path,
-              new Map([['block', blockKeywords.get('block') as string]])
+              new Map([["block", blockKeywords.get("block") as string]])
             )
           );
 
@@ -123,7 +123,7 @@ export async function doCompletion(
           if (nodeRange) {
             textEdit = {
               range: nodeRange,
-              newText: '', // placeholder
+              newText: "", // placeholder
             };
           }
 
@@ -138,7 +138,7 @@ export async function doCompletion(
                 priority = priorityMap.moduleName;
                 kind = CompletionItemKind.Class;
               }
-              const [namespace, collection, name] = moduleFqcn.split('.');
+              const [namespace, collection, name] = moduleFqcn.split(".");
               return {
                 label: useFqcn ? moduleFqcn : name,
                 kind: kind,
@@ -190,7 +190,7 @@ export async function doCompletion(
         if (nodeRange) {
           textEdit = {
             range: nodeRange,
-            newText: '', // placeholder
+            newText: "", // placeholder
           };
         }
 
@@ -257,7 +257,7 @@ function getKeywordCompletion(
   const nodeRange = getNodeRange(path[path.length - 1], document);
   return remainingParams.map(([keyword, description]) => {
     const priority =
-      keyword === 'name' ? priorityMap.nameKeyword : priorityMap.keyword;
+      keyword === "name" ? priorityMap.nameKeyword : priorityMap.keyword;
     const completionItem: CompletionItem = {
       label: keyword,
       kind: CompletionItemKind.Property,
@@ -285,11 +285,11 @@ function getKeywordCompletion(
  */
 function getNodeRange(node: Node, document: TextDocument): Range | undefined {
   const range = getOrigRange(node);
-  if (range && node instanceof Scalar && typeof node.value === 'string') {
+  if (range && node instanceof Scalar && typeof node.value === "string") {
     const start = range[0];
     let end = range[1];
     // compensate for `_:`
-    if (node.value.includes('_:')) {
+    if (node.value.includes("_:")) {
       end -= 2;
     } else {
       // colon, being at the end of the line, was excluded from the node
@@ -313,7 +313,7 @@ export async function doCompletionResolve(
 
     if (module && module.documentation) {
       const [namespace, collection, name] =
-        completionItem.data.moduleFqcn.split('.');
+        completionItem.data.moduleFqcn.split(".");
 
       let useFqcn = (
         await context.documentSettings.get(completionItem.data.documentUri)
@@ -324,7 +324,7 @@ export async function doCompletionResolve(
 
         const declaredCollections: Array<string> =
           completionItem.data?.inlineCollections || [];
-        declaredCollections.push('ansible.builtin');
+        declaredCollections.push("ansible.builtin");
 
         const metadata = await context.documentMetadata.get(
           completionItem.data.documentUri
@@ -385,21 +385,21 @@ function atEndOfLine(document: TextDocument, position: Position): boolean {
   const charAfterCursor = `${document.getText()}\n`[
     document.offsetAt(position)
   ];
-  return charAfterCursor === '\n' || charAfterCursor === '\r';
+  return charAfterCursor === "\n" || charAfterCursor === "\r";
 }
 
 function resolveSuffix(optionType) {
   let returnSuffix: string;
 
   switch (optionType) {
-    case 'list':
-      returnSuffix = '\r\t- ';
+    case "list":
+      returnSuffix = "\r\t- ";
       break;
-    case 'dict':
-      returnSuffix = '\r\t\t';
+    case "dict":
+      returnSuffix = "\r\t\t";
       break;
     default:
-      returnSuffix = ' ';
+      returnSuffix = " ";
       break;
   }
 
