@@ -366,7 +366,7 @@ export async function doCompletionResolve(
 
     const insertText = completionItem.data.atEndOfLine
       ? `${completionItem.label}:${resolveSuffix(completionItem.data.type)}`
-      : `${completionItem.label}:`;
+      : `${completionItem.label}`;
 
     if (completionItem.textEdit) {
       completionItem.textEdit.newText = insertText;
