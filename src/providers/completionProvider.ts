@@ -388,7 +388,7 @@ function atEndOfLine(document: TextDocument, position: Position): boolean {
   return charAfterCursor === "\n" || charAfterCursor === "\r";
 }
 
-function resolveSuffix(optionType) {
+function resolveSuffix(optionType: string) {
   let returnSuffix: string;
 
   switch (optionType) {
