@@ -1,3 +1,4 @@
+import { EOL } from "os";
 import {
   CompletionItem,
   CompletionItemKind,
@@ -127,6 +128,10 @@ export async function doCompletion(
               newText: "", // placeholder
             };
           }
+          const cursorAtFirstElementOfList = firstElementOfList(
+            document,
+            nodeRange
+          );
 
           // offer modules
           const moduleCompletionItems = [...docsLibrary.moduleFqcns].map(
@@ -155,6 +160,7 @@ export async function doCompletion(
                   moduleFqcn: moduleFqcn,
                   inlineCollections: inlineCollections,
                   atEndOfLine: cursorAtEndOfLine,
+                  firstElementOfList: cursorAtFirstElementOfList,
                 },
                 textEdit: textEdit,
               };
@@ -186,14 +192,12 @@ export async function doCompletion(
 
         const nodeRange = getNodeRange(node, document);
 
+        const cursorAtFirstElementOfList = firstElementOfList(
+          document,
+          nodeRange
+        );
+
         const cursorAtEndOfLine = atEndOfLine(document, position);
-        let textEdit: TextEdit | undefined;
-        if (nodeRange) {
-          textEdit = {
-            range: nodeRange,
-            newText: "", // placeholder
-          };
-        }
 
         return remainingOptions
           .map(([option, specs]) => {
@@ -376,7 +380,10 @@ export async function doCompletionResolve(
     // resolve completion for a module option or sub-option
 
     const insertText = completionItem.data.atEndOfLine
-      ? `${completionItem.label}:${resolveSuffix(completionItem.data.type)}`
+      ? `${completionItem.label}:${resolveSuffix(
+          completionItem.data.type,
+          completionItem.data.firstElementOfList
+        )}`
       : `${completionItem.label}`;
 
     if (completionItem.textEdit) {
@@ -399,15 +406,31 @@ function atEndOfLine(document: TextDocument, position: Position): boolean {
   return charAfterCursor === "\n" || charAfterCursor === "\r";
 }
 
-function resolveSuffix(optionType: string) {
+/**
+ * A utility function to check if the item is the first element of a list or not
+ * @param document current document
+ * @param nodeRange range of the keyword in the document
+ * @returns {boolean} true if the key is the first element of the list, else false
+ */
+function firstElementOfList(document: TextDocument, nodeRange: Range): boolean {
+  const checkNodeRange = {
+    start: { line: nodeRange.start.line, character: 0 },
+    end: nodeRange.start,
+  };
+  const elementsBeforeKey = document.getText(checkNodeRange).trim();
+
+  return elementsBeforeKey === "-";
+}
+
+function resolveSuffix(optionType: string, firstElementOfList: boolean) {
   let returnSuffix: string;
 
   switch (optionType) {
     case "list":
-      returnSuffix = "\r\t- ";
+      returnSuffix = firstElementOfList ? `${EOL}\t\t- ` : `${EOL}\t- `;
       break;
     case "dict":
-      returnSuffix = "\r\t\t";
+      returnSuffix = firstElementOfList ? `${EOL}\t\t` : `${EOL}\t`;
       break;
     default:
       returnSuffix = " ";
