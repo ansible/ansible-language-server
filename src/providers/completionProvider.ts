@@ -360,7 +360,10 @@ export async function doCompletionResolve(
 
       const insertName = useFqcn ? completionItem.data.moduleFqcn : name;
       const insertText = completionItem.data.atEndOfLine
-        ? `${insertName}:\r\t\t`
+        ? `${insertName}:${resolveSuffix(
+            "dict", // since a module is always a dictionary
+            completionItem.data.firstElementOfList
+          )}`
         : insertName;
 
       if (completionItem.textEdit) {
