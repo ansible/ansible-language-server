@@ -4,6 +4,7 @@
  */
 
 import { expect } from "chai";
+import { EOL } from "os";
 import { doCompletionResolve } from "../../src/providers/completionProvider";
 import {} from "../../src/providers/validationProvider";
 import {
@@ -29,6 +30,7 @@ describe("doCompletionResolve()", () => {
               moduleFqcn: "org_1.coll_3.module_3",
               inlineCollections: ["org_1.coll_3", "ansible.builtin"],
               atEndOfLine: true,
+              firstElementOfList: false,
             },
           },
           completionText: "org_1.coll_3.module_3",
@@ -46,7 +48,7 @@ describe("doCompletionResolve()", () => {
           );
 
           expect(actualCompletionResolveAtLineEnd.insertText).be.equal(
-            `${completionText}:\r\t\t`
+            `${completionText}:${EOL}\t`
           );
 
           // Check for completion resolution when asked in between of lines
@@ -74,6 +76,7 @@ describe("doCompletionResolve()", () => {
               moduleFqcn: "org_1.coll_3.module_3",
               inlineCollections: ["org_1.coll_3", "ansible.builtin"],
               atEndOfLine: true,
+              firstElementOfList: false,
             },
           },
           completionText: "module_3",
@@ -87,6 +90,7 @@ describe("doCompletionResolve()", () => {
               moduleFqcn: "org_1.coll_1.module_1",
               inlineCollections: ["org_1.coll_3", "ansible.builtin"],
               atEndOfLine: true,
+              firstElementOfList: false,
             },
           },
           completionText: "org_1.coll_1.module_1",
@@ -109,7 +113,7 @@ describe("doCompletionResolve()", () => {
           );
 
           expect(actualCompletionResolveAtLineEnd.insertText).be.equal(
-            `${completionText}:\r\t\t`
+            `${completionText}:${EOL}\t`
           );
 
           // Check for completion resolution when asked in between of lines
@@ -134,19 +138,20 @@ describe("doCompletionResolve()", () => {
   describe("Resolve completion for module options and suboptions", () => {
     const tests = [
       {
-        name: "option expecting dictionary with `option: \\r\\t\\t`",
+        name: "option expecting dictionary with `option: ${EOL}\\t\\t`",
         completionItem: {
           label: "opt_1",
           data: {
             documentUri: "dummy/uri/for/resolve_completion.yml",
             type: "dict",
             atEndOfLine: true,
+            firstElementOfList: true,
           },
         },
         completionText: "opt_1",
       },
       {
-        name: "sub option expecting list with `sub_option: \\r\\t- `",
+        name: "sub option expecting list with `sub_option: ${EOL}\\t- `",
         completionItem: {
           label: "sub_opt_2",
           data: {
@@ -184,10 +189,14 @@ describe("doCompletionResolve()", () => {
         let returnSuffix: string;
         switch (completionItem.data.type) {
           case "list":
-            returnSuffix = "\r\t- ";
+            returnSuffix = completionItem.data.firstElementOfList
+              ? `${EOL}\t\t- `
+              : `${EOL}\t- `;
             break;
           case "dict":
-            returnSuffix = "\r\t\t";
+            returnSuffix = completionItem.data.firstElementOfList
+              ? `${EOL}\t\t`
+              : `${EOL}\t`;
             break;
           default:
             returnSuffix = " ";
