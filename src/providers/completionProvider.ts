@@ -118,6 +118,7 @@ export async function doCompletion(
 
           const inlineCollections = getDeclaredCollections(path);
           const cursorAtEndOfLine = atEndOfLine(document, position);
+
           let textEdit: TextEdit | undefined;
           const nodeRange = getNodeRange(node, document);
           if (nodeRange) {
@@ -225,11 +226,21 @@ export async function doCompletion(
               data: {
                 documentUri: document.uri, // preserve document URI for completion request
                 type: option.specs.type,
+                range: nodeRange,
                 atEndOfLine: cursorAtEndOfLine,
+                firstElementOfList: cursorAtFirstElementOfList,
               },
             };
+            const insertText = atEndOfLine(document, position)
+              ? `${option.name}:`
+              : option.name;
             if (nodeRange) {
-              completionItem.textEdit = textEdit;
+              completionItem.textEdit = {
+                range: nodeRange,
+                newText: insertText,
+              };
+            } else {
+              completionItem.insertText = insertText;
             }
             return completionItem;
           });
