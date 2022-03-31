@@ -39,7 +39,7 @@ jobs:
           npm ci  # Install vscode-ansible dependencies
           rm -rf node_modules/@ansible/ansible-language-server
           # cp -r ../ansible-language-server node_modules/@ansible/ansible-language-server
-          npm ls
+          # npm ls
           cd ../ansible-language-server/
           npm ci
           npm link
