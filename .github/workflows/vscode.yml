@@ -42,10 +42,10 @@ jobs:
           npm ls
           cd ../ansible-language-server/
           npm ci
-          # npm link
+          npm link
           cd ../vscode-ansible
-          # npm link ../ansible-language-server
-          npm install --save ../ansible-language-server
+          npm link ansible-language-server
+          # npm install --save ../ansible-language-server
           npm run package
           # we need to bring vsix artifact inside workspace
           cp *.vsix ../ansible-language-server/
