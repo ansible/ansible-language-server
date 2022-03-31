@@ -64,5 +64,5 @@ jobs:
       - name: Run test-e2e with vscode-ansible
         uses: GabrielBB/xvfb-action@v1
         with:
-          run: sh -c "cp *.vsix ../ansible-language-server/ && ls -a && npm run test-e2e"
+          run: sh -c "cp *.vsix ../vscode-ansible/ && ls -a && npm run test-e2e"
           working-directory: ../vscode-ansible
