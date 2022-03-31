@@ -42,10 +42,10 @@ jobs:
           npm ls
           # npm install --save ../ansible-language-server
           # npm run package
-          npm install vsce --save-dev
-          npx vsce package && npx vsce ls
+          # npm install vsce --save-dev
+          # npx vsce package && npx vsce ls
           # we need to bring vsix artifact inside workspace
-          cp *.vsix ../ansible-language-server/
+          # cp *.vsix ../ansible-language-server/
 
       - name: Publish vsix artifact
         if: ${{ github.event.number }}
@@ -66,5 +66,5 @@ jobs:
       - name: Run test-e2e with vscode-ansible
         uses: GabrielBB/xvfb-action@v1
         with:
-          run: sh -c "./tools/test-setup.sh && npm run test-e2e"
+          run: sh -c "./tools/test-setup.sh && vsce package && vsce ls && npm run test-e2e"
           working-directory: ../vscode-ansible
