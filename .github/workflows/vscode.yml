@@ -44,7 +44,7 @@ jobs:
           npm ci
           npm link
           cd ../vscode-ansible
-          npm link ansible-language-server
+          npm link ansible-language-server --force
           # npm install --save ../ansible-language-server
           npm ls
           npm run package
