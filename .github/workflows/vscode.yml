@@ -42,6 +42,7 @@ jobs:
           npm ls
           # npm install --save ../ansible-language-server
           cd ../ansible-language-server/
+          npm ci
           npm link
           # cd ../vscode-ansible
           # npm link ../ansible-language-server
