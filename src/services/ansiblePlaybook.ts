@@ -135,7 +135,7 @@ export class AnsiblePlaybook {
     };
     const end: Position = {
       line: line - 1,
-      character: Number.MAX_SAFE_INTEGER,
+      character: 2,
     };
     const range: Range = {
       start,
