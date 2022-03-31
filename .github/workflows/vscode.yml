@@ -43,7 +43,7 @@ jobs:
           # npm install --save ../ansible-language-server
           # npm run package
           npm install vsce --save-dev
-          vsce package && vsce ls
+          npx vsce package && npx vsce ls
           # we need to bring vsix artifact inside workspace
           cp *.vsix ../ansible-language-server/
 
