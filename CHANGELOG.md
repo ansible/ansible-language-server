@@ -23,12 +23,11 @@ https://github.com/ansible/ansible-language-server/tree/main/docs/changelog-frag
 
 <!-- towncrier release notes start -->
 
-
 ## v0.5.4 (2022-03-31)
 
 ### Bugfixes
 
-* ```md
+- ```md
   Fix auto-completion and hover not working with execution environment issue. --
   by {user}`ganeshrn`
   ```
@@ -37,11 +36,10 @@ https://github.com/ansible/ansible-language-server/tree/main/docs/changelog-frag
 
 ### Features
 
-* Implemented type based resolution for module options and sub-options completion
-  -- by {user}`priyamsahoo`
+- Implemented type based resolution for module options and sub-options
+  completion -- by {user}`priyamsahoo`
 
   ({issue}`276`)
-
 
 ## v0.5.3 (2022-03-16)
 
