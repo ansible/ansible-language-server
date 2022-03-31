@@ -137,7 +137,7 @@ export class ValidationManager {
           if (displacement) {
             const displacedDiagnostics = diagnosticTree.search([
               change.range.start.line,
-              integer.MAX_VALUE,
+              Number.MAX_SAFE_INTEGER,
             ]);
             if (displacedDiagnostics) {
               for (const diagnostic of displacedDiagnostics as Array<Diagnostic>) {

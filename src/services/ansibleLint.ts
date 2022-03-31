@@ -198,7 +198,7 @@ export class AnsibleLint {
             };
             const end: Position = {
               line: begin_line - 1,
-              character: integer.MAX_VALUE,
+              character: Number.MAX_SAFE_INTEGER,
             };
             const range: Range = {
               start: start,
