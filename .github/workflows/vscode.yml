@@ -52,7 +52,7 @@ jobs:
           name: ansible-extension-from-pr-${{ github.event.number }}.vsix
           # this action cannot archive artifacts from outside workspace "../"
           # https://github.com/actions/upload-artifact/issues/246
-          path: ansible-*.vsix
+          # path: ansible-*.vsix
           retention-days: 15
 
       # - name: Run test-ui with vscode-ansible
@@ -64,5 +64,5 @@ jobs:
       - name: Run test-e2e with vscode-ansible
         uses: GabrielBB/xvfb-action@v1
         with:
-          run: sh -c "cp *.vsix ../vscode-ansible/ && ls -a ../vscode-ansible && npm run test-e2e"
+          run: sh -c "pwd && ls -a ../vscode-ansible && npm run test-e2e"
           working-directory: ../vscode-ansible
