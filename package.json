@@ -66,6 +66,7 @@
     "eslint-config-prettier": "^8.4.0",
     "fuse.js": "^6.5.3",
     "mocha": "^9.2.1",
+    "mustache": "^4.2.0",
     "npm-check-updates": "^12.5.0",
     "nyc": "^15.1.0",
     "prettier": "^2.5.1",
