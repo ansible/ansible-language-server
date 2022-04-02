@@ -2,7 +2,7 @@
   gather_facts: False
   hosts: localhost
   vars:
-    my_var: 'test'
+    my_var: "test"
   tasks:
     - name: Builtin module
       ansible.builtin.debug:
@@ -29,6 +29,7 @@
                   - sub_sub_sub_opt_1:
                     sub_sub_sub_opt_2:
         opt_3: choice_2
+        opt_4: true
 
     - name: Netcommon module
       ansible.netcommon.cli_command:

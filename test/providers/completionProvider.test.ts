@@ -351,11 +351,10 @@ describe("doCompletion()", () => {
         completion: ["choice_4", "choice_1", "choice_2", "choice_3"],
       },
       {
-        name: "empty value",
-        // NOTE: depends on a trailing space character at that position
-        position: { line: 21, character: 23 } as Position,
-        triggerCharacter: "2",
-        completion: ["choice_2"],
+        name: "boolean values",
+        position: { line: 31, character: 15 } as Position,
+        triggerCharacter: "",
+        completion: [false, true],
       },
     ];
 

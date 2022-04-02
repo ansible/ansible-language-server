@@ -71,6 +71,10 @@ options:
       - choice_3
       - choice_4
     default: choice_4
+  opt_4:
+    description: Option 4
+    type: bool
+    default: No
 """
 
 EXAMPLES = """
