@@ -324,6 +324,68 @@ describe("doCompletion()", () => {
     });
   });
 
+  describe("Completion for option and suboption values", () => {
+    const tests = [
+      {
+        name: "builtin module option (ansible.builtin.debug -> msg)",
+        position: { line: 8, character: 13 } as Position,
+        triggerCharacter: "",
+        completion: ["Hello world!"],
+      },
+      {
+        name: "collection module option (org_1.coll_4.module_1 -> opt_3)",
+        position: { line: 30, character: 15 } as Position,
+        triggerCharacter: "3",
+        completion: ["choice_3"],
+      },
+      {
+        name: "collection module sub option (org_1.coll_4.module_1 -> opt_1 -> sub_opt_1)",
+        position: { line: 18, character: 23 } as Position,
+        triggerCharacter: "1",
+        completion: ["choice_1"],
+      },
+      {
+        name: "default first",
+        position: { line: 30, character: 15 } as Position,
+        triggerCharacter: "",
+        completion: ["choice_4", "choice_1", "choice_2", "choice_3"],
+      },
+      {
+        name: "empty value",
+        // NOTE: depends on a trailing space character at that position
+        position: { line: 21, character: 23 } as Position,
+        triggerCharacter: "2",
+        completion: ["choice_2"],
+      },
+    ];
+
+    tests.forEach(({ name, position, triggerCharacter, completion }) => {
+      it(`should provide completion for ${name}`, async function () {
+        const textDoc = await getDoc("completion/simple_tasks.yml");
+        const context = workspaceManager.getContext(textDoc.uri);
+
+        const actualCompletion = await doCompletion(textDoc, position, context);
+
+        const filteredCompletion = smartFilter(
+          actualCompletion,
+          triggerCharacter
+        ).map((completion) => {
+          if (!completion.item) {
+            return completion.label;
+          } else {
+            return completion.item.label;
+          }
+        });
+
+        if (!completion) {
+          expect(filteredCompletion.length).be.equal(0);
+        } else {
+          expect(filteredCompletion).be.deep.equal(completion);
+        }
+      });
+    });
+  });
+
   describe("Completion for module name without FQCN", () => {
     const tests = [
       {

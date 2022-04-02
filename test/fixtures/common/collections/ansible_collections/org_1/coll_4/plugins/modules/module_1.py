@@ -70,7 +70,7 @@ options:
       - choice_2
       - choice_3
       - choice_4
-    default: choice_1
+    default: choice_4
 """
 
 EXAMPLES = """

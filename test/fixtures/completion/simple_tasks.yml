@@ -16,10 +16,10 @@
     - name: Collection module
       org_1.coll_4.module_1:
         opt_1:
-          - sub_opt_1:
+          - sub_opt_1: choice_1
             sub_opt_2:
 
-          - sub_opt_1:
+          - sub_opt_1: 
             sub_opt_2:
               - sub_sub_opt_1:
                 sub_sub_opt_3:
@@ -28,6 +28,7 @@
 
                   - sub_sub_sub_opt_1:
                     sub_sub_sub_opt_2:
+        opt_3: choice_2
 
     - name: Netcommon module
       ansible.netcommon.cli_command:
