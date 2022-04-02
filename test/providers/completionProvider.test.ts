@@ -228,7 +228,7 @@ describe("doCompletion()", () => {
       },
       {
         name: "list for all the modules that contain `cli_` in their name with `cli_`",
-        position: { line: 32, character: 6 } as Position,
+        position: { line: 33, character: 6 } as Position,
         triggerCharacter: "cli_",
         completion: "cli_",
       },
@@ -354,7 +354,7 @@ describe("doCompletion()", () => {
         name: "boolean values",
         position: { line: 31, character: 15 } as Position,
         triggerCharacter: "",
-        completion: [false, true],
+        completion: ["false", "true"],
       },
     ];
 
