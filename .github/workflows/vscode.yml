@@ -60,3 +60,9 @@ jobs:
         with:
           run: sh -c "npm run test-ui && cp *.vsix ../ansible-language-server/"
           working-directory: ../vscode-ansible
+
+      - name: Run test-e2e with vscode-ansible
+        uses: GabrielBB/xvfb-action@v1
+        with:
+          run: sh -c "npm run test-e2e && cp *.vsix ../ansible-language-server/"
+          working-directory: ../vscode-ansible
