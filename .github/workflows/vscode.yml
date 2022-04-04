@@ -8,8 +8,7 @@ on:
 
 jobs:
   ui-test:
-    name: >-
-      test:ui
+    name: test
     runs-on: ubuntu-latest
     steps:
 
