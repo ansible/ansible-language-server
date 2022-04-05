@@ -114,9 +114,13 @@ export async function findPluginRouting(
 }
 
 async function getGlobby() {
-  return (
-    await (Function('return import("globby")')() as Promise<
+  let globby: typeof import("globby");
+  try {
+    globby = await import("globby");
+  } catch (error) {
+    globby = await (Function('return import("globby")')() as Promise<
       typeof import("globby")
-    >)
-  ).globby;
+    >);
+  }
+  return globby.globby;
 }
