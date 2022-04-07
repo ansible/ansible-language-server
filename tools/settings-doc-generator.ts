@@ -22,7 +22,7 @@ const TEMPLATE = `
 
 {{#each arrayOfDefaultSettings}}
 - **{{setting}}**:
-{{description}}  
+{{description}} \\
 _default value: \`{{defaultValue}}\`_
 
 {{/each}}
