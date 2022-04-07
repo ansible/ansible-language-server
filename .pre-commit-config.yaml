@@ -64,6 +64,10 @@ repos:
             docs/settings.md
           )$
       - id: trailing-whitespace
+        exclude: >
+          (?x)^(
+            docs/settings.md
+          )$
       - id: mixed-line-ending
       - id: check-byte-order-marker
       - id: check-executables-have-shebangs
