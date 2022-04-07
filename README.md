@@ -98,10 +98,7 @@ holding `ctrl`/`cmd`.
 ## Language Server Settings
 
 For details on settings, their descriptions and their default values refer to
-the [settings document].
-
-[settings document]:
-  https://github.com/ansible/ansible-language-server/blob/main/docs/settings.md
+the _link_ _settings_ _doc_.
 
 ## Developer support
 
