@@ -23,6 +23,5 @@ changelog
 Code Of Conduct <contributing/code_of_conduct>
 contributing/security
 contributing/guidelines
-settings
 development
 ```
