@@ -87,7 +87,7 @@
     "watch": "tsc --watch -p .",
     "test": "nyc -s -a mocha && nyc report --check-coverage",
     "check-dependencies": "node ./scripts/check-dependencies.js",
-    "generate-settings-readme": "ts-node tools/settings-readme-generation/defaultSettingsDocGenerator.ts"
+    "generate-settings-readme": "ts-node tools/settings-doc-generator.ts"
   },
   "all": true
 }
