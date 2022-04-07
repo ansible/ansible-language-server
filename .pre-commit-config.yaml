@@ -60,7 +60,8 @@ repos:
       - id: end-of-file-fixer
         exclude: >
           (?x)^(
-            syntaxes/.*
+            syntaxes/.*|
+            docs/settings.md
           )$
       - id: trailing-whitespace
       - id: mixed-line-ending
@@ -93,7 +94,8 @@ repos:
       - id: markdownlint
         exclude: >
           (?x)^
-            docs/changelog-fragments\.d/\d+\.\w+\.md
+            docs/changelog-fragments\.d/\d+\.\w+\.md|
+            docs/settings.md
           $
   - repo: https://github.com/pre-commit/mirrors-eslint
     rev: v8.10.0
