@@ -12,5 +12,5 @@ syntaxes/external/jinja.tmLanguage.json
 *.yaml
 *.yml
 
-# Template files, since they change the generated files completely
-*.handlebars
+# Files excluded because they are auto generated
+docs/settings.md
