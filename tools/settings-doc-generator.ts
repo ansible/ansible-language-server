@@ -18,12 +18,12 @@ const arrayOfDefaultSettings = structureSettings(settingsInDotNotation);
 // Use handlebars.js to generate doc file with `defaultSettings.handlebars` as template
 
 const TEMPLATE = `
-### The following are the default values of the settings provided by the Ansible Language Server:
+### The following are the default values of the settings provided by the Ansible Language Server
 
 {{#each arrayOfDefaultSettings}}
-  - **{{setting}}**:
-  {{description}} \
-  _default value: \`{{defaultValue}}\`_
+- **{{setting}}**:
+{{description}}  
+_default value: \`{{defaultValue}}\`_
 
 {{/each}}
 `;
@@ -35,7 +35,7 @@ const settingsReadmeFileUri = path.join(__dirname, "..", "docs", "settings.md");
 
 const template = Handlebars.compile(TEMPLATE);
 const output = template({ arrayOfDefaultSettings });
-fs.writeFileSync(settingsReadmeFileUri, `${WARNING_IN_README}\n\n${output}`);
+fs.writeFileSync(settingsReadmeFileUri, `${WARNING_IN_README}\n${output}`);
 
 console.log(
   `Readme file for settings description and default value generated.`
