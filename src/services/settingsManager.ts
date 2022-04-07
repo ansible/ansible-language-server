@@ -57,7 +57,7 @@ export class SettingsManager {
       containerEngine: {
         default: "auto",
         description:
-          "Container engine to be used while running with execution environment. valid values are `auto`, `podman` and `docker`. For `auto`, it will look for podman and then for docker",
+          "Container engine to be used while running with execution environment. valid values are 'auto', 'podman' and 'docker'. For 'auto', it will look for podman and then for docker",
       },
       enabled: {
         default: false,
@@ -70,7 +70,7 @@ export class SettingsManager {
       pullPolicy: {
         default: "missing",
         description:
-          "Image pull policy to be used. Valid values are `always`, `missing`, `never` and `tag`. always will always pull the image when extension is activated or reloaded. `missing` will pull if not locally available. `never` will never pull the image and `tag` will always pull if the image tag is 'latest', otherwise pull if not locally available.",
+          "Image pull policy to be used. Valid values are 'always', 'missing', 'never' and 'tag'. always will always pull the image when extension is activated or reloaded. 'missing' will pull if not locally available. 'never' will never pull the image and 'tag' will always pull if the image tag is 'latest', otherwise pull if not locally available.",
       },
     },
   };

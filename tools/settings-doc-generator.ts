@@ -25,7 +25,12 @@ const TEMPLATE = `
 {{#each arrayOfDefaultSettings}}
 - **{{setting}}**:
 {{description}} \\
-_default value: \`{{defaultValue}}\`_
+_default value:
+{{#if defaultValue}}
+\`{{defaultValue}}\`_
+{{else}}
+\`""\`
+{{/if}}
 
 {{/each}}
 `;
@@ -80,7 +85,9 @@ export function structureSettings(settingsInDotNotation) {
 
     const obj = {
       setting: key,
-      defaultValue: settingsInDotNotation[`${key}.default`],
+      defaultValue: settingsInDotNotation[`${key}.default`].toString()
+        ? settingsInDotNotation[`${key}.default`]
+        : "",
       description: settingsInDotNotation[`${key}.description`],
     };
 
