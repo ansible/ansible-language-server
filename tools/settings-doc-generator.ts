@@ -18,7 +18,9 @@ const arrayOfDefaultSettings = structureSettings(settingsInDotNotation);
 // Use handlebars.js to generate doc file with `defaultSettings.handlebars` as template
 
 const TEMPLATE = `
-### The following are the default values of the settings provided by the Ansible Language Server
+# Language Server Settings
+
+## The following are the default values of the settings provided by the Ansible Language Server
 
 {{#each arrayOfDefaultSettings}}
 - **{{setting}}**:
