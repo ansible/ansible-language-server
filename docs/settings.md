@@ -27,27 +27,27 @@ _default value:
 - **ansible.ansibleLint.arguments**:
 Optional command line arguments to be appended to ansible-lint invocation \
 _default value:
-`""`
+`""`_
 
 - **ansible.python.interpreterPath**:
 Path to the python/python3 executable. This settings may be used to make the extension work with ansible and ansible-lint installations in a python virtual environment \
 _default value:
-`""`
+`""`_
 
 - **ansible.python.activationScript**:
 Path to a custom activation script, which is to be used instead of te settings above to run in a python virtual environment \
 _default value:
-`""`
+`""`_
 
 - **ansible.executionEnvironment.containerEngine**:
-Container engine to be used while running with execution environment. valid values are &#x27;auto&#x27;, &#x27;podman&#x27; and &#x27;docker&#x27;. For &#x27;auto&#x27;, it will look for podman and then for docker \
+Container engine to be used while running with execution environment. valid values are &#x27;auto&#x27;, &#x27;podman&#x27; and &#x27;docker&#x27;. For &#x27;auto&#x27;, it will look for &#x27;podman&#x27; and then for &#x27;docker&#x27; \
 _default value:
 `auto`_
 
 - **ansible.executionEnvironment.enabled**:
 Toggle usage of an execution environment \
 _default value:
-`""`
+`false`_
 
 - **ansible.executionEnvironment.image**:
 Name of the execution environment to be used \
