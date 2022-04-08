@@ -57,7 +57,7 @@ export class SettingsManager {
       containerEngine: {
         default: "auto",
         description:
-          "Container engine to be used while running with execution environment. valid values are 'auto', 'podman' and 'docker'. For 'auto', it will look for podman and then for docker",
+          "Container engine to be used while running with execution environment. valid values are 'auto', 'podman' and 'docker'. For 'auto', it will look for 'podman' and then for 'docker'",
       },
       enabled: {
         default: false,
