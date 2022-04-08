@@ -20,7 +20,7 @@ const arrayOfDefaultSettings = structureSettings(settingsInDotNotation);
 const TEMPLATE = `
 # Language Server Settings
 
-The following are the default values of the settings provided by the Ansible Language Server
+The following are the default values of the settings provided by the Ansible Language Server:
 
 {{#each arrayOfDefaultSettings}}
 - **{{setting}}**:
