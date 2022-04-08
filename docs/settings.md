@@ -2,7 +2,7 @@
 
 # Language Server Settings
 
-## The following are the default values of the settings provided by the Ansible Language Server
+### The following are the default values of the settings provided by the Ansible Language Server
 
 - **ansible.ansible.path**:
 Path to the ansible executable \
