@@ -27,7 +27,7 @@ platformdirs==2.5.1
 pre-commit==2.18.1
 pycparser==2.21
 pygments==2.11.2
-pyparsing==3.0.7
+pyparsing==3.0.8
 pyyaml==6.0
 resolvelib==0.5.4
 rich==12.0.0
