@@ -149,36 +149,35 @@ export async function findPluginRouting(
  * @param arrayOfPatterns array of patterns
  * @returns matched files
  */
-function globArray(arrayOfPatterns: string[]): string[] {
-  // Patterns to be excluded
-  const ignorePatterns = arrayOfPatterns.filter((pattern) =>
-    pattern.startsWith("!")
-  );
-
+export function globArray(arrayOfPatterns: string[]): string[] {
   // Patterns to be matched
   const matchPatterns = arrayOfPatterns.filter(
     (pattern) => !pattern.startsWith("!")
   );
+
+  // Patterns to be excluded
+  const ignorePatterns = arrayOfPatterns
+    .filter((pattern) => pattern.startsWith("!"))
+    .map((item) => item.slice(1));
 
   let matchFiles = [];
   matchPatterns.forEach((pattern) => {
     const matchedFiles = glob.sync(pattern);
     matchFiles = matchFiles.concat(matchedFiles);
   });
+  const matchFilesSet = new Set(matchFiles);
 
-  let ignoreFiles = [];
-  if (ignorePatterns.length !== 0) {
+  if (ignorePatterns.length === 0) {
+    return [...matchFilesSet];
+  } else {
+    let matchFilesAfterExclusion = [];
     matchPatterns.forEach((pattern) => {
       const ignoredFiles = glob.sync(pattern, {
         ignore: ignorePatterns,
       });
-      ignoreFiles = ignoreFiles.concat(ignoredFiles);
+      matchFilesAfterExclusion = matchFilesAfterExclusion.concat(ignoredFiles);
     });
+    const matchFilesAfterExclusionSet = new Set(matchFilesAfterExclusion);
+    return [...matchFilesAfterExclusionSet];
   }
-
-  // Exclude matching patterns that begin with '!' from the matched array
-  const finalFilesArray = matchFiles.filter((file) => {
-    return !ignoreFiles.includes(file);
-  });
-  return finalFilesArray;
 }
