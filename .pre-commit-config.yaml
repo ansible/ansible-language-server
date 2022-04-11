@@ -50,7 +50,7 @@ repos:
         files: "codecov.yml"
         pass_filenames: false
   - repo: https://github.com/streetsidesoftware/cspell-cli
-    rev: v5.8.4
+    rev: v5.9.0
     hooks:
       - id: cspell
         name: Spell check with cspell
@@ -60,9 +60,14 @@ repos:
       - id: end-of-file-fixer
         exclude: >
           (?x)^(
-            syntaxes/.*
+            syntaxes/.*|
+            docs/settings.md
           )$
       - id: trailing-whitespace
+        exclude: >
+          (?x)^(
+            docs/settings.md
+          )$
       - id: mixed-line-ending
       - id: check-byte-order-marker
       - id: check-executables-have-shebangs
@@ -84,7 +89,7 @@ repos:
         language_version: python3
   - repo: https://github.com/pre-commit/mirrors-prettier
     # keep it before markdownlint and eslint
-    rev: "v2.5.1"
+    rev: "v2.6.2"
     hooks:
       - id: prettier
   - repo: https://github.com/igorshubovych/markdownlint-cli
@@ -93,10 +98,11 @@ repos:
       - id: markdownlint
         exclude: >
           (?x)^
-            docs/changelog-fragments\.d/\d+\.\w+\.md
+            docs/changelog-fragments\.d/\d+\.\w+\.md|
+            docs/settings.md
           $
   - repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v8.10.0
+    rev: v8.12.0
     hooks:
       - id: eslint
         args:
