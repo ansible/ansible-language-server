@@ -7,6 +7,7 @@ import {
   IPluginRoutesByType,
   IPluginRoutingByCollection,
 } from "../interfaces/pluginRouting";
+import { globArray } from "./pathUtils";
 
 export async function findDocumentation(
   dir: string,
@@ -19,26 +20,25 @@ export async function findDocumentation(
   if (!fs.existsSync(dir) || fs.lstatSync(dir).isFile()) {
     return [];
   }
-  const globby = await getGlobby();
   let files;
   switch (kind) {
     case "builtin":
-      files = await globby([`${dir}/**/*.py`, "!/**/_*.py"]);
+      files = await globArray([`${dir}/**/*.py`, "!/**/_*.py"]);
       break;
     case "builtin_doc_fragment":
-      files = await globby([
+      files = await globArray([
         `${path.resolve(dir, "../")}/plugins/doc_fragments/*.py`,
         "!/**/_*.py",
       ]);
       break;
     case "collection":
-      files = await globby([
+      files = await globArray([
         `${dir}/ansible_collections/*/*/plugins/modules/*.py`,
         `!${dir}/ansible_collections/*/*/plugins/modules/_*.py`,
       ]);
       break;
     case "collection_doc_fragment":
-      files = await globby([
+      files = await globArray([
         `${dir}/ansible_collections/*/*/plugins/doc_fragments/*.py`,
         `!${dir}/ansible_collections/*/*/plugins/doc_fragments/_*.py`,
       ]);
@@ -80,14 +80,15 @@ export async function findPluginRouting(
   if (!fs.existsSync(dir) || fs.lstatSync(dir).isFile()) {
     return pluginRouting;
   }
-  const globby = await getGlobby();
   let files;
   switch (kind) {
     case "builtin":
-      files = await globby([`${dir}/config/ansible_builtin_runtime.yml`]);
+      files = await globArray([`${dir}/config/ansible_builtin_runtime.yml`]);
       break;
     case "collection":
-      files = await globby([`${dir}/ansible_collections/*/*/meta/runtime.yml`]);
+      files = await globArray([
+        `${dir}/ansible_collections/*/*/meta/runtime.yml`,
+      ]);
       break;
   }
   for (const file of files) {
@@ -111,12 +112,4 @@ export async function findPluginRouting(
   }
 
   return pluginRouting;
-}
-
-async function getGlobby() {
-  return (
-    await (Function('return import("globby")')() as Promise<
-      typeof import("globby")
-    >)
-  ).globby;
 }
