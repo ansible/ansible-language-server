@@ -8,7 +8,7 @@ on:
 
 jobs:
   ui-test:
-    name: run-with-vscode-ansible-test-suite-main-branch
+    name: vscode-ansible-main-branch-test-suite
     runs-on: ubuntu-latest
     steps:
       - name: Install test dependencies
