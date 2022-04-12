@@ -6,36 +6,35 @@ import { glob } from "glob";
  * @param arrayOfPatterns array of patterns
  * @returns matched files
  */
- export function globArray(arrayOfPatterns: string[]): string[] {
-    // Patterns to be matched
-    const matchPatterns = arrayOfPatterns.filter(
-      (pattern) => !pattern.startsWith("!")
-    );
-  
-    // Patterns to be excluded
-    const ignorePatterns = arrayOfPatterns
-      .filter((pattern) => pattern.startsWith("!"))
-      .map((item) => item.slice(1));
-  
-    let matchFiles = [];
+export function globArray(arrayOfPatterns: string[]): string[] {
+  // Patterns to be matched
+  const matchPatterns = arrayOfPatterns.filter(
+    (pattern) => !pattern.startsWith("!")
+  );
+
+  // Patterns to be excluded
+  const ignorePatterns = arrayOfPatterns
+    .filter((pattern) => pattern.startsWith("!"))
+    .map((item) => item.slice(1));
+
+  let matchFiles = [];
+  matchPatterns.forEach((pattern) => {
+    const matchedFiles = glob.sync(pattern);
+    matchFiles = matchFiles.concat(matchedFiles);
+  });
+  const matchFilesSet = new Set(matchFiles);
+
+  if (ignorePatterns.length === 0) {
+    return [...matchFilesSet];
+  } else {
+    let matchFilesAfterExclusion = [];
     matchPatterns.forEach((pattern) => {
-      const matchedFiles = glob.sync(pattern);
-      matchFiles = matchFiles.concat(matchedFiles);
-    });
-    const matchFilesSet = new Set(matchFiles);
-  
-    if (ignorePatterns.length === 0) {
-      return [...matchFilesSet];
-    } else {
-      let matchFilesAfterExclusion = [];
-      matchPatterns.forEach((pattern) => {
-        const ignoredFiles = glob.sync(pattern, {
-          ignore: ignorePatterns,
-        });
-        matchFilesAfterExclusion = matchFilesAfterExclusion.concat(ignoredFiles);
+      const ignoredFiles = glob.sync(pattern, {
+        ignore: ignorePatterns,
       });
-      const matchFilesAfterExclusionSet = new Set(matchFilesAfterExclusion);
-      return [...matchFilesAfterExclusionSet];
-    }
+      matchFilesAfterExclusion = matchFilesAfterExclusion.concat(ignoredFiles);
+    });
+    const matchFilesAfterExclusionSet = new Set(matchFilesAfterExclusion);
+    return [...matchFilesAfterExclusionSet];
   }
-  
+}
