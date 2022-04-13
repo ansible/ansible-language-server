@@ -42,13 +42,15 @@ jobs:
           mv vscode-ansible ..
 
           # workaround to sync the latest version of ansible-language-server
-          # in the vscode-ansible package.json to avoid npm related failures while vsce pacakaing
-          # pacakage.json
+          # in the vscode-ansible package.json to avoid npm related failures while vsce packaging
+          # package.json
           python tools/version_sync.py
 
+          npm install # update ansible-language-server package-lock.json
           npm ci #  Install ansible-language-server dependencies
 
           pushd ../vscode-ansible
+          npm install # update vscode-ansible package-lock.json
           npm ci  # Install vscode-ansible dependencies
           rm -rf node_modules/@ansible/ansible-language-server
           rm -rf out/server/src/*
