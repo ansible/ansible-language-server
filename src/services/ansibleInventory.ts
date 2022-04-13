@@ -4,7 +4,7 @@ import { CommandRunner } from "../utils/commandRunner";
 
 // Todo:
 // 1. file watcher for change in inventory file
-// 2. priority
+// (done) 2. priority
 // 3. ansible_host keyword
 // 4. support with ee
 // 5. run ansible-inventory every time (no lazy loading)
@@ -15,7 +15,7 @@ import { CommandRunner } from "../utils/commandRunner";
 export class AnsibleInventory {
   private connection: Connection;
   private context: WorkspaceFolderContext;
-  private _hostList: string[] = [];
+  private _hostList = [];
 
   constructor(connection: Connection, context: WorkspaceFolderContext) {
     this.connection = connection;
@@ -41,61 +41,74 @@ export class AnsibleInventory {
       );
 
       const inventoryHostsObject = JSON.parse(ansibleInventoryResult.stdout);
-      console.log("host object -> ", inventoryHostsObject);
       this._hostList = parseInventoryHosts(inventoryHostsObject);
     } catch (error) {
-      console.log("Error from ansibleInventory service", error);
+      this.connection.console.error(
+        `Exception in AnsibleInventory service: ${JSON.stringify(error)}`
+      );
     }
   }
 
-  get hostList(): string[] {
+  get hostList() {
     return this._hostList;
   }
 }
 
-// Add jsdoc after finalizing the return type of the function
+/**
+ * A utility function to parse the hosts object from ansible-inventory executable
+ * to a more usable structure that can be used during auto-completions
+ * @param hostObj nested object of hosts
+ * @returns an array of object with host and priority as keys
+ */
 function parseInventoryHosts(hostObj) {
   const topLevelGroups = hostObj.all.children.filter(
     (item: string) => item !== "ungrouped"
   );
 
-  // console.log("top level groups -> ", topLevelGroups);
-
   const groupsHavingChildren = topLevelGroups.filter(
     (item) => hostObj[`${item}`].children
   );
-  // console.log("groups having children -> ", groupsHavingChildren);
 
-  const otherGroups = [];
-  groupRecursive(groupsHavingChildren);
+  const otherGroups = getChildGroups(groupsHavingChildren, hostObj);
 
-  // console.log("other groups -> ", otherGroups);
+  // Set priorities: top level groups (1), other groups (2), ungrouped (3), hosts for groups (4), localhost (5)
+  const topLevelGroupsObjList = topLevelGroups.map((item) => {
+    return { host: item, priority: 1 };
+  });
 
-  const allGroups = [
-    ...topLevelGroups,
-    ...groupsHavingChildren,
-    ...otherGroups,
-  ];
+  const otherGroupsObjList = otherGroups.map((item) => {
+    return { host: item, priority: 2 };
+  });
 
-  let allHosts = [...hostObj.ungrouped.hosts];
+  const allGroups = [...topLevelGroupsObjList, ...otherGroupsObjList];
+
+  const ungroupedHostsObjList = hostObj.ungrouped.hosts.map((item) => {
+    return { host: item, priority: 3 };
+  });
+
+  const localhostObj = { host: "localhost", priority: 5 };
+
+  let allHosts = [localhostObj, ...ungroupedHostsObjList];
 
   for (const group of allGroups) {
-    if (hostObj[`${group}`].hosts) {
-      allHosts = [...allHosts, ...hostObj[`${group}`].hosts];
-    }
-  }
-
-  // console.log("all hosts -> ", allHosts);
-
-  function groupRecursive(groupList) {
-    for (const host of groupList) {
-      if (hostObj[`${host}`].children) {
-        groupRecursive(hostObj[`${host}`].children);
-      } else {
-        otherGroups.push(host);
-      }
+    if (hostObj[`${group.host}`].hosts) {
+      const hostsObj = hostObj[`${group.host}`].hosts.map((item) => {
+        return { host: item, priority: 4 };
+      });
+      allHosts = [...allHosts, ...hostsObj];
     }
   }
 
   return [...allGroups, ...allHosts];
+}
+
+function getChildGroups(groupList, hostObj, res = []) {
+  for (const host of groupList) {
+    if (hostObj[`${host}`].children) {
+      getChildGroups(hostObj[`${host}`].children, hostObj, res);
+    } else {
+      res.push(host);
+    }
+  }
+  return res;
 }

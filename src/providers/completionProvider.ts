@@ -352,15 +352,12 @@ export async function doCompletion(
         }
       }
 
-      // /
-
       // check for 'hosts' keyword to provide host auto-completion
       const keyPathForHosts = new AncestryBuilder(path)
         .parent(YAMLMap) // compensates for `_:`
         .parent(YAMLMap)
         .getKeyPath();
       const keyNodeForHosts = keyPathForHosts[keyPathForHosts.length - 1];
-      console.log("***keynode -> ", keyNodeForHosts["value"]);
 
       if (
         isPlayParam(keyPathForHosts) &&
@@ -368,20 +365,17 @@ export async function doCompletion(
       ) {
         console.log("Here should be the autocompletion of hosts");
 
+        // const nodeRange = getNodeRange(node, document);
+        // nodeRange is not being passed to getHostCompletion because this will prevent
+        // completion for items beyond ',', ':', '!', and we know that 'hosts' keyword supports regex
+
         const hostsList = (await context.ansibleInventory).hostList;
-        // console.log("*** -> ", testAnsibleInventory);
 
-        const testHostCompletion: CompletionItem[] = [];
-
-        hostsList.forEach((host) => {
-          const hostObj = { label: host, kind: CompletionItemKind.Value };
-          testHostCompletion.push(hostObj);
-        });
+        const testHostCompletion: CompletionItem[] =
+          getHostCompletion(hostsList);
 
         return testHostCompletion;
       }
-
-      // /
     }
   }
   return null;
@@ -423,6 +417,19 @@ function getKeywordCompletion(
     } else {
       completionItem.insertText = insertText;
     }
+    return completionItem;
+  });
+}
+
+function getHostCompletion(hostObjectList): CompletionItem[] {
+  return hostObjectList.map(({ host, priority }) => {
+    const completionItem: CompletionItem = {
+      label: host,
+      sortText: `${priority}_${host}`,
+      kind: [1, 2].includes(priority)
+        ? CompletionItemKind.Variable
+        : CompletionItemKind.Value,
+    };
     return completionItem;
   });
 }
