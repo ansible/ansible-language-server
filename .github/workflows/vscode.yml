@@ -43,7 +43,6 @@ jobs:
 
           # workaround to sync the latest version of ansible-language-server
           # in the vscode-ansible package.json to avoid npm related failures while vsce packaging
-          # package.json
           python tools/version_sync.py
 
           npm install # update ansible-language-server package-lock.json
