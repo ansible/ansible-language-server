@@ -85,6 +85,9 @@ export async function doCompletion(
         return getKeywordCompletion(document, position, path, playKeywords);
       }
 
+      // *******************************************************
+      // *******************************************************
+
       if (isBlockParam(path)) {
         return getKeywordCompletion(document, position, path, blockKeywords);
       }
@@ -348,6 +351,37 @@ export async function doCompletion(
           });
         }
       }
+
+      // /
+
+      // check for 'hosts' keyword to provide host auto-completion
+      const keyPathForHosts = new AncestryBuilder(path)
+        .parent(YAMLMap) // compensates for `_:`
+        .parent(YAMLMap)
+        .getKeyPath();
+      const keyNodeForHosts = keyPathForHosts[keyPathForHosts.length - 1];
+      console.log("***keynode -> ", keyNodeForHosts["value"]);
+
+      if (
+        isPlayParam(keyPathForHosts) &&
+        keyNodeForHosts["value"] === "hosts"
+      ) {
+        console.log("Here should be the autocompletion of hosts");
+
+        const hostsList = (await context.ansibleInventory).hostList;
+        // console.log("*** -> ", testAnsibleInventory);
+
+        const testHostCompletion: CompletionItem[] = [];
+
+        hostsList.forEach((host) => {
+          const hostObj = { label: host, kind: CompletionItemKind.Value };
+          testHostCompletion.push(hostObj);
+        });
+
+        return testHostCompletion;
+      }
+
+      // /
     }
   }
   return null;
