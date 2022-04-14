@@ -5,7 +5,7 @@ import {
   SemanticTokenTypes,
 } from "vscode-languageserver";
 import { TextDocument } from "vscode-languageserver-textdocument";
-import { Node, Pair, Scalar, YAMLMap, YAMLSeq } from "yaml/types";
+import { Node, Pair, Scalar, YAMLMap, YAMLSeq } from "yaml";
 import { IOption } from "../interfaces/module";
 import { DocsLibrary } from "../services/docsLibrary";
 import {

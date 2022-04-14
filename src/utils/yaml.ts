@@ -1,7 +1,7 @@
 import * as _ from "lodash";
 import { Position, TextDocument } from "vscode-languageserver-textdocument";
-import { Document, Options, parseCST } from "yaml";
-import { Node, Pair, Scalar, YAMLMap, YAMLSeq } from "yaml/types";
+import { Document, ParseOptions, parseCST } from "yaml";
+import { Node, Pair, Scalar, YAMLMap, YAMLSeq } from "yaml";
 import { IModuleMetadata, IOption } from "../interfaces/module";
 import { DocsLibrary } from "../services/docsLibrary";
 import { isTaskKeyword, playExclusiveKeywords } from "./ansible";
@@ -506,7 +506,10 @@ export function getOrigRange(
 }
 
 /** Parsing with the YAML library tailored to the needs of this extension */
-export function parseAllDocuments(str: string, options?: Options): Document[] {
+export function parseAllDocuments(
+  str: string,
+  options?: ParseOptions
+): Document[] {
   const cst = parseCST(str);
   cst.setOrigRanges();
 

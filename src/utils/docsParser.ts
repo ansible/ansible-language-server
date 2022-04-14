@@ -1,7 +1,7 @@
 import * as _ from "lodash";
 import * as fs from "fs";
 import { parseDocument } from "yaml";
-import { YAMLError } from "yaml/util";
+import { YAMLError } from "yaml";
 import {
   IDescription,
   IModuleDocumentation,

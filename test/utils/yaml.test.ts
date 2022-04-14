@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { Node, Scalar, YAMLMap, YAMLSeq } from "yaml/types";
+import { Node, Scalar, YAMLMap, YAMLSeq } from "yaml";
 import {
   AncestryBuilder,
   getDeclaredCollections,

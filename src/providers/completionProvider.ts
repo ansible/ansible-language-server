@@ -8,7 +8,7 @@ import {
   TextEdit,
 } from "vscode-languageserver";
 import { Position, TextDocument } from "vscode-languageserver-textdocument";
-import { Node, Scalar, YAMLMap } from "yaml/types";
+import { Node, Scalar, YAMLMap } from "yaml";
 import { IOption } from "../interfaces/module";
 import { WorkspaceFolderContext } from "../services/workspaceManager";
 import {
