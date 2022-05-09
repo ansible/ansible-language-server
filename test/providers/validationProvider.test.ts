@@ -14,7 +14,6 @@ import {
   enableExecutionEnvironmentSettings,
   disableExecutionEnvironmentSettings,
   setFixtureAnsibleCollectionPathEnv,
-  unSetFixtureAnsibleCollectionPathEnv,
 } from "../helper";
 import { ValidationManager } from "../../src/services/validationManager";
 
@@ -251,7 +250,7 @@ describe("doValidate()", () => {
   let docSettings = context.documentSettings.get(textDoc.uri);
 
   describe("Get validation only from cache", () => {
-    describe("With EE enabled", () => {
+    describe("With EE enabled @ee", () => {
       before(async () => {
         setFixtureAnsibleCollectionPathEnv(
           "/home/runner/.ansible/collections:/usr/share/ansible"
@@ -262,14 +261,14 @@ describe("doValidate()", () => {
       testValidationFromCache(validationManager, textDoc);
 
       after(async () => {
-        unSetFixtureAnsibleCollectionPathEnv();
+        setFixtureAnsibleCollectionPathEnv();
         disableExecutionEnvironmentSettings(docSettings);
       });
     });
 
     describe("With EE disabled", () => {
       before(async () => {
-        unSetFixtureAnsibleCollectionPathEnv();
+        setFixtureAnsibleCollectionPathEnv();
         disableExecutionEnvironmentSettings(docSettings);
       });
 
@@ -279,7 +278,7 @@ describe("doValidate()", () => {
 
   describe("Ansible diagnostics", () => {
     describe("Diagnostics using ansible-lint", () => {
-      describe("With EE enabled", () => {
+      describe("With EE enabled @ee", () => {
         before(async () => {
           setFixtureAnsibleCollectionPathEnv(
             "/home/runner/.ansible/collections:/usr/share/ansible"
@@ -290,14 +289,14 @@ describe("doValidate()", () => {
         testAnsibleLintErrors(context, validationManager, textDoc);
 
         after(async () => {
-          unSetFixtureAnsibleCollectionPathEnv();
+          setFixtureAnsibleCollectionPathEnv();
           disableExecutionEnvironmentSettings(docSettings);
         });
       });
 
       describe("With EE disabled", () => {
         before(async () => {
-          unSetFixtureAnsibleCollectionPathEnv();
+          setFixtureAnsibleCollectionPathEnv();
           disableExecutionEnvironmentSettings(docSettings);
         });
 
@@ -307,7 +306,7 @@ describe("doValidate()", () => {
 
     describe("Diagnostics after falling back to --syntax-check due to change in settings", () => {
       describe("no specific ansible lint errors", () => {
-        describe("With EE enabled", () => {
+        describe("With EE enabled @ee", () => {
           before(async () => {
             (await docSettings).ansibleLint.enabled = false;
             setFixtureAnsibleCollectionPathEnv(
@@ -320,7 +319,7 @@ describe("doValidate()", () => {
 
           after(async () => {
             (await docSettings).ansibleLint.enabled = true;
-            unSetFixtureAnsibleCollectionPathEnv();
+            setFixtureAnsibleCollectionPathEnv();
             disableExecutionEnvironmentSettings(docSettings);
           });
         });
@@ -328,7 +327,7 @@ describe("doValidate()", () => {
         describe("With EE disabled", () => {
           before(async () => {
             (await docSettings).ansibleLint.enabled = false;
-            unSetFixtureAnsibleCollectionPathEnv();
+            setFixtureAnsibleCollectionPathEnv();
             disableExecutionEnvironmentSettings(docSettings);
           });
 
@@ -336,7 +335,7 @@ describe("doValidate()", () => {
         });
         after(async () => {
           (await docSettings).ansibleLint.enabled = true;
-          unSetFixtureAnsibleCollectionPathEnv();
+          setFixtureAnsibleCollectionPathEnv();
           disableExecutionEnvironmentSettings(docSettings);
         });
       });
@@ -349,7 +348,7 @@ describe("doValidate()", () => {
         textDoc = getDoc(fixtureFilePath);
         docSettings = context.documentSettings.get(textDoc.uri);
 
-        describe("With EE enabled", () => {
+        describe("With EE enabled @ee", () => {
           before(async () => {
             (await docSettings).ansibleLint.enabled = false;
             setFixtureAnsibleCollectionPathEnv(
@@ -366,7 +365,7 @@ describe("doValidate()", () => {
 
           after(async () => {
             (await docSettings).ansibleLint.enabled = true;
-            unSetFixtureAnsibleCollectionPathEnv();
+            setFixtureAnsibleCollectionPathEnv();
             disableExecutionEnvironmentSettings(docSettings);
           });
         });
@@ -374,7 +373,7 @@ describe("doValidate()", () => {
         describe("With EE disabled", () => {
           before(async () => {
             (await docSettings).ansibleLint.enabled = false;
-            unSetFixtureAnsibleCollectionPathEnv();
+            setFixtureAnsibleCollectionPathEnv();
             disableExecutionEnvironmentSettings(docSettings);
           });
 
@@ -386,7 +385,7 @@ describe("doValidate()", () => {
         });
         after(async () => {
           (await docSettings).ansibleLint.enabled = true;
-          unSetFixtureAnsibleCollectionPathEnv();
+          setFixtureAnsibleCollectionPathEnv();
           disableExecutionEnvironmentSettings(docSettings);
         });
       });
@@ -399,7 +398,7 @@ describe("doValidate()", () => {
         textDoc = getDoc(fixtureFilePath);
         docSettings = context.documentSettings.get(textDoc.uri);
 
-        describe("With EE enabled", () => {
+        describe("With EE enabled @ee", () => {
           before(async () => {
             (await docSettings).ansibleLint.enabled = false;
             setFixtureAnsibleCollectionPathEnv(
@@ -412,7 +411,7 @@ describe("doValidate()", () => {
 
           after(async () => {
             (await docSettings).ansibleLint.enabled = true;
-            unSetFixtureAnsibleCollectionPathEnv();
+            setFixtureAnsibleCollectionPathEnv();
             disableExecutionEnvironmentSettings(docSettings);
           });
         });
@@ -420,7 +419,7 @@ describe("doValidate()", () => {
         describe("With EE disabled", () => {
           before(async () => {
             (await docSettings).ansibleLint.enabled = false;
-            unSetFixtureAnsibleCollectionPathEnv();
+            setFixtureAnsibleCollectionPathEnv();
             disableExecutionEnvironmentSettings(docSettings);
           });
 
@@ -428,7 +427,7 @@ describe("doValidate()", () => {
         });
         after(async () => {
           (await docSettings).ansibleLint.enabled = true;
-          unSetFixtureAnsibleCollectionPathEnv();
+          setFixtureAnsibleCollectionPathEnv();
           disableExecutionEnvironmentSettings(docSettings);
         });
       });
@@ -443,7 +442,7 @@ describe("doValidate()", () => {
         textDoc = getDoc(fixtureFilePath);
         docSettings = context.documentSettings.get(textDoc.uri);
 
-        describe("With EE enabled", () => {
+        describe("With EE enabled @ee", () => {
           before(async () => {
             (await docSettings).ansibleLint.enabled = false;
             (await docSettings).ansibleLint.path = "invalid-ansible-lint-path";
@@ -458,7 +457,7 @@ describe("doValidate()", () => {
           after(async () => {
             (await docSettings).ansibleLint.enabled = true;
             (await docSettings).ansibleLint.path = "ansible-lint";
-            unSetFixtureAnsibleCollectionPathEnv();
+            setFixtureAnsibleCollectionPathEnv();
             disableExecutionEnvironmentSettings(docSettings);
           });
         });
@@ -467,7 +466,7 @@ describe("doValidate()", () => {
           before(async () => {
             (await docSettings).ansibleLint.enabled = false;
             (await docSettings).ansibleLint.path = "invalid-ansible-lint-path";
-            unSetFixtureAnsibleCollectionPathEnv();
+            setFixtureAnsibleCollectionPathEnv();
             disableExecutionEnvironmentSettings(docSettings);
           });
 
@@ -476,7 +475,7 @@ describe("doValidate()", () => {
         after(async () => {
           (await docSettings).ansibleLint.enabled = true;
           (await docSettings).ansibleLint.path = "ansible-lint";
-          unSetFixtureAnsibleCollectionPathEnv();
+          setFixtureAnsibleCollectionPathEnv();
           disableExecutionEnvironmentSettings(docSettings);
         });
       });
@@ -489,7 +488,7 @@ describe("doValidate()", () => {
         textDoc = getDoc(fixtureFilePath);
         docSettings = context.documentSettings.get(textDoc.uri);
 
-        describe("With EE enabled", () => {
+        describe("With EE enabled @ee", () => {
           before(async () => {
             (await docSettings).ansibleLint.enabled = false;
             (await docSettings).ansibleLint.path = "invalid-ansible-lint-path";
@@ -504,7 +503,7 @@ describe("doValidate()", () => {
           after(async () => {
             (await docSettings).ansibleLint.enabled = true;
             (await docSettings).ansibleLint.path = "ansible-lint";
-            unSetFixtureAnsibleCollectionPathEnv();
+            setFixtureAnsibleCollectionPathEnv();
             disableExecutionEnvironmentSettings(docSettings);
           });
         });
@@ -513,7 +512,7 @@ describe("doValidate()", () => {
           before(async () => {
             (await docSettings).ansibleLint.enabled = false;
             (await docSettings).ansibleLint.path = "invalid-ansible-lint-path";
-            unSetFixtureAnsibleCollectionPathEnv();
+            setFixtureAnsibleCollectionPathEnv();
             disableExecutionEnvironmentSettings(docSettings);
           });
 
@@ -522,7 +521,7 @@ describe("doValidate()", () => {
         after(async () => {
           (await docSettings).ansibleLint.enabled = true;
           (await docSettings).ansibleLint.path = "ansible-lint";
-          unSetFixtureAnsibleCollectionPathEnv();
+          setFixtureAnsibleCollectionPathEnv();
           disableExecutionEnvironmentSettings(docSettings);
         });
       });
@@ -537,7 +536,7 @@ describe("doValidate()", () => {
         textDoc = getDoc(fixtureFilePath);
         docSettings = context.documentSettings.get(textDoc.uri);
 
-        describe("With EE enabled", () => {
+        describe("With EE enabled @ee", () => {
           before(async () => {
             (await docSettings).ansibleLint.enabled = false;
             (await docSettings).ansibleLint.arguments = "-f invalid_argument";
@@ -552,7 +551,7 @@ describe("doValidate()", () => {
           after(async () => {
             (await docSettings).ansibleLint.enabled = true;
             (await docSettings).ansibleLint.arguments = undefined;
-            unSetFixtureAnsibleCollectionPathEnv();
+            setFixtureAnsibleCollectionPathEnv();
             disableExecutionEnvironmentSettings(docSettings);
           });
         });
@@ -561,7 +560,7 @@ describe("doValidate()", () => {
           before(async () => {
             (await docSettings).ansibleLint.enabled = false;
             (await docSettings).ansibleLint.arguments = "-f invalid_argument";
-            unSetFixtureAnsibleCollectionPathEnv();
+            setFixtureAnsibleCollectionPathEnv();
             disableExecutionEnvironmentSettings(docSettings);
           });
 
@@ -570,7 +569,7 @@ describe("doValidate()", () => {
         after(async () => {
           (await docSettings).ansibleLint.enabled = true;
           (await docSettings).ansibleLint.arguments = undefined;
-          unSetFixtureAnsibleCollectionPathEnv();
+          setFixtureAnsibleCollectionPathEnv();
           disableExecutionEnvironmentSettings(docSettings);
         });
       });
@@ -583,7 +582,7 @@ describe("doValidate()", () => {
         textDoc = getDoc(fixtureFilePath);
         docSettings = context.documentSettings.get(textDoc.uri);
 
-        describe("With EE enabled", () => {
+        describe("With EE enabled @ee", () => {
           before(async () => {
             (await docSettings).ansibleLint.enabled = false;
             (await docSettings).ansibleLint.arguments = "-f invalid_argument";
@@ -598,7 +597,7 @@ describe("doValidate()", () => {
           after(async () => {
             (await docSettings).ansibleLint.enabled = true;
             (await docSettings).ansibleLint.arguments = undefined;
-            unSetFixtureAnsibleCollectionPathEnv();
+            setFixtureAnsibleCollectionPathEnv();
             disableExecutionEnvironmentSettings(docSettings);
           });
         });
@@ -607,7 +606,7 @@ describe("doValidate()", () => {
           before(async () => {
             (await docSettings).ansibleLint.enabled = false;
             (await docSettings).ansibleLint.arguments = "-f invalid_argument";
-            unSetFixtureAnsibleCollectionPathEnv();
+            setFixtureAnsibleCollectionPathEnv();
             disableExecutionEnvironmentSettings(docSettings);
           });
 
@@ -616,7 +615,7 @@ describe("doValidate()", () => {
         after(async () => {
           (await docSettings).ansibleLint.enabled = true;
           (await docSettings).ansibleLint.arguments = undefined;
-          unSetFixtureAnsibleCollectionPathEnv();
+          setFixtureAnsibleCollectionPathEnv();
           disableExecutionEnvironmentSettings(docSettings);
         });
       });
@@ -631,7 +630,7 @@ describe("doValidate()", () => {
     textDoc = getDoc(fixtureFilePath);
     docSettings = context.documentSettings.get(textDoc.uri);
 
-    describe("With EE enabled", () => {
+    describe("With EE enabled @ee", () => {
       before(async () => {
         setFixtureAnsibleCollectionPathEnv(
           "/home/runner/.ansible/collections:/usr/share/ansible"
@@ -642,14 +641,14 @@ describe("doValidate()", () => {
       testInvalidYamlFile(context, validationManager, textDoc);
 
       after(async () => {
-        unSetFixtureAnsibleCollectionPathEnv();
+        setFixtureAnsibleCollectionPathEnv();
         disableExecutionEnvironmentSettings(docSettings);
       });
     });
 
     describe("With EE disabled", () => {
       before(async () => {
-        unSetFixtureAnsibleCollectionPathEnv();
+        setFixtureAnsibleCollectionPathEnv();
         disableExecutionEnvironmentSettings(docSettings);
       });
 
