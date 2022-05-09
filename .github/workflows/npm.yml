@@ -75,11 +75,14 @@ jobs:
       - name: npm run compile
         run: npm run compile
 
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+        if: matrix.os == 'macos-11' 
+        
       - name: npm run ${{ matrix.npm-target }}
         run: npm run ${{ matrix.npm-target }}
 
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
+
 
   check: # This job does nothing and is only used for the branch protection
     if: always()
