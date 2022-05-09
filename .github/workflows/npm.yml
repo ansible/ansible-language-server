@@ -80,7 +80,6 @@ jobs:
 
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
-        if: matrix.os == 'macos-11' 
 
   check: # This job does nothing and is only used for the branch protection
     if: always()
