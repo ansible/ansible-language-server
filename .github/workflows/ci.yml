@@ -516,12 +516,9 @@ jobs:
     - name: Log ansible-lint version
       if: runner.os != 'Windows'
       run: ansible-lint --version
+
     - name: Run testing against the Git checkout
       run: npm test
-
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3
-      if: matrix.os == 'macos-11'
 
     - name: Produce coverage report
       run: npm run coverage
