@@ -521,8 +521,8 @@ jobs:
 
     - name: Setup tmate session
       uses: mxschmitt/action-tmate@v3
-      if: runner.os == 'macos-11'
-      
+      if: matrix.os == 'macos-11'
+
     - name: Produce coverage report
       run: npm run coverage
     - name: Upload coverage data
