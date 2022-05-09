@@ -519,6 +519,10 @@ jobs:
     - name: Run testing against the Git checkout
       run: npm test
 
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
+      if: runner.os == 'macos-11'
+      
     - name: Produce coverage report
       run: npm run coverage
     - name: Upload coverage data
