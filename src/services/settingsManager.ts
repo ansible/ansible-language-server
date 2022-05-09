@@ -76,7 +76,7 @@ export class SettingsManager {
         arguments: {
           default: [],
           description:
-            "Specify any additional parameters that should be added to the pull command when pulling an execution environment from a container registry. e.g. ’–tls-verify=false’",
+            "Specify any additional parameters that should be added to the pull command when pulling an execution environment from a container registry. e.g. '-–tls-verify=false'",
         },
       },
       volumeMounts: [
