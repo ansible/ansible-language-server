@@ -22,7 +22,7 @@ export class ExecutionEnvironment {
   private useProgressTracker = false;
   private successFileMarker = "SUCCESS";
   private settingsVolumeMounts: string[] = [];
-  private settingsContainerOptions: string[] = [];
+  private settingsContainerOptions: string;
   private _container_engine: IContainerEngine;
   private _container_image: string;
   private _container_image_id: string;
@@ -242,11 +242,9 @@ export class ExecutionEnvironment {
     }
 
     // handle container options setting from client
-    if (
-      this.settingsContainerOptions &&
-      this.settingsContainerOptions.length > 0
-    ) {
-      this.settingsContainerOptions.forEach((containerOption) => {
+    if (this.settingsContainerOptions && this.settingsContainerOptions !== "") {
+      const containerOptions = this.settingsContainerOptions.split(" ");
+      containerOptions.forEach((containerOption) => {
         if (
           containerOption === "" ||
           containerCommand.includes(containerOption)
@@ -429,13 +427,9 @@ export class ExecutionEnvironment {
       command += ` -e ANSIBLE_FORCE_COLOR=0 `; // ensure output is parseable (no ANSI)
       if (
         this.settingsContainerOptions &&
-        this.settingsContainerOptions.length > 0
+        this.settingsContainerOptions !== ""
       ) {
-        this.settingsContainerOptions.forEach((containerOption) => {
-          if (containerOption !== "" && containerOption !== undefined) {
-            command += ` ${containerOption} `;
-          }
-        });
+        command += ` ${this.settingsContainerOptions} `;
       }
       command += ` --name ${containerName} ${this._container_image} bash`;
 

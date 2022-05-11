@@ -74,7 +74,7 @@ export class SettingsManager {
             "Image pull policy to be used. Valid values are 'always', 'missing', 'never' and 'tag'. always will always pull the image when extension is activated or reloaded. 'missing' will pull if not locally available. 'never' will never pull the image and 'tag' will always pull if the image tag is 'latest', otherwise pull if not locally available.",
         },
         arguments: {
-          default: [],
+          default: "",
           description:
             "Specify any additional parameters that should be added to the pull command when pulling an execution environment from a container registry. e.g. '-–tls-verify=false'",
         },
@@ -98,13 +98,11 @@ export class SettingsManager {
           },
         },
       ],
-      containerOptions: [
-        {
-          default: "",
-          description:
-            "Extra parameters passed to the container engine command example: '--net=host'",
-        },
-      ],
+      containerOptions: {
+        default: "",
+        description:
+          "Extra parameters passed to the container engine command example: '--net=host'",
+      },
     },
   };
 

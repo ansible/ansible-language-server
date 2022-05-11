@@ -23,9 +23,9 @@ export interface ExtensionSettings {
     enabled: boolean;
     containerEngine: IContainerEngine;
     image: string;
-    pull: { policy: IPullPolicy; arguments: Array<string> };
+    pull: { policy: IPullPolicy; arguments: string };
     volumeMounts: Array<IVolumeMounts>;
-    containerOptions: string[];
+    containerOptions: string;
   };
   python: { interpreterPath: string; activationScript: string };
 }
@@ -42,14 +42,14 @@ interface ExecutionEnvironmentSettingsWithDescription {
   image: { default: string; description: string };
   pull: {
     policy: { default: IPullPolicy; description: string };
-    arguments: { default: Array<string>; description: string };
+    arguments: { default: string; description: string };
   };
   volumeMounts: Array<{
     src: { default: string; description: string };
     dest: { default: string; description: string };
     options: { default: string; description: string };
   }>;
-  containerOptions: Array<{ default: string; description: string }>;
+  containerOptions: { default: string; description: string };
 }
 
 export interface IVolumeMounts {

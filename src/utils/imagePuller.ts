@@ -9,7 +9,7 @@ export class ImagePuller {
   private _containerEngine: string;
   private _containerImage: string;
   private _pullPolicy: string;
-  private _pullArguments: Array<string>;
+  private _pullArguments: string;
 
   constructor(
     connection: Connection,
@@ -17,7 +17,7 @@ export class ImagePuller {
     containerEngine: string,
     containerImage: string,
     pullPolicy: string,
-    pullArguments: Array<string>
+    pullArguments: string
   ) {
     this.connection = connection;
     this.context = context;
@@ -46,10 +46,8 @@ export class ImagePuller {
 
       try {
         let pullCommand;
-        if (this._pullArguments && this._pullArguments.length > 0) {
-          pullCommand = `${this._containerEngine} pull ${
-            this._containerImage
-          } ${this._pullArguments.join(" ")}`;
+        if (this._pullArguments && this._pullArguments !== "") {
+          pullCommand = `${this._containerEngine} pull ${this._containerImage} ${this._pullArguments}`;
         } else {
           pullCommand = `${this._containerEngine} pull ${this._containerImage}`;
         }
