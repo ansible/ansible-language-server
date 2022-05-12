@@ -23,14 +23,13 @@ https://github.com/ansible/ansible-language-server/tree/main/docs/changelog-frag
 
 <!-- towncrier release notes start -->
 
-
 ## v0.7.0 (2022-05-12)
 
 ### Features
 
-* ````md
-  Added EE settings for volume mounts, container options and pull arguments -- by
-  {user}`ganeshrn`
+- ````md
+  Added EE settings for volume mounts, container options and pull arguments --
+  by {user}`ganeshrn`
 
   - Add settings to allow custom volume mount path eg:
 
@@ -61,7 +60,6 @@ https://github.com/ansible/ansible-language-server/tree/main/docs/changelog-frag
   ````
 
   ({issue}`318`)
-
 
 ## v0.6.1 (2022-04-14)
 
