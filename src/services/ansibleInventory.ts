@@ -23,30 +23,32 @@ export class AnsibleInventory {
   }
 
   public async initialize() {
+    const settings = await this.context.documentSettings.get(
+      this.context.workspaceFolder.uri
+    );
+
+    const commandRunner = new CommandRunner(
+      this.connection,
+      this.context,
+      settings
+    );
+
+    // Get inventory hosts
+    const ansibleInventoryResult = await commandRunner.runCommand(
+      "ansible-inventory",
+      "--list"
+    );
+
+    let inventoryHostsObject = [];
     try {
-      const settings = await this.context.documentSettings.get(
-        this.context.workspaceFolder.uri
-      );
-
-      const commandRunner = new CommandRunner(
-        this.connection,
-        this.context,
-        settings
-      );
-
-      // Get inventory hosts
-      const ansibleInventoryResult = await commandRunner.runCommand(
-        "ansible-inventory",
-        "--list"
-      );
-
-      const inventoryHostsObject = JSON.parse(ansibleInventoryResult.stdout);
-      this._hostList = parseInventoryHosts(inventoryHostsObject);
+      inventoryHostsObject = JSON.parse(ansibleInventoryResult.stdout);
     } catch (error) {
       this.connection.console.error(
         `Exception in AnsibleInventory service: ${JSON.stringify(error)}`
       );
     }
+
+    this._hostList = parseInventoryHosts(inventoryHostsObject);
   }
 
   get hostList() {
@@ -82,13 +84,18 @@ function parseInventoryHosts(hostObj) {
 
   const allGroups = [...topLevelGroupsObjList, ...otherGroupsObjList];
 
-  const ungroupedHostsObjList = hostObj.ungrouped.hosts.map((item) => {
-    return { host: item, priority: 3 };
-  });
+  let ungroupedHostsObjList = [];
+  if (hostObj.ungrouped) {
+    ungroupedHostsObjList = hostObj.ungrouped.hosts.map((item) => {
+      return { host: item, priority: 3 };
+    });
+  }
 
+  // Add 'localhost' and 'all' to the inventory list
   const localhostObj = { host: "localhost", priority: 5 };
+  const allHostObj = { host: "all", priority: 6 };
 
-  let allHosts = [localhostObj, ...ungroupedHostsObjList];
+  let allHosts = [localhostObj, allHostObj, ...ungroupedHostsObjList];
 
   for (const group of allGroups) {
     if (hostObj[`${group.host}`].hosts) {
