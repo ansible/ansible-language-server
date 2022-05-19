@@ -159,6 +159,7 @@ export class WorkspaceFolderContext {
         this._executionEnvironment = undefined;
         this._ansibleConfig = undefined;
         this._docsLibrary = undefined;
+        this._ansibleInventory = undefined;
       }
     );
   }
@@ -205,6 +206,10 @@ export class WorkspaceFolderContext {
         .then(() => ansibleInventory);
     }
     return this._ansibleInventory;
+  }
+
+  public clearAnsibleInventory(): void {
+    this._ansibleInventory = undefined;
   }
 
   public get ansibleLint(): AnsibleLint {
