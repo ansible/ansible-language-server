@@ -17,7 +17,7 @@ env:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   test:
-    name: ${{ matrix.name || format('{0} ({1})', matrix.npm-target, matrix.os) }}
+    name: ${{ matrix.name || format('{0}-node{1} ({2})', matrix.npm-target, matrix.node-version, matrix.os) }}
     # The type of runner that the job will run on
     runs-on: ${{ matrix.os }}
     defaults:
@@ -28,6 +28,10 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
+        node-version:
+          - 12
+          - 14
+          - 16
         npm-target:
           - test
         upload-artifact:
@@ -45,7 +49,12 @@ jobs:
             os: macos-11
             # runner does not support running container
             npm-target: test-without-ee
-
+          - name: docs
+            os: ubuntu-latest
+            npm-target: docs
+          - name: lint
+            os: ubuntu-latest
+            npm-target: lint
     steps:
       - name: Disable autocrlf
         if: "contains(matrix.os, 'windows')"
@@ -65,13 +74,13 @@ jobs:
           # https://github.com/Vampire/setup-wsl#wsl-shell-command
           wsl-shell-command: "bash -i -euo pipefail"
 
-      - name: Use NodeJS v16
+      - name: Use NodeJS ${{ matrix.node-version }}
         # as Windows executables are exposed inside WSL at top of PATH, we
         # would end with broken npm script in PATH on wsl.
         if: "!contains(matrix.shell, 'wsl')"
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: ${{ matrix.node-version }}
 
       - name: Run ./tools/test-setup.sh
         run: ./tools/test-setup.sh
