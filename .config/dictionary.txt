@@ -112,6 +112,7 @@ Nalawade
 Tomasz
 dbaeumer
 esbenp
+fredericgiquel
 ganeshrn
 hbenl
 kimbernator
