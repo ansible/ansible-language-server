@@ -352,29 +352,44 @@ export async function doCompletion(
         }
       }
 
-      // check for 'hosts' keyword to provide host auto-completion
-      const keyPathForHosts = new AncestryBuilder(path)
-        .parent(YAMLMap) // compensates for `_:`
-        .parent(YAMLMap)
-        .getKeyPath();
-      const keyNodeForHosts = keyPathForHosts[keyPathForHosts.length - 1];
+      // check for 'hosts' keyword and 'ansible_host keyword under vars' to provide inventory auto-completion
+      let keyPathForHosts: Node[] | null;
 
-      if (
-        isPlayParam(keyPathForHosts) &&
-        keyNodeForHosts["value"] === "hosts"
-      ) {
-        console.log("Here should be the autocompletion of hosts");
+      if (new AncestryBuilder(path).parent(YAMLMap).getValue() === null) {
+        keyPathForHosts = new AncestryBuilder(path)
+          .parent(YAMLMap) // compensates for `_:`
+          .parent(YAMLMap)
+          .getKeyPath();
+      } else {
+        keyPathForHosts = new AncestryBuilder(path)
+          .parent(YAMLMap) // compensates for `_:`
+          .getKeyPath();
+      }
+      if (keyPathForHosts) {
+        const keyNodeForHosts = keyPathForHosts[keyPathForHosts.length - 1];
 
-        // const nodeRange = getNodeRange(node, document);
-        // nodeRange is not being passed to getHostCompletion because this will prevent
-        // completion for items beyond ',', ':', '!', and we know that 'hosts' keyword supports regex
+        const conditionForHostsKeyword =
+          isPlayParam(keyPathForHosts) && keyNodeForHosts["value"] === "hosts";
 
-        const hostsList = (await context.ansibleInventory).hostList;
+        const conditionForAnsibleHostKeyword =
+          keyNodeForHosts["value"] === "ansible_host" &&
+          new AncestryBuilder(keyPathForHosts)
+            .parent()
+            .parent(YAMLMap)
+            .getStringKey() === "vars";
 
-        const testHostCompletion: CompletionItem[] =
-          getHostCompletion(hostsList);
+        if (conditionForHostsKeyword || conditionForAnsibleHostKeyword) {
+          // const nodeRange = getNodeRange(node, document);
+          // nodeRange is not being passed to getHostCompletion because this will prevent
+          // completion for items beyond ',', ':', '!', and we know that 'hosts' keyword supports regex
 
-        return testHostCompletion;
+          const hostsList = (await context.ansibleInventory).hostList;
+
+          const testHostCompletion: CompletionItem[] =
+            getHostCompletion(hostsList);
+
+          return testHostCompletion;
+        }
       }
     }
   }
