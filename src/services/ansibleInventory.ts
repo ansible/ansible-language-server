@@ -1,13 +1,10 @@
 import { Connection } from "vscode-languageserver";
 import { WorkspaceFolderContext } from "./workspaceManager";
 import { CommandRunner } from "../utils/commandRunner";
+import { URI } from "vscode-uri";
 
 // Todo:
-// 1. file watcher for change in inventory file
-// (done) 2. priority
-// 3. ansible_host keyword
-// 4. support with ee
-// 5. run ansible-inventory every time (no lazy loading)
+// Pass ansible inventory path coming from ansible config dump to mount path during execution EE
 
 /**
  * Class to extend ansible-inventory executable as a service
@@ -33,10 +30,18 @@ export class AnsibleInventory {
       settings
     );
 
+    const defaultHostListPath = new Set(
+      (await this.context.ansibleConfig).default_host_list
+    );
+
+    const workingDirectory = URI.parse(this.context.workspaceFolder.uri).path;
+
     // Get inventory hosts
     const ansibleInventoryResult = await commandRunner.runCommand(
       "ansible-inventory",
-      "--list"
+      "--list",
+      workingDirectory,
+      defaultHostListPath
     );
 
     let inventoryHostsObject = [];
