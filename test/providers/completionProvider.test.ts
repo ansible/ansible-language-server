@@ -12,7 +12,11 @@ import {
   enableExecutionEnvironmentSettings,
   disableExecutionEnvironmentSettings,
   setFixtureAnsibleCollectionPathEnv,
+  setAnsibleConfigEnv,
+  unsetAnsibleConfigEnv,
 } from "../helper";
+import { readFileSync } from "fs";
+import path = require("path");
 
 function testPlayKeywords(
   context: WorkspaceFolderContext,
@@ -482,6 +486,106 @@ function testModuleNamesWithoutFQCN(
   });
 }
 
+function testHostValuesWIthStaticInventory(
+  context: WorkspaceFolderContext,
+  textDoc: TextDocument
+) {
+  const tests = [
+    {
+      name: "hello-worlds group",
+      position: { line: 2, character: 9 } as Position,
+      triggerCharacter: "hello",
+      completion: ["hello-worlds", "hello.world.1", "hello.world.2"],
+    },
+    {
+      name: "test-inventories group",
+      position: { line: 2, character: 9 } as Position,
+      triggerCharacter: "inventor",
+      completion: ["test-inventories", "test.inventory.3", "test.inventory.4"],
+    },
+    {
+      name: "localhost",
+      position: { line: 2, character: 14 } as Position,
+      triggerCharacter: "local",
+      completion: ["localhost"],
+    },
+    {
+      name: "all",
+      position: { line: 2, character: 9 } as Position,
+      triggerCharacter: "all",
+      completion: ["all"],
+    },
+  ];
+
+  tests.forEach(({ name, position, triggerCharacter, completion }) => {
+    it(`test ${name}`, async function () {
+      const actualCompletion = await doCompletion(textDoc, position, context);
+
+      const filteredCompletion = smartFilter(
+        actualCompletion,
+        triggerCharacter
+      ).map((completion) => {
+        if (!completion.item) {
+          return completion.label;
+        } else {
+          return completion.item.label;
+        }
+      });
+
+      if (!completion) {
+        expect(filteredCompletion.length).be.equal(0);
+      } else {
+        expect(filteredCompletion).be.deep.equal(completion);
+      }
+    });
+  });
+}
+
+function testHostValuesWIthDynamicInventory(
+  context: WorkspaceFolderContext,
+  textDoc: TextDocument
+) {
+  const tests = [
+    {
+      name: "python hosts",
+      position: { line: 2, character: 9 } as Position,
+      triggerCharacter: "python",
+      completion: ["python_hosts"],
+    },
+    {
+      name: "ip addresses",
+      position: { line: 2, character: 9 } as Position,
+      triggerCharacter: "10",
+      completion: ["10.220.21.24", "10.220.21.27"],
+    },
+  ];
+
+  tests.forEach(({ name, position, triggerCharacter, completion }) => {
+    it(`test ${name}`, async function () {
+      const actualCompletion = await doCompletion(textDoc, position, context);
+
+      const filteredCompletion = smartFilter(
+        actualCompletion,
+        triggerCharacter
+      ).map((completion) => {
+        if (!completion.item) {
+          return completion.label;
+        } else {
+          return completion.item.label;
+        }
+      });
+
+      console.log("Return results (hosts)-> ", filteredCompletion);
+
+      if (!completion) {
+        expect(filteredCompletion.length).be.equal(0);
+      } else {
+        expect(filteredCompletion).be.deep.equal(completion);
+      }
+    });
+  });
+}
+
 describe("doCompletion()", () => {
   const workspaceManager = createTestWorkspaceManager();
   let fixtureFilePath = "completion/simple_tasks.yml";
@@ -490,6 +594,64 @@ describe("doCompletion()", () => {
 
   let textDoc = getDoc(fixtureFilePath);
   let docSettings = context.documentSettings.get(textDoc.uri);
+
+  describe("Completion for host values with static inventory file", () => {
+    describe("With EE enabled @ee", () => {
+      before(async () => {
+        setFixtureAnsibleCollectionPathEnv(
+          "/home/runner/.ansible/collections:/usr/share/ansible"
+        );
+        enableExecutionEnvironmentSettings(docSettings);
+      });
+
+      testHostValuesWIthStaticInventory(context, textDoc);
+
+      after(async () => {
+        setFixtureAnsibleCollectionPathEnv();
+        disableExecutionEnvironmentSettings(docSettings);
+      });
+    });
+    describe("With EE disabled", () => {
+      before(async () => {
+        setFixtureAnsibleCollectionPathEnv();
+        disableExecutionEnvironmentSettings(docSettings);
+      });
+
+      testHostValuesWIthStaticInventory(context, textDoc);
+    });
+  });
+
+  describe("Completion for host values with dynamic inventory file", () => {
+    describe("With EE enabled @ee", () => {
+      before(async () => {
+        setFixtureAnsibleCollectionPathEnv(
+          "/home/runner/.ansible/collections:/usr/share/ansible"
+        );
+        setAnsibleConfigEnv();
+        enableExecutionEnvironmentSettings(docSettings);
+      });
+
+      testHostValuesWIthDynamicInventory(context, textDoc);
+
+      after(async () => {
+        setFixtureAnsibleCollectionPathEnv();
+        unsetAnsibleConfigEnv();
+        disableExecutionEnvironmentSettings(docSettings);
+      });
+    });
+    describe("With EE disabled", () => {
+      before(async () => {
+        setAnsibleConfigEnv();
+        disableExecutionEnvironmentSettings(docSettings);
+      });
+
+      testHostValuesWIthDynamicInventory(context, textDoc);
+
+      after(async () => {
+        unsetAnsibleConfigEnv();
+      });
+    });
+  });
 
   describe("Completion for play keywords", () => {
     describe("With EE enabled @ee", () => {
