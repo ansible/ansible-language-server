@@ -97,7 +97,8 @@ holding `ctrl`/`cmd`.
 
 ## Standalone Usage
 
-For standalone usage with a language server client, Ansible language server can be installed from npm with the following command:
+For standalone usage with a language server client, Ansible language server can
+be installed from npm with the following command:
 
 ```bash
 npm install -g @ansible/ansible-language-server
