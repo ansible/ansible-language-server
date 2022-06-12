@@ -80,3 +80,12 @@ _default value:
   _default value:
 `""`_
 
+- **ansible.completion.provideRedirectModules**:
+Toggle redirected module provider when completing modules \
+_default value:
+`true`_
+
+- **ansible.completion.provideModuleOptionAliases**:
+Toggle alias provider when completing module options \
+_default value:
+`true`_
