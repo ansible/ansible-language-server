@@ -85,9 +85,6 @@ export async function doCompletion(
         return getKeywordCompletion(document, position, path, playKeywords);
       }
 
-      // *******************************************************
-      // *******************************************************
-
       if (isBlockParam(path)) {
         return getKeywordCompletion(document, position, path, blockKeywords);
       }

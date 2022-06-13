@@ -3,9 +3,6 @@ import { WorkspaceFolderContext } from "./workspaceManager";
 import { CommandRunner } from "../utils/commandRunner";
 import { URI } from "vscode-uri";
 
-// Todo:
-// Pass ansible inventory path coming from ansible config dump to mount path during execution EE
-
 /**
  * Class to extend ansible-inventory executable as a service
  */
