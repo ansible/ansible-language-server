@@ -15,8 +15,6 @@ import {
   setAnsibleConfigEnv,
   unsetAnsibleConfigEnv,
 } from "../helper";
-import { readFileSync } from "fs";
-import path = require("path");
 
 function testPlayKeywords(
   context: WorkspaceFolderContext,
