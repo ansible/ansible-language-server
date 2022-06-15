@@ -36,20 +36,6 @@ export function unSetFixtureAnsibleCollectionPathEnv(): void {
   process.env.ANSIBLE_COLLECTIONS_PATHS = undefined;
 }
 
-export function setAnsibleConfigEnv(
-  prePendPath: string | undefined = undefined
-): void {
-  if (prePendPath) {
-    process.env.ANSIBLE_CONFIG = `${prePendPath}:${NEW_ANSIBLE_CONFIG_FILE}`;
-  } else {
-    process.env.ANSIBLE_CONFIG = NEW_ANSIBLE_CONFIG_FILE;
-  }
-}
-
-export function unsetAnsibleConfigEnv(): void {
-  process.env.ANSIBLE_CONFIG = undefined;
-}
-
 export async function enableExecutionEnvironmentSettings(
   docSettings: Thenable<ExtensionSettings>
 ): Promise<void> {
