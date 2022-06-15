@@ -12,8 +12,6 @@ import {
   enableExecutionEnvironmentSettings,
   disableExecutionEnvironmentSettings,
   setFixtureAnsibleCollectionPathEnv,
-  setAnsibleConfigEnv,
-  unsetAnsibleConfigEnv,
 } from "../helper";
 
 function testPlayKeywords(
