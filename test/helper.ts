@@ -15,7 +15,7 @@ export const ANSIBLE_COLLECTIONS_FIXTURES_BASE_PATH = path.resolve(
   "common",
   "collections"
 );
-export const ANSIBLE_CONFIG = path.resolve(
+export const NEW_ANSIBLE_CONFIG_FILE = path.resolve(
   FIXTURES_BASE_PATH,
   "completion",
   "new_ansible_config.cfg"
@@ -40,9 +40,9 @@ export function setAnsibleConfigEnv(
   prePendPath: string | undefined = undefined
 ): void {
   if (prePendPath) {
-    process.env.ANSIBLE_CONFIG = `${prePendPath}:${ANSIBLE_CONFIG}`;
+    process.env.ANSIBLE_CONFIG = `${prePendPath}:${NEW_ANSIBLE_CONFIG_FILE}`;
   } else {
-    process.env.ANSIBLE_CONFIG = ANSIBLE_CONFIG;
+    process.env.ANSIBLE_CONFIG = NEW_ANSIBLE_CONFIG_FILE;
   }
 }
 
