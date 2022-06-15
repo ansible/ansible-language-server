@@ -484,7 +484,7 @@ function testModuleNamesWithoutFQCN(
   });
 }
 
-function testHostValuesWIthStaticInventory(
+function testHostValues(
   context: WorkspaceFolderContext,
   textDoc: TextDocument
 ) {
@@ -539,49 +539,6 @@ function testHostValuesWIthStaticInventory(
   });
 }
 
-function testHostValuesWIthDynamicInventory(
-  context: WorkspaceFolderContext,
-  textDoc: TextDocument
-) {
-  const tests = [
-    {
-      name: "python hosts",
-      position: { line: 2, character: 9 } as Position,
-      triggerCharacter: "python",
-      completion: ["python_hosts"],
-    },
-    {
-      name: "ip addresses",
-      position: { line: 2, character: 9 } as Position,
-      triggerCharacter: "10",
-      completion: ["10.220.21.24", "10.220.21.27"],
-    },
-  ];
-
-  tests.forEach(({ name, position, triggerCharacter, completion }) => {
-    it(`should provide completion for ${name} as hosts value`, async function () {
-      const actualCompletion = await doCompletion(textDoc, position, context);
-
-      const filteredCompletion = smartFilter(
-        actualCompletion,
-        triggerCharacter
-      ).map((completion) => {
-        if (!completion.item) {
-          return completion.label;
-        } else {
-          return completion.item.label;
-        }
-      });
-
-      if (!completion) {
-        expect(filteredCompletion.length).be.equal(0);
-      } else {
-        expect(filteredCompletion).be.deep.equal(completion);
-      }
-    });
-  });
-}
-
 describe("doCompletion()", () => {
   const workspaceManager = createTestWorkspaceManager();
   let fixtureFilePath = "completion/simple_tasks.yml";
@@ -600,7 +557,7 @@ describe("doCompletion()", () => {
         await enableExecutionEnvironmentSettings(docSettings);
       });
 
-      testHostValuesWIthStaticInventory(context, textDoc);
+      testHostValues(context, textDoc);
 
       after(async () => {
         setFixtureAnsibleCollectionPathEnv();
@@ -613,38 +570,7 @@ describe("doCompletion()", () => {
         await disableExecutionEnvironmentSettings(docSettings);
       });
 
-      testHostValuesWIthStaticInventory(context, textDoc);
-    });
-  });
-
-  describe("Completion for host values with dynamic inventory file", () => {
-    describe("With EE enabled @ee", () => {
-      before(async () => {
-        setFixtureAnsibleCollectionPathEnv(
-          "/home/runner/.ansible/collections:/usr/share/ansible"
-        );
-        await enableExecutionEnvironmentSettings(docSettings);
-      });
-
-      setAnsibleConfigEnv(
-        "/home/runner/.ansible/collections:/usr/share/ansible"
-      );
-      testHostValuesWIthDynamicInventory(context, textDoc);
-      unsetAnsibleConfigEnv();
-
-      after(async () => {
-        setFixtureAnsibleCollectionPathEnv();
-        await disableExecutionEnvironmentSettings(docSettings);
-      });
-    });
-    describe("With EE disabled", () => {
-      before(async function () {
-        await disableExecutionEnvironmentSettings(docSettings);
-      });
-
-      setAnsibleConfigEnv();
-      testHostValuesWIthDynamicInventory(context, textDoc);
-      unsetAnsibleConfigEnv();
+      testHostValues(context, textDoc);
     });
   });
 
