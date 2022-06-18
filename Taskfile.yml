@@ -47,7 +47,6 @@ tasks:
       OS: "{{OS}}"
     cmds:
       - ./tools/test-setup.sh
-      - npm ci
     sources:
       - Taskfile.yml
       - package.json
@@ -140,6 +139,12 @@ tasks:
         source {{.VENV_PATH}}/bin/activate &&
         npm run test-without-ee
     interactive: true
+  test-code:
+    desc: Tests effects on vscode-ansible extension
+    deps:
+      - setup
+    cmds:
+      - git clone https://github.com/ansible/vscode-ansible out/vscode-ansible
   package:
     desc: Package extension
     deps:

@@ -55,10 +55,15 @@ if [[ $(uname) != MINGW* ]]; then # if we are not on pure Windows
 fi
 
 command -v nvm >/dev/null 2>&1 || {
-    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
     [ -z "${NVM_DIR:-}" ] && export NVM_DIR="$HOME/.nvm";
+    # installing nvm if missing
+    [ ! -f "${NVM_DIR:-}/nvm.sh" ] && {
+        curl -s -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+    }
+    # activating nvm
     [ -s "${NVM_DIR:-}/nvm.sh" ] && . "${NVM_DIR:-}/nvm.sh" --silent;
     [ -s "/usr/local/opt/nvm/nvm.sh" ] && . "/usr/local/opt/nvm/nvm.sh";
+    command -v nvm
 }
 
 # Log some useful info in case of unexpected failures:
@@ -71,4 +76,5 @@ npm --version
 
 # install npm packages
 npm config set fund false
-npm ci
+# install dependencies but avoid compilation (implicit from prepare script)
+npm ci --ignore-scripts
