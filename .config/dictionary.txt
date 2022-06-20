@@ -38,6 +38,7 @@ envdir
 eqeqeq
 globbing
 globby
+hostvars
 installdeps
 jsdoc
 lcov
@@ -64,22 +65,28 @@ parseable
 patchback
 pkgcache
 podman
-prettierrc
 preid
+prettierrc
 preversion
+projectuser
 pyparsing
 pyup
+ro
 seealso
 setuptools
 showcontent
+simplejson
 sphinxcontrib
 stderr
 stdout
 suboption
 suboptions
+testhost
 testorg
+tls
 toctree
 todos
+towerhost
 towncrier
 toxenv
 tsbuildinfo
@@ -93,8 +100,6 @@ wordwrap
 workdir
 xvfb
 yammlint
-tls
-ro
 
 # sphinx:
 pathsep
