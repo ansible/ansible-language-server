@@ -47,6 +47,7 @@ linkcheck
 linkify
 lxml
 markdownlint
+mocharc
 monospace
 mycollection
 mymodule
@@ -60,14 +61,17 @@ npmjs
 npmrc
 nvim
 nvmrc
+nycrc
 parseable
 patchback
 pkgcache
 podman
+prettierignore
 prettierrc
 preversion
 pyparsing
 pyup
+ro
 seealso
 setuptools
 showcontent
@@ -77,6 +81,7 @@ stdout
 suboption
 suboptions
 testorg
+tls
 toctree
 todos
 towncrier
@@ -92,8 +97,6 @@ wordwrap
 workdir
 xvfb
 yammlint
-tls
-ro
 
 # sphinx:
 pathsep
