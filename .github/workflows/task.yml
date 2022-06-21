@@ -13,6 +13,12 @@ env:
   FORCE_COLOR: "1" # make mocha output colorful
   # https://devblogs.microsoft.com/commandline/share-environment-vars-between-wsl-and-windows/
   WSLENV: FORCE_COLOR:GITHUB_PATH/p
+  TASK_CLI: >
+    task
+    -v
+    --output=group
+    --output-group-begin '::group::{{.TASK}}'
+    --output-group-end '::endgroup::'
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -120,12 +126,13 @@ jobs:
         if: "!contains(matrix.shell, 'wsl')"
         uses: actions/setup-node@v3
         with:
-          node-version-file: '.nvmrc'
+          node-version-file: ".nvmrc"
 
-      - run: task setup
+      - name: task setup
+        run: ${{ env.TASK_CLI }} setup
 
       - name: task ${{ matrix.task-name }}
-        run: task -v ${{ matrix.task-name }}
+        run: task ${{ matrix.task-name }}
 
   check: # This job does nothing and is only used for the branch protection
     if: always()

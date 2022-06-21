@@ -36,6 +36,7 @@ doctree
 doctrees
 dunamai
 endfor
+endgroup
 envdir
 envrc
 eqeqeq
