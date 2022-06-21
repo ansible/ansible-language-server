@@ -71,8 +71,8 @@ parseable
 patchback
 pkgcache
 podman
-prettierrc
 preid
+prettierrc
 preversion
 projectuser
 pyparsing
