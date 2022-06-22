@@ -1,7 +1,6 @@
 ---
 # see https://taskfile.dev/#/
 version: "3"
-output: group
 vars:
   VENV_PATH: '{{default ".venv" (env "VIRTUAL_ENV")}}'
   VENV_PYTHON: '{{if (eq OS "windows")}}{{.VENV_PATH}}/Scripts/python.exe{{else}}{{.VENV_PATH}}/bin/python{{end}}'
@@ -13,13 +12,14 @@ tasks:
   default:
     desc: Run most commands
     deps:
-      - lint
-      - package
+      - setup
     env:
       VERSION:
         sh: node -p "require('./package.json').version"
     cmds:
       - bash -c '{{ .NODE_ENV }} nvm install'
+      - task: lint
+      - task: package
       - echo Done {{.VERSION}}!
   docs:
     desc: Build the documentation
@@ -45,11 +45,11 @@ tasks:
     env:
       # used inside test-setup.sh
       OS: "{{OS}}"
+      ARCH: "{{ARCH}}"
     cmds:
       - ./tools/test-setup.sh
       - npm ci
     sources:
-      - Taskfile.yml
       - package.json
       - .config/requirements.*
       - setup.cfg
@@ -98,12 +98,18 @@ tasks:
       - tools
   test:
     desc: Run all tests
+    vars:
+      ENGINE:
+        sh: bash -c "command -v podman docker | head -n 1"
     deps:
       - setup
     cmds:
+      - "{{.ENGINE}} pull quay.io/ansible/creator-ee:latest"
+      # Tests that container engine is functional and that we have the image:
+      - "{{.ENGINE}} run -it quay.io/ansible/creator-ee:latest ansible-lint --version"
       - >
         source {{.VENV_PATH}}/bin/activate &&
-        which -a ansible-lint &&
+        command -v ansible-lint &&
         npm run test
     interactive: true
   test-node12:
@@ -166,5 +172,5 @@ tasks:
     deps:
       - setup
     cmds:
-      - ./tools/mk_changelog.sh
+      - ./tools/release.sh
     interactive: true

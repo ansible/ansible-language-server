@@ -1,6 +1,12 @@
 #!/bin/bash
 set -eo pipefail
 
+# Fail if repo is dirty
+if [[ -n $(git status -s) ]]; then
+  echo 'ERROR: Release script requires a clean git repo.'
+  exit 1
+fi
+
 RELEASE_NAME=$(gh api 'repos/{owner}/{repo}/releases' --jq '.[0].name')
 echo -e "\n## ${RELEASE_NAME}\n" > out/next.md
 gh api "repos/{owner}/{repo}/releases" --jq '.[0].body' | \
@@ -11,10 +17,15 @@ gh api "repos/{owner}/{repo}/releases" --jq '.[0].body' | \
 truncate -s -1 out/next.md
 
 # inject the temp nodes into the CHANGELOG.md
-sed -i '' -e '/<!-- KEEP-THIS-COMMENT -->/r out/next.md' CHANGELOG.md
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    SED_OPTION='-i \x27\x27'
+else
+    SED_OPTION='-i'
+fi
+sed $SED_OPTION -e '/<!-- KEEP-THIS-COMMENT -->/r out/next.md' CHANGELOG.md
 
 # use prettier to reformat the changelog, lik rewrapping long lines
-npx prettier -w CHANGELOG.md
+npx prettier --loglevel error -w CHANGELOG.md
 
 # update version
 npm version "${RELEASE_NAME}" --allow-same-version --no-commit-hooks --no-git-tag-version
@@ -29,6 +40,8 @@ task lint --silent
 git checkout -B "release/${RELEASE_NAME}"
 
 # commit the changes
+git config user.email || git config user.email ansible-devtools@redhat.com
+git config user.name || git config user.name "Ansible DevTools"
 echo "Release ${RELEASE_NAME}" | cat -  out/next.md | git commit --file -
 
 # Unless, CI is defined we prompt for confirmation
