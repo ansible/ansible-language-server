@@ -4,6 +4,7 @@ FQCN
 FQCNs
 HORIZONTALLINE
 Jenkinsfile
+OSTYPE
 PYTHONHOME
 TLDR
 Taskfile
@@ -52,6 +53,7 @@ libyaml
 lineinfile
 linkcheck
 linkify
+loglevel
 lxml
 markdownlint
 monospace
@@ -61,6 +63,7 @@ mynamespace
 neovim
 netcommon
 nocolor
+noheading
 notest
 notfound
 npmjs
@@ -83,6 +86,7 @@ seealso
 setuptools
 showcontent
 simplejson
+showformat
 sphinxcontrib
 stderr
 stdout
@@ -90,7 +94,6 @@ suboption
 suboptions
 testhost
 testorg
-TLDR
 tls
 toctree
 todos
@@ -109,8 +112,6 @@ workdir
 WSLENV
 xvfb
 yammlint
-YOLO
-
 # sphinx:
 pathsep
 sectionauthor
