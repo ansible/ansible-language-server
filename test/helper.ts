@@ -15,10 +15,10 @@ export const ANSIBLE_COLLECTIONS_FIXTURES_BASE_PATH = path.resolve(
   "common",
   "collections"
 );
-export const NEW_ANSIBLE_CONFIG_FILE = path.resolve(
+export const ANSIBLE_CONFIG_FILE = path.resolve(
   FIXTURES_BASE_PATH,
   "completion",
-  "new_ansible_config.cfg"
+  "ansible.cfg"
 );
 
 export function setFixtureAnsibleCollectionPathEnv(
@@ -34,6 +34,14 @@ export function setFixtureAnsibleCollectionPathEnv(
 
 export function unSetFixtureAnsibleCollectionPathEnv(): void {
   process.env.ANSIBLE_COLLECTIONS_PATHS = undefined;
+}
+
+export function setAnsibleConfigEnv(): void {
+  process.env.ANSIBLE_CONFIG = ANSIBLE_CONFIG_FILE;
+}
+
+export function unsetAnsibleConfigEnv(): void {
+  process.env.ANSIBLE_CONFIG = undefined;
 }
 
 export async function enableExecutionEnvironmentSettings(

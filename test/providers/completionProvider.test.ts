@@ -12,6 +12,8 @@ import {
   enableExecutionEnvironmentSettings,
   disableExecutionEnvironmentSettings,
   setFixtureAnsibleCollectionPathEnv,
+  setAnsibleConfigEnv,
+  unsetAnsibleConfigEnv,
 } from "../helper";
 
 function testPlayKeywords(
@@ -566,9 +568,15 @@ describe("doCompletion()", () => {
       before(async () => {
         setFixtureAnsibleCollectionPathEnv();
         await disableExecutionEnvironmentSettings(docSettings);
+
+        setAnsibleConfigEnv();
       });
 
       testHostValues(context, textDoc);
+
+      after(() => {
+        unsetAnsibleConfigEnv();
+      });
     });
   });
 
