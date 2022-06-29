@@ -11,8 +11,9 @@ on:
 
 env:
   FORCE_COLOR: "1" # make mocha output colorful
+  # https://docs.github.com/en/actions/learn-github-actions/environment-variables
   # https://devblogs.microsoft.com/commandline/share-environment-vars-between-wsl-and-windows/
-  WSLENV: FORCE_COLOR:GITHUB_PATH/p
+  WSLENV: CI:FORCE_COLOR:GITHUB_ACTION:GITHUB_ACTION_PATH/p:GITHUB_ACTION_REPOSITORY:GITHUB_WORKFLOW:GITHUB_WORKSPACE/p:GITHUB_PATH/p
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -34,31 +35,39 @@ jobs:
         node-version:
           - "12"
         task-name:
-          - vscode
-          - test-node12
-          - test-node14
+          # - vscode
+          # - test-node12
+          # - test-node14
           - test-node16
         upload-artifact:
           - false
         name:
           - false
         include:
-          - name: lint
-            task-name: lint
-          - name: docs
-            task-name: docs
+          # - name: lint
+          #   task-name: lint
+          # - name: docs
+          #   task-name: docs
           - name: test (wsl)
             # runner does not support running container
             task-name: test-without-ee
             # https://github.com/actions/virtual-environments/issues/5151
-            os: windows-2019
+            # keep in mind than on 2022, wsl2 is default but it does not work
+            # on GHA runners. So as part of installation you need to run
+            # `wsl --set-default-version 2`
+            os: windows-2022
             shell: "wsl-bash {0}"
-          - name: test (macos)
-            os: macos-11
-            # runner does not support running container
-            task-name: test-without-ee
+          # - name: test (macos)
+          #   os: macos-11
+          #   # runner does not support running container
+          #   task-name: test-without-ee
 
     steps:
+      - name: Show windows version
+        if: "contains(matrix.os, 'windows')"
+        run: systeminfo | findstr /B /C:"OS Name" /C:"OS Version"
+        shell: cmd
+
       - name: Disable autocrlf
         if: "contains(matrix.os, 'windows')"
         run: |-
@@ -66,12 +75,10 @@ jobs:
           git config --global core.eol lf
         shell: bash # <-- keep it here to avoid using default shell
 
-      - uses: actions/checkout@v2
-
       # https://github.com/marketplace/actions/setup-wsl
       - name: Activate WSL
         if: "contains(matrix.shell, 'wsl')"
-        uses: Vampire/setup-wsl@v1.2.1
+        uses: Vampire/setup-wsl@v1.3.0
         with:
           # we want to load user profile
           # https://github.com/Vampire/setup-wsl#wsl-shell-command
@@ -79,11 +86,42 @@ jobs:
           additional-packages:
             curl
             git
+            make
+            nodejs
             python3-dev
             python3-pip
             python3-venv
             qemu-user-static
             xvfb
+
+      - name: Determine working-directory
+        id: wsl
+        if: "contains(matrix.shell, 'wsl')"
+        # mv cannot be used on wsl to move the workspace from the /mnt mount
+        # into ~/ as this will produce a "permission denied" error, we copy.
+        shell: pwsh
+        run: |
+          $wsl_home=wsl --cd ~ --exec wslpath -w .;
+          echo "$wsl_home";
+          mkdir -p "$wsl_home\ws";
+          mklink -D ws "$wsl_home\ws";
+          echo "::set-output name=working-directory::$wsl_home\ws"
+        # set -euxo pipefail
+        # pwd
+        # export PROJECT=`basename $GITHUB_WORKSPACE`
+        # mkdir -p ~/$PROJECT
+        # WIN_PATH=$(wslpath -w $HOME/$PROJECT)
+        # echo PROJECT=$PROJECT
+
+      # WARNING: GITHUB_WORKSPACE is hardcoded and we cannot modify it. The
+      # runner is keeping this folder open so we cannot touch it (replace)
+      # actions/checks does not allow you to write anywhere outside workspace
+      # but we can create symlink inside it, tricking it to checkput on
+      # different location.
+      - uses: actions/checkout@v3
+        with:
+          # that is the symlinked folder that goes into linux partition:
+          path: ws
 
       - name: Enable caching
         if: "!contains(matrix.shell, 'wsl')"
@@ -115,6 +153,28 @@ jobs:
           sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /usr/local/bin
           task --version
 
+      - name: WSL Magic 🎲
+        if: "contains(matrix.shell, 'wsl')"
+        working-directory: ${{ steps.wsl.outputs.working-directory }}"
+        # mv cannot be used on wsl to move the workspace from the /mnt mount
+        # into ~/ as this will produce a "permission denied" error, we copy.
+        run: |
+          set -euxo pipefail
+          cd ~/ws
+          pwd
+          ls -la
+        # pwd
+        # export PROJECT=`basename $GITHUB_WORKSPACE`
+        # mkdir -p $PROJECT
+        # WIN_PATH=$(wslpath -w $HOME/$PROJECT)
+        # echo PROJECT=$PROJECT
+        # cd ..
+        # # time cp -rp $GITHUB_WORKSPACE $HOME
+        # # cd ~/$PROJECT
+        # # git status
+        # ls -la .
+        # echo "::set-output name=working-directory::$WIN_PATH"
+
       - name: Dump node version into .nvmrc file
         # save node version in .nvmrc file by looking for a pattern like
         # node12 in job name. If pattern is not found it uses 'current' alias
@@ -139,6 +199,8 @@ jobs:
           sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b ~/.local/bin
           echo $PATH
           command -v task
+          pwd
+        working-directory: ${{ steps.wsl.outputs.working-directory }}"
 
       - run: task setup
 
