@@ -124,6 +124,10 @@ jobs:
 
       - run: task setup
 
+      - name: Setup tmate session
+        if: ${{ always() && contains(matrix.os, 'windows') }}
+        uses: mxschmitt/action-tmate@v3
+
       - name: task ${{ matrix.task-name }}
         run: task -v ${{ matrix.task-name }}
 
