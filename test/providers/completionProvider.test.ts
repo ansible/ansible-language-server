@@ -570,12 +570,14 @@ describe("doCompletion()", () => {
         await disableExecutionEnvironmentSettings(docSettings);
 
         setAnsibleConfigEnv();
+        console.log("env -> ", process.env.ANSIBLE_CONFIG);
       });
 
       testHostValues(context, textDoc);
 
       after(() => {
         unsetAnsibleConfigEnv();
+        console.log("env after -> ", process.env.ANSIBLE_CONFIG);
       });
     });
   });
