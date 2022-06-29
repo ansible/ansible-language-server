@@ -30,6 +30,7 @@ compat
 customizer
 deps
 devel
+direnv
 dirhtml
 docker
 doctree
@@ -38,6 +39,7 @@ Dpkg
 dunamai
 endfor
 envdir
+envrc
 eqeqeq
 FQCN
 FQCNs
@@ -72,6 +74,7 @@ nvim
 nvmrc
 parseable
 patchback
+piptools
 pkgcache
 podman
 preid
@@ -103,6 +106,7 @@ toxenv
 tsbuildinfo
 unshallow
 uuidv4
+venvs
 vscodeignore
 vsix
 whereis
@@ -138,8 +142,10 @@ fredericgiquel
 ganeshrn
 hbenl
 kimbernator
+koalaman
 priyamsahoo
 ssbarnea
+timonwong
 tomaciazek
 webknjaz
 yaegassy
