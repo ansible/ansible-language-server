@@ -37,7 +37,7 @@ mdit-py-plugins==0.3.0
 mdurl==0.1.0
 mypy==0.961
 mypy-extensions==0.4.3
-myst-parser[linkify]==0.18.0
+myst-parser==0.18.0
 nodeenv==1.6.0
 packaging==21.3
 pathspec==0.9.0
