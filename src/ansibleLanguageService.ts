@@ -4,6 +4,7 @@ import {
   DidChangeWatchedFilesNotification,
   InitializeParams,
   InitializeResult,
+  NotificationType,
   TextDocuments,
   TextDocumentSyncKind,
 } from "vscode-languageserver";
@@ -333,6 +334,19 @@ export class AnsibleLanguageService {
         });
       });
     });
+
+    // Send ansible info to client on receive of notification
+    this.connection.onNotification(
+      "update/ansible-metadata",
+      async (activeFileUri) => {
+        const ansibleMetaData = (
+          await this.workspaceManager.getContext(activeFileUri).ansibleConfig
+        ).ansible_meta_data;
+        this.connection.sendNotification("update/ansible-metadata", [
+          ansibleMetaData,
+        ]);
+      }
+    );
   }
 
   private handleError(error: unknown, contextName: string) {
