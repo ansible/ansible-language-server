@@ -4,7 +4,6 @@ import {
   DidChangeWatchedFilesNotification,
   InitializeParams,
   InitializeResult,
-  NotificationType,
   TextDocuments,
   TextDocumentSyncKind,
 } from "vscode-languageserver";
