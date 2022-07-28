@@ -22,6 +22,7 @@ import {
 import { doValidate } from "./providers/validationProvider";
 import { ValidationManager } from "./services/validationManager";
 import { WorkspaceManager } from "./services/workspaceManager";
+import { getAnsibleMetaData } from "./utils/getAnsibleMetaData";
 
 /**
  * Initializes the connection and registers all lifecycle event handlers.
@@ -338,9 +339,11 @@ export class AnsibleLanguageService {
     this.connection.onNotification(
       "update/ansible-metadata",
       async (activeFileUri) => {
-        const ansibleMetaData = (
-          await this.workspaceManager.getContext(activeFileUri).ansibleConfig
-        ).ansible_meta_data;
+        const ansibleMetaData = await getAnsibleMetaData(
+          this.workspaceManager.getContext(activeFileUri),
+          this.connection
+        );
+
         this.connection.sendNotification("update/ansible-metadata", [
           ansibleMetaData,
         ]);
