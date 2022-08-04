@@ -2,6 +2,7 @@ import { Connection } from "vscode-languageserver";
 import { URI } from "vscode-uri";
 import { WorkspaceFolderContext } from "../services/workspaceManager";
 import { CommandRunner } from "./commandRunner";
+import * as child_process from "child_process";
 
 let context: WorkspaceFolderContext;
 let connection: Connection;
@@ -18,6 +19,15 @@ export async function getAnsibleMetaData(
   ansibleMetaData["ansible information"] = await getAnsibleInfo();
   ansibleMetaData["python information"] = await getPythonInfo();
   ansibleMetaData["ansible-lint information"] = await getAnsibleLintInfo();
+
+  const settings = await context.documentSettings.get(
+    context.workspaceFolder.uri
+  );
+
+  if (settings.executionEnvironment.enabled) {
+    ansibleMetaData["execution environment information"] =
+      await getExecutionEnvironmentInfo();
+  }
 
   // console.log("*** ansible metadata -> ", ansibleMetaData);
   return ansibleMetaData;
@@ -67,7 +77,12 @@ async function getAnsibleInfo() {
     return ansibleInfo;
   }
 
-  const ansibleVersion = ansibleVersionObjKeys[0].split(" [");
+  let ansibleVersion;
+  if (ansibleVersionObjKeys[0].includes(" [")) {
+    ansibleVersion = ansibleVersionObjKeys[0].split(" [");
+  } else {
+    ansibleVersion = ansibleVersionObjKeys[0].split(" ");
+  }
   ansibleInfo["ansible version"] = ansibleVersion[1].slice(0, -1);
 
   ansibleInfo["ansible location"] = (
@@ -132,4 +147,48 @@ async function getAnsibleLintInfo() {
 
   // console.log("*** ansible-lint info -> ", ansibleLintInfo);
   return ansibleLintInfo;
+}
+
+async function getExecutionEnvironmentInfo() {
+  const eeInfo = {};
+
+  const basicDetails = (await context.executionEnvironment)
+    .getBasicContainerAndImageDetails;
+
+  eeInfo["container engine"] = basicDetails.containerEngine;
+  eeInfo["container image"] = basicDetails.containerImage;
+  eeInfo["container image ID"] = basicDetails.containerImageId;
+  eeInfo["container volume mounts"] = basicDetails.containerVolumeMounts;
+
+  // const inspectResult = await getResultsThroughCommandRunner(
+  //   basicDetails.containerEngine,
+  //   `inspect --format='{{.Config}}' ${basicDetails.containerImageId}`
+  // );
+
+  let eeServiceWorking = false;
+  let inspectResult;
+  try {
+    inspectResult = JSON.parse(
+      child_process
+        .execSync(
+          `${basicDetails.containerEngine} inspect --format='{{json .Config}}' ${basicDetails.containerImage}`,
+          {
+            encoding: "utf-8",
+          }
+        )
+        .toString()
+    );
+    eeServiceWorking = true;
+  } catch (error) {
+    eeServiceWorking = false;
+    console.log(error);
+  }
+
+  if (eeServiceWorking) {
+    eeInfo["Env"] = inspectResult["Env"];
+    eeInfo["Working directory"] = inspectResult["WorkingDir"];
+  }
+
+  // console.log("*** ee info -> ", eeInfo);
+  return eeInfo;
 }
