@@ -1,7 +1,5 @@
 import { expect } from "chai";
-import * as child_process from "child_process";
 import path = require("path");
-import { WorkspaceFolderContext } from "../../src/services/workspaceManager";
 import {
   getAnsibleMetaData,
   getResultsThroughCommandRunner,
@@ -12,8 +10,6 @@ import {
   enableExecutionEnvironmentSettings,
   getDoc,
   resolveDocUri,
-  setFixtureAnsibleCollectionPathEnv,
-  unSetFixtureAnsibleCollectionPathEnv,
 } from "../helper";
 
 function getAnsibleTestInfo() {
