@@ -142,9 +142,16 @@ async function getAnsibleLintInfo() {
     return ansibleLintInfo;
   }
 
+  const ansibleLintPathResult = await getResultsThroughCommandRunner(
+    "which",
+    "ansible-lint"
+  );
+
   ansibleLintInfo["ansible-lint version"] =
     ansibleLintVersionResult.stdout.trim();
 
+  ansibleLintInfo["ansible-lint location"] =
+    ansibleLintPathResult.stdout.trim();
   // console.log("*** ansible-lint info -> ", ansibleLintInfo);
   return ansibleLintInfo;
 }
