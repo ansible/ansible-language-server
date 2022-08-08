@@ -33,7 +33,7 @@ export async function getAnsibleMetaData(
   return ansibleMetaData;
 }
 
-async function getResultsThroughCommandRunner(cmd, arg) {
+export async function getResultsThroughCommandRunner(cmd, arg) {
   const settings = await context.documentSettings.get(
     context.workspaceFolder.uri
   );
@@ -52,13 +52,13 @@ async function getResultsThroughCommandRunner(cmd, arg) {
 
     if (result.stderr) {
       console.log(
-        `cmd '${cmd} ${arg} have the following error: ' ${result.stderr}`
+        `cmd '${cmd} ${arg}' has the following error: ${result.stderr}`
       );
       return undefined;
     }
   } catch (error) {
     console.log(
-      `cmd '${cmd} ${arg} have the following error: ' ${error.toString()}`
+      `cmd '${cmd} ${arg}' was not executed with the following error: ' ${error.toString()}`
     );
     return undefined;
   }
@@ -83,7 +83,7 @@ async function getAnsibleInfo() {
   } else {
     ansibleVersion = ansibleVersionObjKeys[0].split(" ");
   }
-  ansibleInfo["ansible version"] = ansibleVersion[1].slice(0, -1);
+  ansibleInfo["ansible version"] = `Ansible ${ansibleVersion[1].slice(0, -1)}`;
 
   ansibleInfo["ansible location"] = (
     await context.ansibleConfig
@@ -152,6 +152,7 @@ async function getAnsibleLintInfo() {
 
   ansibleLintInfo["ansible-lint location"] =
     ansibleLintPathResult.stdout.trim();
+
   // console.log("*** ansible-lint info -> ", ansibleLintInfo);
   return ansibleLintInfo;
 }
@@ -166,11 +167,6 @@ async function getExecutionEnvironmentInfo() {
   eeInfo["container image"] = basicDetails.containerImage;
   eeInfo["container image ID"] = basicDetails.containerImageId;
   eeInfo["container volume mounts"] = basicDetails.containerVolumeMounts;
-
-  // const inspectResult = await getResultsThroughCommandRunner(
-  //   basicDetails.containerEngine,
-  //   `inspect --format='{{.Config}}' ${basicDetails.containerImageId}`
-  // );
 
   let eeServiceWorking = false;
   let inspectResult;
@@ -192,8 +188,8 @@ async function getExecutionEnvironmentInfo() {
   }
 
   if (eeServiceWorking) {
-    eeInfo["Env"] = inspectResult["Env"];
-    eeInfo["Working directory"] = inspectResult["WorkingDir"];
+    eeInfo["env"] = inspectResult["Env"];
+    eeInfo["working directory"] = inspectResult["WorkingDir"];
   }
 
   // console.log("*** ee info -> ", eeInfo);
