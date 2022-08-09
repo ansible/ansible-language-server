@@ -40,7 +40,6 @@ function getAnsibleTestInfo() {
       "inventory"
     ),
   ];
-  // console.log("test data ->", ansibleInfo);
   return ansibleInfo;
 }
 
@@ -48,7 +47,6 @@ function getPythonTestInfo() {
   const pythonInfo = {};
   pythonInfo["python version"] = "Python";
   pythonInfo["python location"] = "/python";
-  // console.log("test data ->", pythonInfo);
   return pythonInfo;
 }
 
@@ -56,7 +54,6 @@ function getAnsibleLintTestInfo() {
   const ansibleLintInfo = {};
   ansibleLintInfo["ansible-lint version"] = "ansible-lint";
   ansibleLintInfo["ansible-lint location"] = "/ansible-lint";
-  // console.log("test data ->", ansibleLintInfo);
   return ansibleLintInfo;
 }
 
@@ -73,20 +70,6 @@ function getExecutionEnvironmentTestInfo() {
   console.log("test data ->", eeInfo);
   return eeInfo;
 }
-
-// function testAnsibleInfo(testAnsibleInfo, actualAnsibleInfo) {
-//   console.log("I am inside the function");
-
-//   it("should contain all the keys for ansible information", function () {
-//     console.log(
-//       Object.keys(testAnsibleInfo).length,
-//       Object.keys(actualAnsibleInfo).length
-//     );
-//     expect(Object.keys(testAnsibleInfo).length).equals(
-//       Object.keys(actualAnsibleInfo).length
-//     );
-//   });
-// }
 
 function testCommands() {
   describe("Verify the working of command executions", () => {
@@ -124,7 +107,6 @@ function testCommands() {
 
 describe("getAnsibleMetaData()", () => {
   const workspaceManager = createTestWorkspaceManager();
-  // setFixtureAnsibleCollectionPathEnv();
   const fixtureFilePath = "utils/getAnsibleMetaData/plays.yml";
   const fixtureFileUri = resolveDocUri(fixtureFilePath);
   const context = workspaceManager.getContext(fixtureFileUri);
@@ -144,8 +126,6 @@ describe("getAnsibleMetaData()", () => {
       ansibleInfoForTest = getAnsibleTestInfo();
       pythonInfoForTest = getPythonTestInfo();
       ansibleLintInfoForTest = getAnsibleLintTestInfo();
-
-      // console.log(actualAnsibleMetaData);
     });
 
     testCommands();
@@ -255,8 +235,6 @@ describe("getAnsibleMetaData()", () => {
       pythonInfoForTest = getPythonTestInfo();
       ansibleLintInfoForTest = getAnsibleLintTestInfo();
       executionEnvironmentInfoForTest = getExecutionEnvironmentTestInfo();
-
-      // console.log(JSON.stringify(actualAnsibleMetaData, null, 2));
     });
 
     testCommands();

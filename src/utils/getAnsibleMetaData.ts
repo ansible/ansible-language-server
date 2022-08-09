@@ -29,7 +29,6 @@ export async function getAnsibleMetaData(
       await getExecutionEnvironmentInfo();
   }
 
-  // console.log("*** ansible metadata -> ", ansibleMetaData);
   return ansibleMetaData;
 }
 
@@ -103,7 +102,6 @@ async function getAnsibleInfo() {
     await context.ansibleConfig
   ).default_host_list;
 
-  // console.log("*** ansible info -> ", ansibleInfo);
   return ansibleInfo;
 }
 
@@ -126,7 +124,6 @@ async function getPythonInfo() {
   );
   pythonInfo["python location"] = pythonPathResult.stdout.trim();
 
-  // console.log("*** python info -> ", pythonInfo);
   return pythonInfo;
 }
 
@@ -153,7 +150,6 @@ async function getAnsibleLintInfo() {
   ansibleLintInfo["ansible-lint location"] =
     ansibleLintPathResult.stdout.trim();
 
-  // console.log("*** ansible-lint info -> ", ansibleLintInfo);
   return ansibleLintInfo;
 }
 
@@ -192,6 +188,5 @@ async function getExecutionEnvironmentInfo() {
     eeInfo["working directory"] = inspectResult["WorkingDir"];
   }
 
-  // console.log("*** ee info -> ", eeInfo);
   return eeInfo;
 }
