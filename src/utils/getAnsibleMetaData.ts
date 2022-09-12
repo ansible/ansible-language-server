@@ -109,8 +109,8 @@ async function getPythonInfo() {
   const pythonInfo = {};
 
   const pythonVersionResult = await getResultsThroughCommandRunner(
-    "python",
-    "--version",
+    "python3",
+    "--version"
   );
   if (pythonVersionResult === undefined) {
     return pythonInfo;
