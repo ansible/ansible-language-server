@@ -10,9 +10,9 @@ import { ExtensionSettings } from "../interfaces/extensionSettings";
  */
 export function getAnsibleCommandExecPath(
   name: string,
-  settings: ExtensionSettings,
+  settings: ExtensionSettings
 ): string {
   return name === "ansible-lint"
-    ? settings.ansibleLint.path
+    ? settings.validation.lint.path
     : path.join(path.dirname(settings.ansible.path), name);
 }

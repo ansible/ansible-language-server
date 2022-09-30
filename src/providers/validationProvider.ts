@@ -26,7 +26,7 @@ export async function doValidate(
   validationManager: ValidationManager,
   quick = true,
   context?: WorkspaceFolderContext,
-  connection?: Connection,
+  connection?: Connection
 ): Promise<Map<string, Diagnostic[]>> {
   let diagnosticsByFile;
   if (quick || !context) {
@@ -38,40 +38,49 @@ export async function doValidate(
     // full validation with ansible-lint or ansible syntax-check (if ansible-lint is not installed or disabled)
 
     const settings = await context.documentSettings.get(textDocument.uri);
-    const commandRunner = new CommandRunner(connection, context, settings);
-    const lintExecutable = settings.executionEnvironment.enabled
-      ? "ansible-lint"
-      : settings.ansibleLint.path;
-    const lintAvailability = await commandRunner.getExecutablePath(
-      lintExecutable,
-    );
-    console.debug("Path for lint: ", lintAvailability);
+    if (!settings.validation.enabled) {
+      console.log("Validation disabled");
 
-    if (lintAvailability) {
-      console.debug("Validating using ansible-lint");
-      diagnosticsByFile = await context.ansibleLint.doValidate(textDocument);
+      // this is done to remove the cache as well
+      const blankDiagnostics = new Map<string, Diagnostic[]>();
+      blankDiagnostics.set(textDocument.uri, []);
+      validationManager.processDiagnostics(textDocument.uri, blankDiagnostics);
+      return blankDiagnostics;
     }
 
-    if (!diagnosticsByFile || !lintAvailability || diagnosticsByFile === -1) {
-      // Notifying the user about the failed ansible-lint command and falling back to ansible syntax-check in this scenario
-      if (diagnosticsByFile === -1) {
-        console.debug(
-          "Ansible-lint command execution failed. Falling back to ansible syntax-check",
-        );
-        connection?.window.showInformationMessage(
-          "Falling back to ansible syntax-check.",
+    // validation using ansible-lint
+    if (settings.validation.lint.enabled) {
+      const commandRunner = new CommandRunner(connection, context, settings);
+      const lintExecutable = settings.executionEnvironment.enabled
+        ? "ansible-lint"
+        : settings.validation.lint.path;
+      const lintAvailability = await commandRunner.getExecutablePath(
+        lintExecutable
+      );
+      console.debug("Path for lint: ", lintAvailability);
+
+      if (lintAvailability) {
+        console.debug("Validating using ansible-lint");
+        diagnosticsByFile = await context.ansibleLint.doValidate(textDocument);
+      } else {
+        connection?.window.showErrorMessage(
+          "Ansible-lint is not available. Kindly check the path or disable validation using ansible-lint"
         );
       }
+    }
+
+    // validate using ansible-playbook --syntax-check
+    else {
       console.debug("Validating using ansible syntax-check");
 
       if (isPlaybook(textDocument)) {
-        console.log("is playbook...");
+        console.debug("playbook file");
         diagnosticsByFile = await context.ansiblePlaybook.doValidate(
-          textDocument,
+          textDocument
         );
       } else {
-        console.log("not a playbook...");
-        diagnosticsByFile = new Map();
+        console.debug("non-playbook file");
+        diagnosticsByFile = new Map<string, Diagnostic[]>();
       }
     }
 
@@ -107,12 +116,10 @@ export function getYamlValidation(textDocument: TextDocument): Diagnostic[] {
         const start = textDocument.positionAt(
           errorRange.origStart !== undefined
             ? errorRange.origStart
-            : errorRange.start,
+            : errorRange.start
         );
         const end = textDocument.positionAt(
-          errorRange.origEnd !== undefined
-            ? errorRange.origEnd
-            : errorRange.end,
+          errorRange.origEnd !== undefined ? errorRange.origEnd : errorRange.end
         );
         range = Range.create(start, end);
 
@@ -159,7 +166,7 @@ export function getYamlValidation(textDocument: TextDocument): Diagnostic[] {
               start: range.end,
               end: range.end,
             }),
-            "the scope of this error ends here",
+            "the scope of this error ends here"
           ),
         ];
         // collapse the range

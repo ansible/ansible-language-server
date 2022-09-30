@@ -29,18 +29,6 @@ export class SettingsManager {
           "Toggle usage of fully qualified collection names (FQCN) when inserting module names",
       },
     },
-    ansibleLint: {
-      enabled: { default: true, description: "Toggle usage of ansible-lint" },
-      path: {
-        default: "ansible-lint",
-        description: "Path to the ansible-lint executable",
-      },
-      arguments: {
-        default: "",
-        description:
-          "Optional command line arguments to be appended to ansible-lint invocation",
-      },
-    },
     python: {
       interpreterPath: {
         default: "",
@@ -115,11 +103,33 @@ export class SettingsManager {
         description: "Toggle alias provider when completing module options",
       },
     },
+    validation: {
+      enabled: {
+        default: true,
+        description:
+          "Toggle validation provider. If enabled and ansible-lint is disabled, validation falls back to ansible-playbook --syntax-check",
+      },
+      lint: {
+        enabled: {
+          default: true,
+          description: "Toggle usage of ansible-lint",
+        },
+        path: {
+          default: "ansible-lint",
+          description: "Path to the ansible-lint executable",
+        },
+        arguments: {
+          default: "",
+          description:
+            "Optional command line arguments to be appended to ansible-lint invocation",
+        },
+      },
+    },
   };
 
   // Structure the settings similar to the ExtensionSettings interface for usage in the code
   private defaultSettings: ExtensionSettings = this._settingsAdjustment(
-    _.cloneDeep(this.defaultSettingsWithDescription),
+    _.cloneDeep(this.defaultSettingsWithDescription)
   );
 
   public globalSettings: ExtensionSettings = this.defaultSettings;
@@ -164,7 +174,7 @@ export class SettingsManager {
   }
 
   public async handleConfigurationChanged(
-    params: DidChangeConfigurationParams,
+    params: DidChangeConfigurationParams
   ): Promise<void> {
     if (this.clientSupportsConfigRequests) {
       // find configuration change handlers to fire
