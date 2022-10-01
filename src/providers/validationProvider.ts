@@ -26,7 +26,7 @@ export async function doValidate(
   validationManager: ValidationManager,
   quick = true,
   context?: WorkspaceFolderContext,
-  connection?: Connection
+  connection?: Connection,
 ): Promise<Map<string, Diagnostic[]>> {
   let diagnosticsByFile;
   if (quick || !context) {
@@ -55,7 +55,7 @@ export async function doValidate(
         ? "ansible-lint"
         : settings.validation.lint.path;
       const lintAvailability = await commandRunner.getExecutablePath(
-        lintExecutable
+        lintExecutable,
       );
       console.debug("Path for lint: ", lintAvailability);
 
@@ -64,7 +64,7 @@ export async function doValidate(
         diagnosticsByFile = await context.ansibleLint.doValidate(textDocument);
       } else {
         connection?.window.showErrorMessage(
-          "Ansible-lint is not available. Kindly check the path or disable validation using ansible-lint"
+          "Ansible-lint is not available. Kindly check the path or disable validation using ansible-lint",
         );
       }
     }
@@ -76,7 +76,7 @@ export async function doValidate(
       if (isPlaybook(textDocument)) {
         console.debug("playbook file");
         diagnosticsByFile = await context.ansiblePlaybook.doValidate(
-          textDocument
+          textDocument,
         );
       } else {
         console.debug("non-playbook file");
@@ -116,10 +116,12 @@ export function getYamlValidation(textDocument: TextDocument): Diagnostic[] {
         const start = textDocument.positionAt(
           errorRange.origStart !== undefined
             ? errorRange.origStart
-            : errorRange.start
+            : errorRange.start,
         );
         const end = textDocument.positionAt(
-          errorRange.origEnd !== undefined ? errorRange.origEnd : errorRange.end
+          errorRange.origEnd !== undefined
+            ? errorRange.origEnd
+            : errorRange.end,
         );
         range = Range.create(start, end);
 
@@ -166,7 +168,7 @@ export function getYamlValidation(textDocument: TextDocument): Diagnostic[] {
               start: range.end,
               end: range.end,
             }),
-            "the scope of this error ends here"
+            "the scope of this error ends here",
           ),
         ];
         // collapse the range

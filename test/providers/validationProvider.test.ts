@@ -19,7 +19,7 @@ import { ValidationManager } from "../../src/services/validationManager";
 
 function testValidationFromCache(
   validationManager: ValidationManager,
-  textDoc: TextDocument
+  textDoc: TextDocument,
 ) {
   it("should provide no diagnostics", async function () {
     const actualDiagnostics = await doValidate(textDoc, validationManager);
@@ -33,7 +33,7 @@ function assertValidateTests(
   context: WorkspaceFolderContext,
   validationManager: ValidationManager,
   textDoc: TextDocument,
-  validationEnabled: boolean
+  validationEnabled: boolean,
 ) {
   tests.forEach((test) => {
     it(`should provide diagnostics for ${test.name}`, async function () {
@@ -41,7 +41,7 @@ function assertValidateTests(
         textDoc,
         validationManager,
         false,
-        context
+        context,
       );
 
       if (!validationEnabled) {
@@ -53,7 +53,7 @@ function assertValidateTests(
         expect(actualDiagnostics.has(`file://${textDoc.uri}`)).to.be.false;
       } else {
         expect(actualDiagnostics.get(`file://${textDoc.uri}`).length).to.equal(
-          test.diagnosticReport.length
+          test.diagnosticReport.length,
         );
 
         actualDiagnostics.get(`file://${textDoc.uri}`).forEach((diag, i) => {
@@ -74,7 +74,7 @@ function testAnsibleLintErrors(
   context: WorkspaceFolderContext,
   validationManager: ValidationManager,
   textDoc: TextDocument,
-  validationEnabled: boolean
+  validationEnabled: boolean,
 ) {
   const tests = [
     {
@@ -136,7 +136,7 @@ function testAnsibleLintErrors(
     context,
     validationManager,
     textDoc,
-    validationEnabled
+    validationEnabled,
   );
 }
 
@@ -144,7 +144,7 @@ function testAnsibleSyntaxCheckNoErrors(
   context: WorkspaceFolderContext,
   validationManager: ValidationManager,
   textDoc: TextDocument,
-  validationEnabled: boolean
+  validationEnabled: boolean,
 ) {
   const tests = [
     {
@@ -157,7 +157,7 @@ function testAnsibleSyntaxCheckNoErrors(
     context,
     validationManager,
     textDoc,
-    validationEnabled
+    validationEnabled,
   );
 }
 
@@ -165,7 +165,7 @@ function testAnsibleSyntaxCheckEmptyPlaybook(
   context: WorkspaceFolderContext,
   validationManager: ValidationManager,
   textDoc: TextDocument,
-  validationEnabled: boolean
+  validationEnabled: boolean,
 ) {
   const tests = [
     {
@@ -178,7 +178,7 @@ function testAnsibleSyntaxCheckEmptyPlaybook(
     context,
     validationManager,
     textDoc,
-    validationEnabled
+    validationEnabled,
   );
 }
 
@@ -186,7 +186,7 @@ function testAnsibleSyntaxCheckNoHost(
   context: WorkspaceFolderContext,
   validationManager: ValidationManager,
   textDoc: TextDocument,
-  validationEnabled: boolean
+  validationEnabled: boolean,
 ) {
   const tests = [
     {
@@ -213,14 +213,14 @@ function testAnsibleSyntaxCheckNoHost(
     context,
     validationManager,
     textDoc,
-    validationEnabled
+    validationEnabled,
   );
 }
 
 function testInvalidYamlFile(
   context: WorkspaceFolderContext,
   validationManager: ValidationManager,
-  textDoc: TextDocument
+  textDoc: TextDocument,
 ) {
   const tests = [
     {
@@ -287,7 +287,7 @@ describe("doValidate()", () => {
     describe("With EE enabled @ee", () => {
       before(async () => {
         setFixtureAnsibleCollectionPathEnv(
-          "/home/runner/.ansible/collections:/usr/share/ansible"
+          "/home/runner/.ansible/collections:/usr/share/ansible",
         );
         await enableExecutionEnvironmentSettings(docSettings);
       });
@@ -315,7 +315,7 @@ describe("doValidate()", () => {
       describe("With EE enabled @ee", () => {
         before(async () => {
           setFixtureAnsibleCollectionPathEnv(
-            "/home/runner/.ansible/collections:/usr/share/ansible"
+            "/home/runner/.ansible/collections:/usr/share/ansible",
           );
           await enableExecutionEnvironmentSettings(docSettings);
         });
@@ -344,7 +344,7 @@ describe("doValidate()", () => {
           before(async () => {
             (await docSettings).validation.lint.enabled = false;
             setFixtureAnsibleCollectionPathEnv(
-              "/home/runner/.ansible/collections:/usr/share/ansible"
+              "/home/runner/.ansible/collections:/usr/share/ansible",
             );
             await enableExecutionEnvironmentSettings(docSettings);
           });
@@ -353,7 +353,7 @@ describe("doValidate()", () => {
             context,
             validationManager,
             textDoc,
-            true
+            true,
           );
 
           after(async () => {
@@ -374,7 +374,7 @@ describe("doValidate()", () => {
             context,
             validationManager,
             textDoc,
-            true
+            true,
           );
         });
         after(async () => {
@@ -396,7 +396,7 @@ describe("doValidate()", () => {
           before(async () => {
             (await docSettings).validation.lint.enabled = false;
             setFixtureAnsibleCollectionPathEnv(
-              "/home/runner/.ansible/collections:/usr/share/ansible"
+              "/home/runner/.ansible/collections:/usr/share/ansible",
             );
             await enableExecutionEnvironmentSettings(docSettings);
           });
@@ -405,7 +405,7 @@ describe("doValidate()", () => {
             context,
             validationManager,
             textDoc,
-            true
+            true,
           );
 
           after(async () => {
@@ -426,7 +426,7 @@ describe("doValidate()", () => {
             context,
             validationManager,
             textDoc,
-            true
+            true,
           );
         });
         after(async () => {
@@ -448,7 +448,7 @@ describe("doValidate()", () => {
           before(async () => {
             (await docSettings).validation.lint.enabled = false;
             setFixtureAnsibleCollectionPathEnv(
-              "/home/runner/.ansible/collections:/usr/share/ansible"
+              "/home/runner/.ansible/collections:/usr/share/ansible",
             );
             await enableExecutionEnvironmentSettings(docSettings);
           });
@@ -457,7 +457,7 @@ describe("doValidate()", () => {
             context,
             validationManager,
             textDoc,
-            true
+            true,
           );
 
           after(async () => {
@@ -478,7 +478,7 @@ describe("doValidate()", () => {
             context,
             validationManager,
             textDoc,
-            true
+            true,
           );
         });
         after(async () => {
@@ -505,7 +505,7 @@ describe("doValidate()", () => {
             //   "invalid-ansible-lint-path";
             (await docSettings).validation.enabled = false;
             setFixtureAnsibleCollectionPathEnv(
-              "/home/runner/.ansible/collections:/usr/share/ansible"
+              "/home/runner/.ansible/collections:/usr/share/ansible",
             );
             await enableExecutionEnvironmentSettings(docSettings);
           });
@@ -514,7 +514,7 @@ describe("doValidate()", () => {
             context,
             validationManager,
             textDoc,
-            false
+            false,
           );
 
           after(async () => {
@@ -540,7 +540,7 @@ describe("doValidate()", () => {
             context,
             validationManager,
             textDoc,
-            false
+            false,
           );
         });
         after(async () => {
@@ -567,7 +567,7 @@ describe("doValidate()", () => {
             //   "invalid-ansible-lint-path";
             (await docSettings).validation.enabled = false;
             setFixtureAnsibleCollectionPathEnv(
-              "/home/runner/.ansible/collections:/usr/share/ansible"
+              "/home/runner/.ansible/collections:/usr/share/ansible",
             );
             await enableExecutionEnvironmentSettings(docSettings);
           });
@@ -576,7 +576,7 @@ describe("doValidate()", () => {
             context,
             validationManager,
             textDoc,
-            false
+            false,
           );
 
           after(async () => {
@@ -602,7 +602,7 @@ describe("doValidate()", () => {
             context,
             validationManager,
             textDoc,
-            false
+            false,
           );
         });
         after(async () => {
@@ -725,7 +725,7 @@ describe("doValidate()", () => {
     describe("With EE enabled @ee", () => {
       before(async () => {
         setFixtureAnsibleCollectionPathEnv(
-          "/home/runner/.ansible/collections:/usr/share/ansible"
+          "/home/runner/.ansible/collections:/usr/share/ansible",
         );
         await enableExecutionEnvironmentSettings(docSettings);
       });

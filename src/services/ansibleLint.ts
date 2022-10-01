@@ -48,7 +48,7 @@ export class AnsibleLint {
    * reported in other files.
    */
   public async doValidate(
-    textDocument: TextDocument
+    textDocument: TextDocument,
   ): Promise<Map<string, Diagnostic[]>> {
     let diagnostics: Map<string, Diagnostic[]> = new Map();
 
@@ -60,13 +60,13 @@ export class AnsibleLint {
 
     // Determine linter config file
     let ansibleLintConfigPath = linterArguments.match(
-      /(?:^|\s)-c\s*(?<sep>[\s'"])(?<conf>.+?)(?:\k<sep>|$)/
+      /(?:^|\s)-c\s*(?<sep>[\s'"])(?<conf>.+?)(?:\k<sep>|$)/,
     )?.groups?.conf;
     if (!ansibleLintConfigPath) {
       // Config file not provided in arguments -> search for one mimicking the
       // way ansible-lint looks for it, going up the directory structure
       const ansibleLintConfigFile = await this.findAnsibleLintConfigFile(
-        textDocument.uri
+        textDocument.uri,
       );
       if (ansibleLintConfigFile) {
         ansibleLintConfigPath = URI.parse(ansibleLintConfigFile).path;
@@ -88,7 +88,7 @@ export class AnsibleLint {
 
     const ansibleLintConfigPromise = this.getAnsibleLintConfig(
       workingDirectory,
-      ansibleLintConfigPath
+      ansibleLintConfigPath,
     );
 
     progressTracker.begin("ansible-lint", undefined, "Processing files...");
@@ -96,7 +96,7 @@ export class AnsibleLint {
     const commandRunner = new CommandRunner(
       this.connection,
       this.context,
-      settings
+      settings,
     );
 
     try {
@@ -105,13 +105,13 @@ export class AnsibleLint {
         "ansible-lint",
         `${linterArguments} "${docPath}"`,
         workingDirectory,
-        mountPaths
+        mountPaths,
       );
 
       diagnostics = this.processReport(
         result.stdout,
         await ansibleLintConfigPromise,
-        workingDirectory
+        workingDirectory,
       );
 
       if (result.stderr) {
@@ -129,7 +129,7 @@ export class AnsibleLint {
           diagnostics = this.processReport(
             execError.stdout,
             await ansibleLintConfigPromise,
-            workingDirectory
+            workingDirectory,
           );
         } else {
           if (execError.stderr) {
@@ -142,7 +142,7 @@ export class AnsibleLint {
         }
       } else {
         const exceptionString = `Exception in AnsibleLint service: ${JSON.stringify(
-          error
+          error,
         )}`;
 
         progressTracker.done();
@@ -159,12 +159,12 @@ export class AnsibleLint {
   private processReport(
     result: string,
     ansibleLintConfig: IAnsibleLintConfig | undefined,
-    workingDirectory: string
+    workingDirectory: string,
   ): Map<string, Diagnostic[]> {
     const diagnostics: Map<string, Diagnostic[]> = new Map();
     if (!result) {
       this.connection.console.warn(
-        "Standard output from ansible-lint is suspiciously empty."
+        "Standard output from ansible-lint is suspiciously empty.",
       );
       return diagnostics;
     }
@@ -199,7 +199,7 @@ export class AnsibleLint {
             let severity: DiagnosticSeverity = DiagnosticSeverity.Error;
             if (ansibleLintConfig) {
               const lintRuleName = (item.check_name as string).match(
-                /\[(?<name>[a-z\-]+)\].*/
+                /\[(?<name>[a-z\-]+)\].*/,
               )?.groups?.name;
 
               if (
@@ -240,7 +240,7 @@ export class AnsibleLint {
     } catch (error) {
       this.connection.window.showErrorMessage(
         "Could not parse ansible-lint output. Please check your ansible-lint installation & configuration." +
-          " More info in `Ansible Server` output."
+          " More info in `Ansible Server` output.",
       );
       let message: string;
       if (error instanceof Error) {
@@ -250,14 +250,14 @@ export class AnsibleLint {
       }
       this.connection.console.error(
         `Exception while parsing ansible-lint output: ${message}` +
-          `\nTried to parse the following:\n${result}`
+          `\nTried to parse the following:\n${result}`,
       );
     }
     return diagnostics;
   }
 
   public handleWatchedDocumentChange(
-    params: DidChangeWatchedFilesParams
+    params: DidChangeWatchedFilesParams,
   ): void {
     for (const fileEvent of params.changes) {
       // remove from cache on any change
@@ -267,7 +267,7 @@ export class AnsibleLint {
 
   private async getAnsibleLintConfig(
     workingDirectory: string,
-    configPath: string | undefined
+    configPath: string | undefined,
   ): Promise<IAnsibleLintConfig | undefined> {
     if (configPath) {
       const absConfigPath = path.resolve(workingDirectory, configPath);
@@ -281,7 +281,7 @@ export class AnsibleLint {
   }
 
   private async readAnsibleLintConfig(
-    configPath: string
+    configPath: string,
   ): Promise<IAnsibleLintConfig> {
     const config = {
       warnList: new Set<string>(),
@@ -310,7 +310,7 @@ export class AnsibleLint {
   }
 
   private async findAnsibleLintConfigFile(
-    uri: string
+    uri: string,
   ): Promise<string | undefined> {
     // find configuration path
     let configPath;
