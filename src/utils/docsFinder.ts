@@ -37,7 +37,7 @@ export async function findDocumentation(
         `${dir}/ansible_collections/*/*/plugins/modules/**/*.py`,
         `!${dir}/ansible_collections/*/*/plugins/modules/_*.py`,
         `!${dir}/ansible_collections/*/*/plugins/modules/**/_*.py`,
-      ]);
+      ]).filter((item) => !fs.lstatSync(item).isSymbolicLink());
       break;
     case "collection_doc_fragment":
       files = await globArray([
