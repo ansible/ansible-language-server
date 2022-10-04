@@ -158,6 +158,14 @@ if [[ "$(command -v npm || true)" == '/mnt/c/Program Files/nodejs/npm' ]]; then
         nodejs gcc g++ make python3-dev
 fi
 
+
+
+which -a ansible || true
+ansible --version || true
+
+which -a ansible-lint || true
+ansible-lint --version || true
+
 VIRTUAL_ENV=${VIRTUAL_ENV:-out/venvs/${HOSTNAME}}
 if [[ ! -d "${VIRTUAL_ENV}" ]]; then
     log notice "Creating virtualenv ..."
@@ -173,6 +181,8 @@ if [[ $(uname || true) != MINGW* ]]; then # if we are not on pure Windows
         -c .config/requirements.txt -r .config/requirements.in
 fi
 
+which -a ansible || true
+ansible --version || true
 # GHA failsafe only: ensure ansible and ansible-lint cannot be found anywhere
 # other than our own virtualenv. (test isolation)
 if [[ -n "${CI:-}" ]]; then
@@ -301,6 +311,9 @@ if [[ -f yarn.lock ]]; then
 else
     npm ci --no-audit
 fi
+
+which -a ansible-lint
+ansible-lint --version
 
 [[ $ERR -eq 0 ]] && level=notice || level=error
 log "${level}" "${0##*/} -> out/log/manifest.yml and returned ${ERR}"

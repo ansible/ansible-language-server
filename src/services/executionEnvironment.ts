@@ -432,7 +432,7 @@ export class ExecutionEnvironment {
     this.cleanUpContainer(containerName);
 
     try {
-      let command = `${this._container_engine} run --rm -it -d `;
+      let command = `${this._container_engine} run --rm -t -d `;
       if (this.settingsVolumeMounts && this.settingsVolumeMounts.length > 0) {
         command += this.settingsVolumeMounts.join(" ");
       }
