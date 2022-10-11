@@ -219,6 +219,9 @@ export class AnsibleLint {
             const path = `${workingDirectory}/${item.location.path}`;
             const locationUri = URI.file(path).toString();
 
+            const helpUri: string = item.url ? item.url : undefined;
+            const helpUrlName: string = helpUri ? item.check_name : undefined;
+
             let fileDiagnostics = diagnostics.get(locationUri);
             if (!fileDiagnostics) {
               fileDiagnostics = [];
@@ -232,7 +235,9 @@ export class AnsibleLint {
               message: message,
               range: range || Range.create(0, 0, 0, 0),
               severity: severity,
-              source: "Ansible",
+              source: "Ansible-lint",
+              code: helpUrlName,
+              codeDescription: { href: helpUri },
             });
           }
         }
