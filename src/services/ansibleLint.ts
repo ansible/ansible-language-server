@@ -229,7 +229,7 @@ export class AnsibleLint {
             }
             let message: string = item.check_name;
             if (item.description) {
-              message += `\nDescription: ${item.description}`;
+              message += `\n${item.description}`;
             }
             fileDiagnostics.push({
               message: message,
