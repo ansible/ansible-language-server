@@ -140,9 +140,11 @@ async function getAnsibleLintInfo() {
   }
 
   const ansibleLintPathResult = await getResultsThroughCommandRunner(
-    "which",
+    "command -v",
     "ansible-lint",
   );
+
+  console.log("*** result -> ", ansibleLintPathResult);
 
   ansibleLintInfo["ansible-lint version"] =
     ansibleLintVersionResult.stdout.trim();
