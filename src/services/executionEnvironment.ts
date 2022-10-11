@@ -198,19 +198,19 @@ export class ExecutionEnvironment {
   ): string | undefined {
     if (!this.isServiceInitialized) {
       this.connection.console.error(
-        "ExecutionEnvironment service not correctly initialized."
+        "ExecutionEnvironment service not correctly initialized.",
       );
       return undefined;
     }
     const workspaceFolderPath = URI.parse(
-      this.context.workspaceFolder.uri
+      this.context.workspaceFolder.uri,
     ).path;
     const containerCommand: Array<string> = [this._container_engine];
     containerCommand.push(...["run", "--rm"]);
     containerCommand.push(...["--workdir", workspaceFolderPath]);
 
     containerCommand.push(
-      ...["-v", `${workspaceFolderPath}:${workspaceFolderPath}`]
+      ...["-v", `${workspaceFolderPath}:${workspaceFolderPath}`],
     );
 
     // TODO: add condition to check file path exists or not
@@ -218,7 +218,7 @@ export class ExecutionEnvironment {
       // push to array only if mount path is valid
       if (mountPath === "" || !fs.existsSync(mountPath)) {
         this.connection.console.error(
-          `Volume mount source path '${mountPath}' does not exist. Ignoring this volume mount entry.`
+          `Volume mount source path '${mountPath}' does not exist. Ignoring this volume mount entry.`,
         );
         continue;
       }
@@ -281,7 +281,7 @@ export class ExecutionEnvironment {
     containerCommand.push(command);
     const generatedCommand = containerCommand.join(" ");
     this.connection.console.log(
-      `container engine invocation: ${generatedCommand}`
+      `container engine invocation: ${generatedCommand}`,
     );
     return generatedCommand;
   }
@@ -447,6 +447,7 @@ export class ExecutionEnvironment {
         }
       }
       command += ` -e ANSIBLE_FORCE_COLOR=0 `; // ensure output is parseable (no ANSI)
+      command += ` -e ANSIBLE_LOCAL_TEMP=./.ansible/tmp `; // ensure temp location for ansible
       if (
         this.settingsContainerOptions &&
         this.settingsContainerOptions !== ""
