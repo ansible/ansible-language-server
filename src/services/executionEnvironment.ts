@@ -249,6 +249,9 @@ export class ExecutionEnvironment {
     // ensure output is parseable (no ANSI)
     containerCommand.push("-e", "ANSIBLE_FORCE_COLOR=0");
 
+    // 
+    containerCommand.push("-e", "ANSIBLE_LOCAL_TEMP=./.ansible/tmp");
+
     if (this._container_engine === "podman") {
       // container namespace stuff
       containerCommand.push("--group-add=root");
