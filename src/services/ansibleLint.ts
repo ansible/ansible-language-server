@@ -229,13 +229,13 @@ export class AnsibleLint {
             }
             let message: string = item.check_name;
             if (item.description) {
-              message += `\n${item.description}`;
+              message = item.description;
             }
             fileDiagnostics.push({
               message: message,
               range: range || Range.create(0, 0, 0, 0),
               severity: severity,
-              source: "Ansible-lint",
+              source: "ansible-lint",
               code: helpUrlName,
               codeDescription: { href: helpUri },
             });
