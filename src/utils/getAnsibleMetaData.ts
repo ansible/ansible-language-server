@@ -144,8 +144,6 @@ async function getAnsibleLintInfo() {
     "ansible-lint",
   );
 
-  console.log("*** result -> ", ansibleLintPathResult);
-
   ansibleLintInfo["ansible-lint version"] =
     ansibleLintVersionResult.stdout.trim();
 
