@@ -158,7 +158,6 @@ async function getExecutionEnvironmentInfo() {
   eeInfo["container engine"] = basicDetails.containerEngine;
   eeInfo["container image"] = basicDetails.containerImage;
   eeInfo["container image ID"] = basicDetails.containerImageId;
-  eeInfo["container volume mounts"] = basicDetails.containerVolumeMounts;
 
   let eeServiceWorking = false;
   let inspectResult;
