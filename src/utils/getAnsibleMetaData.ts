@@ -150,6 +150,9 @@ async function getAnsibleLintInfo() {
   ansibleLintInfo["ansible-lint location"] =
     ansibleLintPathResult.stdout.trim();
 
+  ansibleLintInfo["config file path"] =
+    context.ansibleLint.ansibleLintConfigPath;
+
   return ansibleLintInfo;
 }
 

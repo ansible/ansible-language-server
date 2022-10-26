@@ -28,6 +28,7 @@ export class AnsibleLint {
   private connection: Connection;
   private context: WorkspaceFolderContext;
   private useProgressTracker = false;
+  public ansibleLintConfigPath: string;
 
   private configCache: Map<string, IAnsibleLintConfig> = new Map();
 
@@ -74,6 +75,9 @@ export class AnsibleLint {
         mountPaths.add(path.dirname(ansibleLintConfigPath));
       }
     }
+
+    this.ansibleLintConfigPath = ansibleLintConfigPath;
+
     linterArguments = `${linterArguments} --offline --nocolor -f codeclimate`;
 
     const docPath = URI.parse(textDocument.uri).path;
