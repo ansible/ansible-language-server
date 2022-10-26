@@ -108,11 +108,9 @@ export class AnsibleLint {
         mountPaths,
       );
 
-      diagnostics = this.processReport(
-        result.stdout,
-        await ansibleLintConfigPromise,
-        workingDirectory,
-      );
+      if (result.stdout) {
+        this.connection.console.warn(`[ansible-lint] ${result.stdout}`);
+      }
 
       if (result.stderr) {
         this.connection.console.info(`[ansible-lint] ${result.stderr}`);
@@ -331,8 +329,8 @@ export class AnsibleLint {
         // we've gone out of the workspace folder
         break;
       }
-      if (await fileExists(candidatePath)) {
-        configPath = candidatePath;
+      if (await fileExists(URI.parse(candidatePath).path)) {
+        configPath = URI.parse(candidatePath).path;
         break;
       }
     }
