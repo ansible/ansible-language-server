@@ -28,7 +28,7 @@ export class AnsibleLint {
   private connection: Connection;
   private context: WorkspaceFolderContext;
   private useProgressTracker = false;
-  public ansibleLintConfigPath: string;
+  private _ansibleLintConfigFilePath: string;
 
   private configCache: Map<string, IAnsibleLintConfig> = new Map();
 
@@ -75,8 +75,6 @@ export class AnsibleLint {
         mountPaths.add(path.dirname(ansibleLintConfigPath));
       }
     }
-
-    this.ansibleLintConfigPath = ansibleLintConfigPath;
 
     linterArguments = `${linterArguments} --offline --nocolor -f codeclimate`;
 
@@ -313,6 +311,7 @@ export class AnsibleLint {
     } catch (error) {
       this.connection.window.showErrorMessage(error);
     }
+    this._ansibleLintConfigFilePath = configPath;
     return config;
   }
 
@@ -339,5 +338,9 @@ export class AnsibleLint {
       }
     }
     return configPath;
+  }
+
+  get ansibleLintConfigFilePath(): string {
+    return this._ansibleLintConfigFilePath;
   }
 }
