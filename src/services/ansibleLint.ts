@@ -102,7 +102,7 @@ export class AnsibleLint {
     );
 
     try {
-      // get Ansible configuration
+      // get ansible-lint result on the doc
       const result = await commandRunner.runCommand(
         "ansible-lint",
         `${linterArguments} "${docPath}"`,
@@ -110,9 +110,11 @@ export class AnsibleLint {
         mountPaths,
       );
 
-      if (result.stdout) {
-        this.connection.console.warn(`[ansible-lint] ${result.stdout}`);
-      }
+      diagnostics = this.processReport(
+        result.stdout,
+        ansibleLintConfigPromise,
+        workingDirectory,
+      );
 
       if (result.stderr) {
         this.connection.console.info(`[ansible-lint] ${result.stderr}`);
@@ -199,8 +201,8 @@ export class AnsibleLint {
             let severity: DiagnosticSeverity = DiagnosticSeverity.Error;
             if (ansibleLintConfig) {
               const lintRuleName = (item.check_name as string).match(
-                /\[(?<name>[a-z\-]+)\].*/,
-              )?.groups?.name;
+                /(?<name>[a-z\-]+).*/,
+              )[0];
 
               if (
                 lintRuleName &&
