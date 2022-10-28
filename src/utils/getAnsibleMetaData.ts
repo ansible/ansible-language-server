@@ -86,7 +86,7 @@ async function getAnsibleInfo() {
 
   ansibleInfo["location"] = (await context.ansibleConfig).ansible_location;
 
-  ansibleInfo["config file path"] = [ansibleVersionObj["config file"]];
+  ansibleInfo["config file path"] = ansibleVersionObj["config file"];
 
   ansibleInfo["collections location"] = (
     await context.ansibleConfig
@@ -145,6 +145,9 @@ async function getAnsibleLintInfo() {
   ansibleLintInfo["version"] = ansibleLintVersionResult.stdout.trim();
 
   ansibleLintInfo["location"] = ansibleLintPathResult.stdout.trim();
+
+  ansibleLintInfo["config file path"] =
+    context.ansibleLint.ansibleLintConfigFilePath;
 
   return ansibleLintInfo;
 }
