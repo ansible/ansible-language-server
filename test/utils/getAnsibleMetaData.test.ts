@@ -243,16 +243,6 @@ describe("getAnsibleMetaData()", () => {
         ).to.include(executionEnvironmentInfoForTest["container image"]);
       });
 
-      it("should have valid container volume mount information", function () {
-        expect(
-          actualAnsibleMetaData["execution environment information"][
-            "container volume mounts"
-          ][0]["src"],
-        ).to.include(
-          executionEnvironmentInfoForTest["container volume mounts"][0]["src"],
-        );
-      });
-
       after(async () => {
         await disableExecutionEnvironmentSettings(docSettings);
       });
