@@ -97,7 +97,7 @@ fi
 if [[ "${OS:-}" == "darwin" && "${SKIP_PODMAN:-}" != '1' ]]; then
     command -v podman >/dev/null 2>&1 || {
         HOMEBREW_NO_ENV_HINTS=1 time brew install podman
-        time podman machine init
+        podman machine ls --noheading || time podman machine init
         time podman machine start
         podman info
         podman run hello-world
