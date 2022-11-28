@@ -336,6 +336,35 @@ export class ExecutionEnvironment {
       );
       return false;
     }
+    // Now we need to validate if container engine is running or well configured
+    if (this._container_engine === "docker") {
+      try {
+        // When installing podman on MacOS, user is also given the recommendation
+        // to configure DOCKER_HOST to pass to podman socket, thus enabling tools
+        // that use docker to call podman backend instead from docker cli.
+        // This does not work for us, so better to ask user to fix his setup.
+        const docker_version = child_process
+          .execSync(
+            "docker version -f '{{(index .Server.Components 0).Name}}'",
+            {
+              encoding: "utf-8",
+            },
+          )
+          .toString()
+          .trim();
+        if (docker_version === "Podman Engine") {
+          this.connection.window.showErrorMessage(
+            "Docker if configured to use Podman backend, which is not supported by this extension. Please configure DOCKER_HOST to point to a Docker daemon OR use podman directly.",
+          );
+          return false;
+        }
+      } catch (error) {
+        this.connection.window.showErrorMessage(
+          `Container engine '${this._container_engine}' not running or configured properly. Failed with error '${error}'`,
+        );
+        return false;
+      }
+    }
     return true;
   }
 
