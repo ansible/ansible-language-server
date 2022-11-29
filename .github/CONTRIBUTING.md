@@ -13,6 +13,7 @@ To contribute, you'll need to:
 5. Iterate on your PR, incorporating the requested improvements and
    participating in the discussions.
 
-**_NOTE:_** On some operating systems, ``task`` may be another command, such as ``go-task``.
+**_NOTE:_** On some operating systems, `task` may be another command, such as
+`go-task`.
 
 [task]: https://taskfile.dev/
