@@ -274,8 +274,9 @@ export class ExecutionEnvironment {
       });
     }
     // lets minimize the container name to reduce the length of the command
-    // while keeping it legal https://stackoverflow.com/questions/27791913/
-    const id = crypto.randomBytes(4).toString("ascii");
+    // while keeping it within [a-zA-Z0-9][a-zA-Z0-9_.-] (docker requirement).
+    // https://www.rfc-editor.org/rfc/rfc4648#section-5
+    const id = crypto.randomBytes(4).toString("base64url");
     containerCommand.push(`--name als_${id}`);
     containerCommand.push(this._container_image);
     containerCommand.push(command);
