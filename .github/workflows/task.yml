@@ -27,7 +27,7 @@ jobs:
       JOB_NAME: ${{ matrix.name || matrix.task-name }}
     name: ${{ matrix.name || matrix.task-name }}
     # The type of runner that the job will run on
-    runs-on: ${{ matrix.os || 'ubuntu-20.04' }}
+    runs-on: ${{ matrix.os || 'ubuntu-22.04' }}
     defaults:
       run:
         shell: ${{ matrix.shell || 'bash'}}
@@ -35,7 +35,7 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - ubuntu-20.04
+          - ubuntu-22.04
         node-version:
           - "16"
         task-name:
@@ -112,13 +112,21 @@ jobs:
             ~/.cache/yarn
             ~/.nvm/.cache
             ~/Library/Caches/pip
-            ~/.local/share/containers/podman/machine/qemu
           key: >
             ${{ runner.os }}-${{ matrix.task-name }}-${{ hashFiles(
             'package.json',
             'package-lock.json',
             '.config/requirements.txt'
             ) }}
+
+      - name: Enable caching for podman-machine
+        uses: actions/cache@v3
+        if: "contains(matrix.os, 'macos')"
+        with:
+          path: |
+            ~/.local/share/containers
+            ~/.config/containers
+          key: ${{ runner.os }}-${{ matrix.task-name }}-${{ hashFiles('package.json', 'yarn.lock', '.config/requirements.txt', '**/Taskfile.yml', 'tools/*.*') }}
 
       - name: Install Task
         if: "!contains(matrix.shell, 'wsl')"
@@ -201,7 +209,7 @@ jobs:
 
   check: # This job does nothing and is only used for the branch protection
     if: always()
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     needs:
       - test
     steps:
