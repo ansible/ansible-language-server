@@ -28,6 +28,10 @@ export class SettingsManager {
         description:
           "Toggle usage of fully qualified collection names (FQCN) when inserting module names",
       },
+      supportPlaybookAdjacentCollections: {
+        default: false,
+        description: "Toggle support for playbook adjacent collections"
+      }
     },
     python: {
       interpreterPath: {

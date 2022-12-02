@@ -3,6 +3,7 @@
  *
  * 1. Add appropriate setting type in the desired section (particular interface)
  * 2. Add the setting(s) to `ExtensionSetting` at appropriate nested level
+ * 3. Go to `settingsManager.ts` and add the appropriate change
  */
 
 export type IContainerEngine = "auto" | "podman" | "docker";
@@ -21,6 +22,7 @@ export interface ExtensionSettings {
   ansible: {
     path: string;
     useFullyQualifiedCollectionNames: boolean;
+    supportPlaybookAdjacentCollections: boolean;
   };
   completion: {
     provideRedirectModules: boolean;
@@ -78,6 +80,10 @@ interface AnsibleSettingsWithDescription {
     description: string;
   };
   useFullyQualifiedCollectionNames: {
+    default: boolean;
+    description: string;
+  };
+  supportPlaybookAdjacentCollections: {
     default: boolean;
     description: string;
   };
