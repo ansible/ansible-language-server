@@ -5,6 +5,7 @@ import { URI } from "vscode-uri";
 import { Connection } from "vscode-languageserver";
 import { WorkspaceFolderContext } from "./workspaceManager";
 import { CommandRunner } from "../utils/commandRunner";
+import { existsSync } from "fs";
 
 export class AnsibleConfig {
   private connection: Connection;
@@ -95,6 +96,28 @@ export class AnsibleConfig {
         this.connection.console.error(
           `Exception in AnsibleConfig service: ${JSON.stringify(error)}`,
         );
+      }
+    }
+
+    // add support for playbook adjacent collections
+    const docSettings = await this.context.documentSettings.get("ansible");
+    if (docSettings.ansible.supportPlaybookAdjacentCollections) {
+      const workspaceUri = this.context.workspaceFolder.uri;
+      console.log("*** workspace -> ", workspaceUri);
+
+      const playbookAdjacentCollectionsPath = path.resolve(
+        URI.parse(workspaceUri).path,
+        "collections",
+      );
+
+      if (existsSync(playbookAdjacentCollectionsPath)) {
+        // show a warning message if the found path is not present in the config already
+        if (!this._collection_paths.includes(playbookAdjacentCollectionsPath)) {
+          this.connection.window.showWarningMessage(
+            "Playbook adjacent collections' path not found in config file.",
+          );
+        }
+        this._collection_paths.push(playbookAdjacentCollectionsPath);
       }
     }
   }
