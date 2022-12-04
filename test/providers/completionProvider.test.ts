@@ -15,8 +15,6 @@ import {
   setAnsibleConfigEnv,
   unsetAnsibleConfigEnv,
 } from "../helper";
-import path = require("path");
-import { URI } from "vscode-uri";
 
 function testPlayKeywords(
   context: WorkspaceFolderContext,
