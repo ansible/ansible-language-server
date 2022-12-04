@@ -30,8 +30,8 @@ export class SettingsManager {
       },
       supportPlaybookAdjacentCollections: {
         default: false,
-        description: "Toggle support for playbook adjacent collections"
-      }
+        description: "Toggle support for playbook adjacent collections",
+      },
     },
     python: {
       interpreterPath: {
