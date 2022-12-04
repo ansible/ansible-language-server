@@ -600,6 +600,7 @@ function testHostValues(
 
 describe("doCompletion()", () => {
   const workspaceManager = createTestWorkspaceManager();
+
   let fixtureFilePath = "completion/simple_tasks.yml";
   let fixtureFileUri = resolveDocUri(fixtureFilePath);
   let context = workspaceManager.getContext(fixtureFileUri);
@@ -732,13 +733,13 @@ describe("doCompletion()", () => {
     });
   });
 
-  describe("Completion for task keywords", () => {
-    fixtureFilePath = "completion/simple_tasks.yml";
-    fixtureFileUri = resolveDocUri(fixtureFilePath);
-    context = workspaceManager.getContext(fixtureFileUri);
-    textDoc = getDoc(fixtureFilePath);
-    docSettings = context.documentSettings.get(textDoc.uri);
+  fixtureFilePath = "completion/simple_tasks.yml";
+  fixtureFileUri = resolveDocUri(fixtureFilePath);
+  context = workspaceManager.getContext(fixtureFileUri);
+  textDoc = getDoc(fixtureFilePath);
+  docSettings = context.documentSettings.get(textDoc.uri);
 
+  describe("Completion for task keywords", () => {
     describe("With EE enabled @ee", () => {
       before(async () => {
         setFixtureAnsibleCollectionPathEnv(
@@ -845,13 +846,13 @@ describe("doCompletion()", () => {
     });
   });
 
-  describe("Completion for module name without FQCN", () => {
-    fixtureFilePath = "completion/tasks_without_fqcn.yml";
-    fixtureFileUri = resolveDocUri(fixtureFilePath);
-    context = workspaceManager.getContext(fixtureFileUri);
-    textDoc = getDoc(fixtureFilePath);
-    docSettings = context.documentSettings.get(textDoc.uri);
+  fixtureFilePath = "completion/tasks_without_fqcn.yml";
+  fixtureFileUri = resolveDocUri(fixtureFilePath);
+  context = workspaceManager.getContext(fixtureFileUri);
+  textDoc = getDoc(fixtureFilePath);
+  docSettings = context.documentSettings.get(textDoc.uri);
 
+  describe("Completion for module name without FQCN", () => {
     describe("With EE enabled @ee", () => {
       before(async () => {
         setFixtureAnsibleCollectionPathEnv(
@@ -878,49 +879,43 @@ describe("doCompletion()", () => {
     });
   });
 
+  fixtureFilePath = "playbook_adjacent_collection/playbook.yml";
+  fixtureFileUri = resolveDocUri(fixtureFilePath);
+  context = workspaceManager.getContext(fixtureFileUri);
+  textDoc = getDoc(fixtureFilePath);
+  docSettings = context.documentSettings.get(textDoc.uri);
+
   describe("Completion for playbook adjacent collection", () => {
-    fixtureFilePath = "completion/playbook_adjacent_to_collection.yml";
-    fixtureFileUri = resolveDocUri(fixtureFilePath);
-    context = workspaceManager.getContext(fixtureFileUri);
-    textDoc = getDoc(fixtureFilePath);
-    docSettings = context.documentSettings.get(textDoc.uri);
-
-    const workspaceUri = context.workspaceFolder.uri;
-    const playbookAdjacentCollectionsPath = path.resolve(
-      URI.parse(workspaceUri).path,
-      "collections",
-    );
-
     describe("With EE enabled @ee", () => {
       before(async () => {
+        (await docSettings).ansible.supportPlaybookAdjacentCollections = true;
         setFixtureAnsibleCollectionPathEnv(
           "/home/runner/.ansible/collections:/usr/share/ansible",
         );
         await enableExecutionEnvironmentSettings(docSettings);
-        (await context.ansibleConfig).collections_paths.push(
-          playbookAdjacentCollectionsPath,
-        );
       });
 
       testPlaybookAdjacentCollection(context, textDoc);
 
       after(async () => {
+        (await docSettings).ansible.supportPlaybookAdjacentCollections = false;
         setFixtureAnsibleCollectionPathEnv();
         await disableExecutionEnvironmentSettings(docSettings);
-        // (await context.ansibleConfig).collections_paths.pop();
       });
     });
 
     describe("With EE disabled", () => {
       before(async () => {
+        (await docSettings).ansible.supportPlaybookAdjacentCollections = true;
         setFixtureAnsibleCollectionPathEnv();
         await disableExecutionEnvironmentSettings(docSettings);
-        (await context.ansibleConfig).collections_paths.push(
-          playbookAdjacentCollectionsPath,
-        );
       });
 
       testPlaybookAdjacentCollection(context, textDoc);
+
+      after(async () => {
+        (await docSettings).ansible.supportPlaybookAdjacentCollections = false;
+      });
     });
   });
 });
