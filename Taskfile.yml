@@ -113,7 +113,7 @@ tasks:
     desc: Run all tests
     vars:
       ENGINE:
-        sh: bash -c "command -v podman docker | head -n 1"
+        sh: bash -c "command -v docker | head -n 1"
     deps:
       - setup
     cmds:
