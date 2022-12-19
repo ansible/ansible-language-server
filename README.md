@@ -2,6 +2,8 @@
 
 [//]: # DO-NOT-REMOVE-README-TITLE
 
+FOO!
+
 This language server adds support for Ansible and is currently used by the
 following projects:
 
