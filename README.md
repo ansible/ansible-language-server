@@ -64,8 +64,8 @@ improve the user experience:
 - on module options, the required properties are shown first, and aliases are
   shown last, otherwise ordering from the documentation is preserved
 - FQCNs (fully qualified collection names) are inserted only when necessary;
-  collections configured with the [keyword][`collections` keyword] are honored. This
-  behavior can be disabled in extension settings.
+  collections configured with the [keyword][`collections` keyword] are honored.
+  This behavior can be disabled in extension settings.
 
 #### Auto-closing Jinja expressions
 
@@ -103,7 +103,8 @@ npm install -g @ansible/ansible-language-server
 
 ## Container usage
 
-To run the language server as a Docker / Podman container you can build an image with the following command:
+To run the language server as a Docker / Podman container you can build an image
+with the following command:
 
 ```bash
 podman build . -t ansible-language-server:<tag>
@@ -115,7 +116,10 @@ Once the image is build you can start the container by running:
 podman run --name ansible-language-server -itd localhost/ansible-language-server:<tag>
 ```
 
-Note however that the container will not run anymore after a reboot. If you want to have the container started after a reboot setup a `systemd` service for the image. The video [Managing Containers in Podman with Systemd Unit Files](https://www.youtube.com/watch?v=AGkM2jGT61Y)
+Note however that the container will not run anymore after a reboot. If you want
+to have the container started after a reboot setup a `systemd` service for the
+image. The video
+[Managing Containers in Podman with Systemd Unit Files](https://www.youtube.com/watch?v=AGkM2jGT61Y)
 can be followed to set this up.
 
 ## Language Server Settings
@@ -153,5 +157,7 @@ For Windows users, this extension works perfectly well with extensions such as
 Based on the good work done by
 [Tomasz Maciążek](https://github.com/tomaciazek/vscode-ansible)
 
-[`collections` keyword]: https://docs.ansible.com/ansible/latest/collections_guide/collections_using_playbooks.html#simplifying-module-names-with-the-collections-keyword
-[development document]: https://github.com/ansible/ansible-language-server/blob/main/docs/development.md
+[`collections` keyword]:
+  https://docs.ansible.com/ansible/latest/collections_guide/collections_using_playbooks.html#simplifying-module-names-with-the-collections-keyword
+[development document]:
+  https://github.com/ansible/ansible-language-server/blob/main/docs/development.md
