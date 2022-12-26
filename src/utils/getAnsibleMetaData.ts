@@ -128,7 +128,7 @@ async function getPythonInfo() {
 async function getAnsibleLintInfo() {
   const ansibleLintInfo = {};
 
-  const ansibleLintVersionResult = await getResultsThroughCommandRunner(
+  let ansibleLintVersionResult = await getResultsThroughCommandRunner(
     "ansible-lint",
     "--version",
   );
@@ -142,7 +142,17 @@ async function getAnsibleLintInfo() {
     "ansible-lint",
   );
 
-  ansibleLintInfo["version"] = ansibleLintVersionResult.stdout.trim();
+  // ansible-lint version reports if a newer version of the ansible-lint is available or not
+  // along with the current version itself
+  // so the following lines of code are to segregate the two information into to keys
+  ansibleLintVersionResult = ansibleLintVersionResult.stdout.trim().split("\n");
+  const ansibleLintVersion = ansibleLintVersionResult[0];
+  const ansibleLintUpgradeStatus = ansibleLintVersionResult[1]
+    ? ansibleLintVersionResult[1]
+    : undefined;
+
+  ansibleLintInfo["version"] = ansibleLintVersion.split("using")[0].trim();
+  ansibleLintInfo["upgrade status"] = ansibleLintUpgradeStatus;
 
   ansibleLintInfo["location"] = ansibleLintPathResult.stdout.trim();
 

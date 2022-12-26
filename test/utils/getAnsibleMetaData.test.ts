@@ -51,6 +51,7 @@ function getPythonTestInfo() {
 function getAnsibleLintTestInfo() {
   const ansibleLintInfo = {};
   ansibleLintInfo["version"] = "ansible-lint";
+  ansibleLintInfo["upgrade status"] = "A new version"; // this key will be undefined (but the key will be present) because the value only gets updated based on the ansible-lint version used
   ansibleLintInfo["location"] = "/ansible-lint";
   ansibleLintInfo["config file path"] = "/.ansible-lint"; // this key will be undefined (but the key will be present) because the value only gets updated when validation in run
   return ansibleLintInfo;
