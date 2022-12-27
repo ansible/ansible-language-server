@@ -178,12 +178,6 @@ jobs:
           mkdir -p out/vscode
           cp -r ../vscode-ansible/out/userdata/logs/* out/vscode || true
 
-      - name: Check ALS cache
-        if: ${{ always() }}
-        run: |
-          tree ~/.cache/ansible-language-server/
-          podman images
-
       - name: Upload test logs
         if: ${{ always() }}
         uses: actions/upload-artifact@v3
