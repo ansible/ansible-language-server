@@ -176,6 +176,10 @@ jobs:
       - name: task ${{ matrix.task-name }}
         run: task -v ${{ matrix.task-name }}
 
+      - uses: actions/checkout@v2
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+
       - name: Gather logs
         if: ${{ always() }}
         run: |
