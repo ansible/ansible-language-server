@@ -145,6 +145,8 @@ tasks:
       - >
         source $VIRTUAL_ENV/bin/activate &&
         bash -c '{{ .NODE_ENV }} npm run test-with-ee'
+      - tree ~/.cache/ansible-language-server/
+      - "{{.ENGINE}} images" 
     interactive: true
   test-without-ee:
     desc: Run only non-ee tests
