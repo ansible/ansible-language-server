@@ -76,6 +76,12 @@ jobs:
 
       - uses: actions/checkout@v3
 
+      - name: Setup python
+        if: "!contains(matrix.shell, 'wsl')"
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11" # keep it same version we have inside creator-ee
+
       # https://github.com/marketplace/actions/setup-wsl
       - name: Activate WSL
         if: "contains(matrix.shell, 'wsl')"
@@ -120,12 +126,14 @@ jobs:
             ${{ runner.os }}-${{ matrix.task-name }}-${{ hashFiles(
             'package.json',
             'package-lock.json',
-            '.config/Containerfile'
+            '.config/Containerfile',
+            '.config/requirements.in',
+            '.github/workflows/task.yml'
             ) }}
 
       - name: Enable caching for podman-machine
         uses: actions/cache@v3
-        if: "contains(matrix.os, 'macos')"
+        if: "contains(matrix.os, 'macos') && (matrix.skip_podman || '0') == '1'"
         with:
           path: |
             ~/.local/share/containers
