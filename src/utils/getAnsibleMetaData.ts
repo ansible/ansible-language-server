@@ -76,13 +76,17 @@ async function getAnsibleInfo() {
     return ansibleInfo;
   }
 
-  let ansibleVersion;
+  let ansibleCoreVersion;
   if (ansibleVersionObjKeys[0].includes(" [")) {
-    ansibleVersion = ansibleVersionObjKeys[0].split(" [");
+    ansibleCoreVersion = ansibleVersionObjKeys[0].split(" [");
   } else {
-    ansibleVersion = ansibleVersionObjKeys[0].split(" ");
+    ansibleCoreVersion = ansibleVersionObjKeys[0].split(" ");
   }
-  ansibleInfo["version"] = `Ansible ${ansibleVersion[1].slice(0, -1)}`;
+  ansibleInfo["core version"] = ansibleCoreVersion[1]
+    .slice(0, -1)
+    .split(" ")
+    .pop()
+    .trim();
 
   ansibleInfo["location"] = (await context.ansibleConfig).ansible_location;
 
@@ -114,7 +118,11 @@ async function getPythonInfo() {
     return pythonInfo;
   }
 
-  pythonInfo["version"] = pythonVersionResult.stdout.trim();
+  pythonInfo["version"] = pythonVersionResult.stdout
+    .trim()
+    .split(" ")
+    .pop()
+    .trim();
 
   const pythonPathResult = await getResultsThroughCommandRunner(
     "python3",
@@ -151,7 +159,12 @@ async function getAnsibleLintInfo() {
     ? ansibleLintVersionResult[1]
     : undefined;
 
-  ansibleLintInfo["version"] = ansibleLintVersion.split("using")[0].trim();
+  ansibleLintInfo["version"] = ansibleLintVersion
+    .split("using")[0]
+    .trim()
+    .split(" ")
+    .pop()
+    .trim();
   ansibleLintInfo["upgrade status"] = ansibleLintUpgradeStatus;
 
   ansibleLintInfo["location"] = ansibleLintPathResult.stdout.trim();
