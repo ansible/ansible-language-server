@@ -103,7 +103,6 @@ export class AnsibleConfig {
     const docSettings = await this.context.documentSettings.get("ansible");
     if (docSettings.ansible.supportPlaybookAdjacentCollections) {
       const workspaceUri = this.context.workspaceFolder.uri;
-      console.log("*** workspace -> ", workspaceUri);
 
       const playbookAdjacentCollectionsPath = path.resolve(
         URI.parse(workspaceUri).path,

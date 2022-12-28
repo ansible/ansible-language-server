@@ -212,7 +212,6 @@ function testPlaybookAdjacentCollection(
 
 describe("doHover()", () => {
   const workspaceManager = createTestWorkspaceManager();
-
   let fixtureFilePath = "hover/tasks.yml";
   let fixtureFileUri = resolveDocUri(fixtureFilePath);
   let context = workspaceManager.getContext(fixtureFileUri);

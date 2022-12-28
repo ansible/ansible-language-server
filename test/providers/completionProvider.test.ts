@@ -598,7 +598,6 @@ function testHostValues(
 
 describe("doCompletion()", () => {
   const workspaceManager = createTestWorkspaceManager();
-
   let fixtureFilePath = "completion/simple_tasks.yml";
   let fixtureFileUri = resolveDocUri(fixtureFilePath);
   let context = workspaceManager.getContext(fixtureFileUri);
