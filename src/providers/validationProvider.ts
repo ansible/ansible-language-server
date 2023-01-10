@@ -39,7 +39,6 @@ export async function doValidate(
 
     const settings = await context.documentSettings.get(textDocument.uri);
     if (!settings.validation.enabled) {
-
       // this is done to remove the cache as well
       const blankDiagnostics = new Map<string, Diagnostic[]>();
       blankDiagnostics.set(textDocument.uri, []);
@@ -69,7 +68,6 @@ export async function doValidate(
 
     // validate using ansible-playbook --syntax-check
     else {
-
       if (isPlaybook(textDocument)) {
         diagnosticsByFile = await context.ansiblePlaybook.doValidate(
           textDocument,
