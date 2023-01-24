@@ -890,6 +890,10 @@ describe("doCompletion()", () => {
           "/home/runner/.ansible/collections:/usr/share/ansible",
         );
         await enableExecutionEnvironmentSettings(docSettings);
+        console.log(
+          "collection paths -> ",
+          (await context.ansibleConfig).collections_paths,
+        );
       });
 
       testPlaybookAdjacentCollection(context, textDoc);
@@ -906,6 +910,10 @@ describe("doCompletion()", () => {
         (await docSettings).ansible.supportPlaybookAdjacentCollections = true;
         setFixtureAnsibleCollectionPathEnv();
         await disableExecutionEnvironmentSettings(docSettings);
+        console.log(
+          "collection paths -> ",
+          (await context.ansibleConfig).collections_paths,
+        );
       });
 
       testPlaybookAdjacentCollection(context, textDoc);
