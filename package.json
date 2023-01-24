@@ -4,7 +4,7 @@
   "displayName": "Ansible",
   "description": "Ansible language server",
   "license": "MIT",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "contributors": [
     {
       "name": "Tomasz Maciążek",
@@ -33,7 +33,7 @@
   "main": "./out/server/src/server.js",
   "types": "./out/server/src/server.d.ts",
   "files": [
-    "CHANGELOG.md",
+    "docs/changelog.md",
     "icon.png",
     "out/server/src"
   ],
