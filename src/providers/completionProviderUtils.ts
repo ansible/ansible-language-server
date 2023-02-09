@@ -42,12 +42,12 @@ export function getVarsCompletion(
           if (Array.isArray(varsObject)) {
             varsObject.forEach((element) => {
               Object.keys(element).forEach((key) => {
-                varsCompletion.push({ varr: key, priority: varPriority });
+                varsCompletion.push({ variable: key, priority: varPriority });
               });
             });
           } else {
             Object.keys(varsObject).forEach((key) => {
-              varsCompletion.push({ varr: key, priority: varPriority });
+              varsCompletion.push({ variable: key, priority: varPriority });
             });
           }
         }
@@ -76,12 +76,12 @@ export function getVarsCompletion(
           if (Array.isArray(varsObject)) {
             varsObject.forEach((element) => {
               Object.keys(element).forEach((key) => {
-                varsCompletion.push({ varr: key, priority: varPriority });
+                varsCompletion.push({ variable: key, priority: varPriority });
               });
             });
           } else {
             Object.keys(varsObject).forEach((key) => {
-              varsCompletion.push({ varr: key, priority: varPriority });
+              varsCompletion.push({ variable: key, priority: varPriority });
             });
           }
         }
@@ -103,7 +103,7 @@ export function getVarsCompletion(
     const varsPromptObject = playNode["vars_prompt"];
 
     varsPromptObject.forEach((element) => {
-      varsCompletion.push({ varr: element["name"], priority: varPriority });
+      varsCompletion.push({ variable: element["name"], priority: varPriority });
     });
   }
 
@@ -136,7 +136,7 @@ export function getVarsCompletion(
           yamlDocContent.forEach((element) => {
             if (typeof element === "object") {
               Object.keys(element).forEach((key) => {
-                varsCompletion.push({ varr: key, priority: varPriority });
+                varsCompletion.push({ variable: key, priority: varPriority });
               });
             }
           });
@@ -146,10 +146,10 @@ export function getVarsCompletion(
   }
 
   // return the completions as completion items
-  return varsCompletion.map(({ varr, priority }) => {
+  return varsCompletion.map(({ variable, priority }) => {
     const completionItem: CompletionItem = {
-      label: varr,
-      sortText: `${priority}_${varr}`,
+      label: variable,
+      sortText: `${priority}_${variable}`,
       kind: CompletionItemKind.Variable,
     };
     return completionItem;
