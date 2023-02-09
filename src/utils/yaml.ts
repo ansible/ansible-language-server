@@ -586,11 +586,20 @@ export function isCursorInsideJinjaBrackets(
   position: Position,
   path: Node[],
 ): boolean {
-  // return early if invalid yaml syntax
-  // this handles the case that if a value starts with {{ foo }}, the whole expression must be quoted
-  // to create a valid syntax
-  // refer: https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_variables.html#when-to-quote-variables-a-yaml-gotcha
-  if (!path[path.length - 1].toJSON().includes("{{ ")) {
+  const node = path[path.length - 1];
+  let nodeObject: string | string[];
+
+  try {
+    nodeObject = node.toJSON();
+  } catch (error) {
+    // return early if invalid yaml syntax
+    return false;
+  }
+
+  if (!nodeObject.includes("{{ ")) {
+    // this handles the case that if a value starts with {{ foo }}, the whole expression must be quoted
+    // to create a valid syntax
+    // refer: https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_variables.html#when-to-quote-variables-a-yaml-gotcha
     return false;
   }
 
@@ -627,5 +636,6 @@ export function isCursorInsideJinjaBrackets(
   ) {
     return true;
   }
+
   return false;
 }
