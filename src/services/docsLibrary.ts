@@ -13,6 +13,9 @@ import {
   processRawDocumentation,
 } from "../utils/docsParser";
 import { IModuleMetadata } from "../interfaces/module";
+import * as path from "path";
+import { existsSync } from "fs";
+import { URI } from "vscode-uri";
 export class DocsLibrary {
   private connection: Connection;
   private modules = new Map<string, IModuleMetadata>();
@@ -41,16 +44,7 @@ export class DocsLibrary {
         await executionEnvironment.fetchPluginDocs(ansibleConfig);
       }
       for (const modulesPath of ansibleConfig.module_locations) {
-        (await findDocumentation(modulesPath, "builtin")).forEach((doc) => {
-          this.modules.set(doc.fqcn, doc);
-          this.moduleFqcns.add(doc.fqcn);
-        });
-
-        (await findDocumentation(modulesPath, "builtin_doc_fragment")).forEach(
-          (doc) => {
-            this.docFragments.set(doc.fqcn, doc);
-          },
-        );
+        await this.findDocumentationInModulesPath(modulesPath);
       }
 
       (
@@ -58,31 +52,7 @@ export class DocsLibrary {
       ).forEach((r, collection) => this.pluginRouting.set(collection, r));
 
       for (const collectionsPath of ansibleConfig.collections_paths) {
-        (await findDocumentation(collectionsPath, "collection")).forEach(
-          (doc) => {
-            this.modules.set(doc.fqcn, doc);
-            this.moduleFqcns.add(doc.fqcn);
-          },
-        );
-
-        (
-          await findDocumentation(collectionsPath, "collection_doc_fragment")
-        ).forEach((doc) => {
-          this.docFragments.set(doc.fqcn, doc);
-        });
-
-        (await findPluginRouting(collectionsPath, "collection")).forEach(
-          (r, collection) => this.pluginRouting.set(collection, r),
-        );
-
-        // add all valid redirect routes as possible FQCNs
-        for (const [collection, routesByType] of this.pluginRouting) {
-          for (const [name, route] of routesByType.get("modules") || []) {
-            if (route.redirect && !route.tombstone) {
-              this.moduleFqcns.add(`${collection}.${name}`);
-            }
-          }
-        }
+        await this.findDocumentationInCollectionsPath(collectionsPath);
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -110,6 +80,25 @@ export class DocsLibrary {
     contextPath?: Node[],
     documentUri?: string,
   ): Promise<[IModuleMetadata | undefined, string | undefined]> {
+    // Support playbook adjacent collections:
+    // Before finding module, append playbook adjacent collections (if there are any)
+    // to the collections_path, so that those collections are also considered
+    const settings = await this.context.documentSettings.get(documentUri);
+    if (settings.ansible.supportPlaybookAdjacentCollections) {
+      const playbookDirectory = URI.parse(documentUri).path.split(path.sep);
+      playbookDirectory.pop();
+      playbookDirectory.push("collections");
+
+      const playbookAdjacentCollectionsPath = playbookDirectory.join(path.sep);
+
+      if (existsSync(playbookAdjacentCollectionsPath)) {
+        await this.findDocumentationInCollectionsPath(
+          playbookAdjacentCollectionsPath,
+        );
+      }
+    }
+
+    // Now, start finding the module
     let hitFqcn;
     const candidateFqcns = await this.getCandidateFqcns(
       searchText,
@@ -156,6 +145,45 @@ export class DocsLibrary {
       }
     }
     return [module, hitFqcn];
+  }
+
+  private async findDocumentationInModulesPath(modulesPath) {
+    (await findDocumentation(modulesPath, "builtin")).forEach((doc) => {
+      this.modules.set(doc.fqcn, doc);
+      this.moduleFqcns.add(doc.fqcn);
+    });
+
+    (await findDocumentation(modulesPath, "builtin_doc_fragment")).forEach(
+      (doc) => {
+        this.docFragments.set(doc.fqcn, doc);
+      },
+    );
+  }
+
+  private async findDocumentationInCollectionsPath(collectionsPath) {
+    (await findDocumentation(collectionsPath, "collection")).forEach((doc) => {
+      this.modules.set(doc.fqcn, doc);
+      this.moduleFqcns.add(doc.fqcn);
+    });
+
+    (
+      await findDocumentation(collectionsPath, "collection_doc_fragment")
+    ).forEach((doc) => {
+      this.docFragments.set(doc.fqcn, doc);
+    });
+
+    (await findPluginRouting(collectionsPath, "collection")).forEach(
+      (r, collection) => this.pluginRouting.set(collection, r),
+    );
+
+    // add all valid redirect routes as possible FQCNs
+    for (const [collection, routesByType] of this.pluginRouting) {
+      for (const [name, route] of routesByType.get("modules") || []) {
+        if (route.redirect && !route.tombstone) {
+          this.moduleFqcns.add(`${collection}.${name}`);
+        }
+      }
+    }
   }
 
   private async getCandidateFqcns(

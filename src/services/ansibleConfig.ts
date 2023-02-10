@@ -98,27 +98,6 @@ export class AnsibleConfig {
         );
       }
     }
-
-    // add support for playbook adjacent collections
-    const docSettings = await this.context.documentSettings.get("ansible");
-    if (docSettings.ansible.supportPlaybookAdjacentCollections) {
-      const workspaceUri = this.context.workspaceFolder.uri;
-
-      const playbookAdjacentCollectionsPath = path.resolve(
-        URI.parse(workspaceUri).path,
-        "collections",
-      );
-
-      if (existsSync(playbookAdjacentCollectionsPath)) {
-        // show a warning message if the found path is not present in the config already
-        if (!this._collection_paths.includes(playbookAdjacentCollectionsPath)) {
-          this.connection.window.showWarningMessage(
-            "Playbook adjacent collections' path not found in config file.",
-          );
-        }
-        this._collection_paths.push(playbookAdjacentCollectionsPath);
-      }
-    }
   }
 
   set collections_paths(updatedCollectionPath: string[]) {
