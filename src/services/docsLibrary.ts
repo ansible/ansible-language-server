@@ -14,12 +14,13 @@ import {
 } from "../utils/docsParser";
 import { IModuleMetadata } from "../interfaces/module";
 import * as path from "path";
-import { existsSync } from "fs";
+import { existsSync, lstatSync } from "fs";
 import { URI } from "vscode-uri";
 import {
   findModulesUtils,
   getModuleFqcnsUtils,
 } from "./docsLibraryUtilsForPAC";
+import { globArray } from "../utils/pathUtils";
 export class DocsLibrary {
   private connection: Connection;
   private modules = new Map<string, IModuleMetadata>();
@@ -95,9 +96,15 @@ export class DocsLibrary {
       playbookAdjacentCollectionsPath,
     );
 
-    // todo: add check to find module (if any)
+    // check if a module code is actually present or not
+    const moduleFiles = globArray([
+      `${playbookAdjacentCollectionsPath}/ansible_collections/*/*/plugins/modules/*.py`,
+      `${playbookAdjacentCollectionsPath}/ansible_collections/*/*/plugins/modules/**/*.py`,
+      `!${playbookAdjacentCollectionsPath}/ansible_collections/*/*/plugins/modules/_*.py`,
+      `!${playbookAdjacentCollectionsPath}/ansible_collections/*/*/plugins/modules/**/_*.py`,
+    ]).filter((item) => !lstatSync(item).isSymbolicLink());
 
-    if (isAdjacentCollectionAvailable) {
+    if (isAdjacentCollectionAvailable && moduleFiles.length !== 0) {
       const [PAModule, PAHitFqcn] = await findModulesUtils(
         playbookAdjacentCollectionsPath,
         searchText,
