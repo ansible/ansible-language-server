@@ -541,6 +541,51 @@ function testPlaybookAdjacentCollection(
   });
 }
 
+function testNonPlaybookAdjacentCollection(
+  context: WorkspaceFolderContext,
+  textDoc: TextDocument,
+) {
+  const tests = [
+    {
+      name: "non playbook adjacent module (adjacent_org.adjacent_coll.module_1)",
+      position: { line: 5, character: 19 } as Position,
+      triggerCharacter: "adjacent_org.",
+      completion: "",
+    },
+    {
+      name: "non playbook adjacent module option (adjacent_org.adjacent_coll.module_1 -> opt_1)",
+      position: { line: 6, character: 11 } as Position,
+      triggerCharacter: "opt",
+      completion: "",
+    },
+  ];
+
+  tests.forEach(({ name, position, triggerCharacter, completion }) => {
+    it(`should not provide completion for ${name}`, async function () {
+      const actualCompletion = await doCompletion(textDoc, position, context);
+
+      const filteredCompletion = smartFilter(
+        actualCompletion,
+        triggerCharacter,
+      );
+
+      if (!completion) {
+        expect(filteredCompletion.length).be.equal(0);
+      } else {
+        if (!filteredCompletion[0].item) {
+          expect(filteredCompletion[0].label).be.equal(completion);
+          expect(filteredCompletion[0].textEdit.newText).be.equal(completion);
+        } else {
+          expect(filteredCompletion[0].item.label).to.be.equal(completion);
+          expect(filteredCompletion[0].item.textEdit.newText).be.equal(
+            completion,
+          );
+        }
+      }
+    });
+  });
+}
+
 function testHostValues(
   context: WorkspaceFolderContext,
   textDoc: TextDocument,
@@ -909,6 +954,47 @@ describe("doCompletion()", () => {
       });
 
       testPlaybookAdjacentCollection(context, textDoc);
+
+      after(async () => {
+        (await docSettings).ansible.supportPlaybookAdjacentCollections = false;
+      });
+    });
+  });
+
+  fixtureFilePath =
+    "playbook_adjacent_collection/non_adjacent_playbooks/playbook2.yml";
+  fixtureFileUri = resolveDocUri(fixtureFilePath);
+  context = workspaceManager.getContext(fixtureFileUri);
+  textDoc = getDoc(fixtureFilePath);
+  docSettings = context.documentSettings.get(textDoc.uri);
+
+  describe("Negate completion for non playbook adjacent collection", () => {
+    describe("With EE enabled @ee", () => {
+      before(async () => {
+        (await docSettings).ansible.supportPlaybookAdjacentCollections = true;
+        setFixtureAnsibleCollectionPathEnv(
+          "/home/runner/.ansible/collections:/usr/share/ansible",
+        );
+        await enableExecutionEnvironmentSettings(docSettings);
+      });
+
+      testNonPlaybookAdjacentCollection(context, textDoc);
+
+      after(async () => {
+        (await docSettings).ansible.supportPlaybookAdjacentCollections = false;
+        setFixtureAnsibleCollectionPathEnv();
+        await disableExecutionEnvironmentSettings(docSettings);
+      });
+    });
+
+    describe("With EE disabled", () => {
+      before(async () => {
+        (await docSettings).ansible.supportPlaybookAdjacentCollections = true;
+        setFixtureAnsibleCollectionPathEnv();
+        await disableExecutionEnvironmentSettings(docSettings);
+      });
+
+      testNonPlaybookAdjacentCollection(context, textDoc);
 
       after(async () => {
         (await docSettings).ansible.supportPlaybookAdjacentCollections = false;
