@@ -5,7 +5,6 @@ import { URI } from "vscode-uri";
 import { Connection } from "vscode-languageserver";
 import { WorkspaceFolderContext } from "./workspaceManager";
 import { CommandRunner } from "../utils/commandRunner";
-import { existsSync } from "fs";
 
 export class AnsibleConfig {
   private connection: Connection;
