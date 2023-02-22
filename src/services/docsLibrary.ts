@@ -16,6 +16,10 @@ import { IModuleMetadata } from "../interfaces/module";
 import * as path from "path";
 import { existsSync } from "fs";
 import { URI } from "vscode-uri";
+import {
+  findModulesUtils,
+  getModuleFqcnsUtils,
+} from "./docsLibraryUtilsForPAC";
 export class DocsLibrary {
   private connection: Connection;
   private modules = new Map<string, IModuleMetadata>();
@@ -80,21 +84,30 @@ export class DocsLibrary {
     contextPath?: Node[],
     documentUri?: string,
   ): Promise<[IModuleMetadata | undefined, string | undefined]> {
-    // Support playbook adjacent collections:
-    // Before finding module, append playbook adjacent collections (if there are any)
-    // to the collections_path, so that those collections are also considered
-    const settings = await this.context.documentSettings.get(documentUri);
-    if (settings.ansible.supportPlaybookAdjacentCollections) {
-      const playbookDirectory = URI.parse(documentUri).path.split(path.sep);
-      playbookDirectory.pop();
-      playbookDirectory.push("collections");
+    // support playbook adjacent collections
+    const playbookDirectory = URI.parse(documentUri).path.split(path.sep);
+    playbookDirectory.pop();
+    playbookDirectory.push("collections");
 
-      const playbookAdjacentCollectionsPath = playbookDirectory.join(path.sep);
+    const playbookAdjacentCollectionsPath = playbookDirectory.join(path.sep);
 
-      if (existsSync(playbookAdjacentCollectionsPath)) {
-        await this.findDocumentationInCollectionsPath(
-          playbookAdjacentCollectionsPath,
-        );
+    const isAdjacentCollectionAvailable = existsSync(
+      playbookAdjacentCollectionsPath,
+    );
+
+    // todo: add check to find module (if any)
+
+    if (isAdjacentCollectionAvailable) {
+      const [PAModule, PAHitFqcn] = await findModulesUtils(
+        playbookAdjacentCollectionsPath,
+        searchText,
+        this.context,
+        contextPath,
+        documentUri,
+      );
+      if (PAModule) {
+        // return early if module found in playbook adjacent collection
+        return [PAModule, PAHitFqcn];
       }
     }
 
@@ -150,7 +163,7 @@ export class DocsLibrary {
   private async findDocumentationInModulesPath(modulesPath) {
     (await findDocumentation(modulesPath, "builtin")).forEach((doc) => {
       this.modules.set(doc.fqcn, doc);
-      this.moduleFqcns.add(doc.fqcn);
+      this._moduleFqcns.add(doc.fqcn);
     });
 
     (await findDocumentation(modulesPath, "builtin_doc_fragment")).forEach(
@@ -163,7 +176,7 @@ export class DocsLibrary {
   private async findDocumentationInCollectionsPath(collectionsPath) {
     (await findDocumentation(collectionsPath, "collection")).forEach((doc) => {
       this.modules.set(doc.fqcn, doc);
-      this.moduleFqcns.add(doc.fqcn);
+      this._moduleFqcns.add(doc.fqcn);
     });
 
     (
@@ -180,7 +193,7 @@ export class DocsLibrary {
     for (const [collection, routesByType] of this.pluginRouting) {
       for (const [name, route] of routesByType.get("modules") || []) {
         if (route.redirect && !route.tombstone) {
-          this.moduleFqcns.add(`${collection}.${name}`);
+          this._moduleFqcns.add(`${collection}.${name}`);
         }
       }
     }
@@ -229,7 +242,26 @@ export class DocsLibrary {
     }
   }
 
-  get moduleFqcns(): Set<string> {
+  public async getModuleFqcns(documentUri: string): Promise<Set<string>> {
+    // support playbook adjacent collections
+    const playbookDirectory = URI.parse(documentUri).path.split(path.sep);
+    playbookDirectory.pop();
+    playbookDirectory.push("collections");
+
+    const playbookAdjacentCollectionsPath = playbookDirectory.join(path.sep);
+
+    const isAdjacentCollectionAvailable = existsSync(
+      playbookAdjacentCollectionsPath,
+    );
+
+    if (isAdjacentCollectionAvailable) {
+      const paModuleFqcns = await getModuleFqcnsUtils(
+        playbookAdjacentCollectionsPath,
+      );
+      // return early if appended list
+      return new Set([...this._moduleFqcns, ...paModuleFqcns]);
+    }
+
     return this._moduleFqcns;
   }
 }
