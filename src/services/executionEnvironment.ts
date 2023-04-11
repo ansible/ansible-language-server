@@ -216,7 +216,7 @@ export class ExecutionEnvironment {
     // TODO: add condition to check file path exists or not
     for (const mountPath of mountPaths || []) {
       // push to array only if mount path is valid
-      if (mountPath === "" || !fs.existsSync(mountPath)) {
+      if (!mountPath || !fs.existsSync(mountPath)) {
         this.connection.console.error(
           `Volume mount source path '${mountPath}' does not exist. Ignoring this volume mount entry.`,
         );
@@ -261,13 +261,10 @@ export class ExecutionEnvironment {
     }
 
     // handle container options setting from client
-    if (this.settingsContainerOptions && this.settingsContainerOptions !== "") {
+    if (this.settingsContainerOptions && this.settingsContainerOptions) {
       const containerOptions = this.settingsContainerOptions.split(" ");
       containerOptions.forEach((containerOption) => {
-        if (
-          containerOption === "" ||
-          containerCommand.includes(containerOption)
-        ) {
+        if (!containerOption || containerCommand.includes(containerOption)) {
           return;
         }
         containerCommand.push(containerOption);
@@ -395,7 +392,7 @@ export class ExecutionEnvironment {
       }
 
       let mountPath = `${fsSrcPath}:${fsDestPath}`;
-      if (options && options !== "") {
+      if (options) {
         mountPath += `:${options}`;
       }
       if (this.settingsVolumeMounts.includes(mountPath)) {
@@ -444,10 +441,7 @@ export class ExecutionEnvironment {
         }
       }
       command += ` -e ANSIBLE_FORCE_COLOR=0 `; // ensure output is parseable (no ANSI)
-      if (
-        this.settingsContainerOptions &&
-        this.settingsContainerOptions !== ""
-      ) {
+      if (this.settingsContainerOptions) {
         command += ` ${this.settingsContainerOptions} `;
       }
       command += ` --name ${containerName} ${this._container_image} bash`;

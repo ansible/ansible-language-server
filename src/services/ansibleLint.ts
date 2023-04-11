@@ -51,27 +51,29 @@ export class AnsibleLint {
     const mountPaths = new Set([workingDirectory]);
     const settings = await this.context.documentSettings.get(textDocument.uri);
 
-    let linterArguments = settings.validation.lint.arguments ?? "";
+    let linterArguments = settings.validation.lint.arguments;
 
-    // Determine linter config file
-    let ansibleLintConfigPath = linterArguments.match(
-      /(?:^|\s)-c\s*(?<sep>[\s'"])(?<conf>.+?)(?:\k<sep>|$)/,
-    )?.groups?.conf;
-    if (!ansibleLintConfigPath) {
-      // Config file not provided in arguments -> search for one mimicking the
-      // way ansible-lint looks for it, going up the directory structure
-      const ansibleLintConfigFile = await this.findAnsibleLintConfigFile(
-        textDocument.uri,
-      );
-      if (ansibleLintConfigFile) {
-        ansibleLintConfigPath = URI.parse(ansibleLintConfigFile).path;
-        linterArguments = `${linterArguments} -c "${ansibleLintConfigPath}"`;
-        mountPaths.add(path.dirname(ansibleLintConfigPath));
+    if (linterArguments) {
+      // Determine linter config file
+      let ansibleLintConfigPath = linterArguments.match(
+        /(?:^|\s)-c\s*(?<sep>[\s'"])(?<conf>.+?)(?:\k<sep>|$)/,
+      )?.groups?.conf;
+      if (!ansibleLintConfigPath) {
+        // Config file not provided in arguments -> search for one mimicking the
+        // way ansible-lint looks for it, going up the directory structure
+        const ansibleLintConfigFile = await this.findAnsibleLintConfigFile(
+          textDocument.uri,
+        );
+        if (ansibleLintConfigFile) {
+          ansibleLintConfigPath = URI.parse(ansibleLintConfigFile).path;
+          linterArguments = `${linterArguments} -c "${ansibleLintConfigPath}"`;
+          mountPaths.add(path.dirname(ansibleLintConfigPath));
+        }
       }
-    }
 
-    this._ansibleLintConfigFilePath = ansibleLintConfigPath;
-    linterArguments = `${linterArguments} --offline --nocolor -f codeclimate`;
+      this._ansibleLintConfigFilePath = ansibleLintConfigPath;
+      linterArguments = `${linterArguments} --offline --nocolor -f codeclimate`;
+    }
 
     const docPath = URI.parse(textDocument.uri).path;
     mountPaths.add(path.dirname(docPath));

@@ -31,12 +31,12 @@ export class SettingsManager {
     },
     python: {
       interpreterPath: {
-        default: "",
+        default: undefined,
         description:
           "Path to the python/python3 executable. This settings may be used to make the extension work with ansible and ansible-lint installations in a python virtual environment",
       },
       activationScript: {
-        default: "",
+        default: undefined,
         description:
           "Path to a custom activation script, which is to be used instead of te settings above to run in a python virtual environment",
       },
@@ -62,7 +62,7 @@ export class SettingsManager {
             "Image pull policy to be used. Valid values are 'always', 'missing', 'never' and 'tag'. always will always pull the image when extension is activated or reloaded. 'missing' will pull if not locally available. 'never' will never pull the image and 'tag' will always pull if the image tag is 'latest', otherwise pull if not locally available.",
         },
         arguments: {
-          default: "",
+          default: undefined,
           description:
             "Specify any additional parameters that should be added to the pull command when pulling an execution environment from a container registry. e.g. '-–tls-verify=false'",
         },
@@ -70,24 +70,24 @@ export class SettingsManager {
       volumeMounts: [
         {
           src: {
-            default: "",
+            default: undefined,
             description:
               "The name of the local volume or path to be mounted within execution environment.",
           },
           dest: {
-            default: "",
+            default: undefined,
             description:
               "The path where the file or directory are mounted in the container.",
           },
           options: {
-            default: "",
+            default: undefined,
             description:
               "The field is optional, and is a comma-separated list of options, such as ro,Z",
           },
         },
       ],
       containerOptions: {
-        default: "",
+        default: undefined,
         description:
           "Extra parameters passed to the container engine command example: '--net=host'",
       },
@@ -119,7 +119,7 @@ export class SettingsManager {
           description: "Path to the ansible-lint executable",
         },
         arguments: {
-          default: "",
+          default: undefined,
           description:
             "Optional command line arguments to be appended to ansible-lint invocation",
         },

@@ -46,7 +46,7 @@ export class ImagePuller {
 
       try {
         let pullCommand;
-        if (this._pullArguments && this._pullArguments !== "") {
+        if (this._pullArguments) {
           pullCommand = `${this._containerEngine} pull ${this._containerImage} ${this._pullArguments}`;
         } else {
           pullCommand = `${this._containerEngine} pull ${this._containerImage}`;
