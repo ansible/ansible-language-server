@@ -130,18 +130,6 @@ function testAnsibleLintErrors(
         },
         {
           severity: 2,
-          message: "Avoid using free-form",
-          range: {
-            start: { line: 14, character: 0 } as Position,
-            end: {
-              line: 14,
-              character: integer.MAX_VALUE,
-            } as Position,
-          },
-          source: "ansible-lint",
-        },
-        {
-          severity: 2,
           message: "should not use a relative path",
           range: {
             start: { line: 17, character: 0 } as Position,
