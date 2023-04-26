@@ -8,7 +8,7 @@ import {
   TextEdit,
 } from "vscode-languageserver";
 import { Position, TextDocument } from "vscode-languageserver-textdocument";
-import { Node, Scalar, YAMLMap } from "yaml/types";
+import { isScalar, Node, YAMLMap } from "yaml";
 import { IOption } from "../interfaces/module";
 import { WorkspaceFolderContext } from "../services/workspaceManager";
 import {
@@ -310,12 +310,12 @@ export async function doCompletion(
         );
         if (
           keyOptions &&
-          keyNode instanceof Scalar &&
-          keyOptions.has(keyNode.value)
+          isScalar(keyNode) &&
+          keyOptions.has(keyNode.value as string)
         ) {
           const nodeRange = getNodeRange(node, document);
 
-          const option = keyOptions.get(keyNode.value);
+          const option = keyOptions.get(keyNode.value as string);
           const choices = [];
           let defaultChoice = option.default;
           if (option.type === "bool" && typeof option.default === "string") {
@@ -463,7 +463,7 @@ function getHostCompletion(hostObjectList): CompletionItem[] {
  */
 function getNodeRange(node: Node, document: TextDocument): Range | undefined {
   const range = getOrigRange(node);
-  if (range && node instanceof Scalar && typeof node.value === "string") {
+  if (range && isScalar(node) && typeof node.value === "string") {
     const start = range[0];
     let end = range[1];
     // compensate for `_:`

@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { Position } from "vscode-languageserver";
-import { Node, Scalar, YAMLMap, YAMLSeq } from "yaml/types";
+import { Node, Scalar, YAMLMap, YAMLSeq } from "yaml";
 import {
   AncestryBuilder,
   getDeclaredCollections,
@@ -220,7 +220,7 @@ describe("yaml", () => {
     });
 
     it("canCorrectlyNegateTaskParamForValue", async () => {
-      const path = (await getPathInFile("isTaskParam.yml", 2, 9)) as Node[];
+      const path = (await getPathInFile("isTaskParam.yml", 1, 9)) as Node[];
       const test = isTaskParam(path);
       expect(test).to.be.eq(false);
     });
@@ -250,13 +250,13 @@ describe("yaml", () => {
     });
 
     it("canCorrectlyConfirmTaskParamInTasks", async () => {
-      const path = (await getPathInFile("isTaskParam.yml", 13, 7)) as Node[];
+      const path = (await getPathInFile("isTaskParam.yml", 13, 9)) as Node[];
       const test = isTaskParam(path);
       expect(test).to.be.eq(true);
     });
 
     it("canCorrectlyConfirmTaskParamInBlock", async () => {
-      const path = (await getPathInFile("isTaskParam.yml", 17, 11)) as Node[];
+      const path = (await getPathInFile("isTaskParam.yml", 15, 9)) as Node[];
       const test = isTaskParam(path);
       expect(test).to.be.eq(true);
     });

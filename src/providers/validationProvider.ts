@@ -111,26 +111,20 @@ export function getYamlValidation(textDocument: TextDocument): Diagnostic[] {
   const rangeTree = new IntervalTree<Diagnostic>();
   yDocuments.forEach((yDoc) => {
     yDoc.errors.forEach((error) => {
-      const errorRange = error.range || error.source?.range;
+      const [errStart, errEnd] = error.linePos;
       let range;
-      if (errorRange) {
+      if (errStart) {
         const start = textDocument.positionAt(
-          errorRange.origStart !== undefined
-            ? errorRange.origStart
-            : errorRange.start,
+          errStart !== undefined ? errStart.line : null,
         );
         const end = textDocument.positionAt(
-          errorRange.origEnd !== undefined
-            ? errorRange.origEnd
-            : errorRange.end,
+          errEnd !== undefined ? errEnd.line : null,
         );
         range = Range.create(start, end);
 
         let severity;
         switch (error.name) {
-          case "YAMLReferenceError":
-          case "YAMLSemanticError":
-          case "YAMLSyntaxError":
+          case "YAMLParseError":
             severity = DiagnosticSeverity.Error;
             break;
           case "YAMLWarning":
@@ -140,7 +134,7 @@ export function getYamlValidation(textDocument: TextDocument): Diagnostic[] {
             severity = DiagnosticSeverity.Information;
             break;
         }
-        rangeTree.insert([errorRange.start, errorRange.end], {
+        rangeTree.insert([errStart.line, errEnd.line], {
           message: error.message,
           range: range || Range.create(0, 0, 0, 0),
           severity: severity,

@@ -1,6 +1,6 @@
 import { CompletionItem, CompletionItemKind } from "vscode-languageserver";
 import { URI } from "vscode-uri";
-import { Node, Scalar, YAMLMap, YAMLSeq } from "yaml/types";
+import { isScalar, Node, YAMLMap, YAMLSeq } from "yaml";
 import { AncestryBuilder, isPlayParam } from "../utils/yaml";
 import * as pathUri from "path";
 import { existsSync, readFileSync } from "fs";
@@ -30,10 +30,7 @@ export function getVarsCompletion(
       .getKeyPath();
     if (parentKeyPath) {
       const parentKeyNode = parentKeyPath[parentKeyPath.length - 1];
-      if (
-        parentKeyNode instanceof Scalar &&
-        typeof parentKeyNode.value === "string"
-      ) {
+      if (isScalar(parentKeyNode) && typeof parentKeyNode.value === "string") {
         path = parentKeyPath;
         const scopedNode = path[path.length - 3].toJSON();
         if (scopedNode.hasOwnProperty("vars")) {
@@ -64,10 +61,7 @@ export function getVarsCompletion(
       .getKeyPath();
     if (parentKeyPath) {
       const parentKeyNode = parentKeyPath[parentKeyPath.length - 1];
-      if (
-        parentKeyNode instanceof Scalar &&
-        typeof parentKeyNode.value === "string"
-      ) {
+      if (isScalar(parentKeyNode) && typeof parentKeyNode.value === "string") {
         path = parentKeyPath;
         const scopedNode = path[path.length - 3].toJSON();
         if (scopedNode.hasOwnProperty("vars")) {
