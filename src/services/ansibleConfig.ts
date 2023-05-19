@@ -78,16 +78,6 @@ export class AnsibleConfig {
       );
 
       this._ansible_location = versionInfo["ansible python module location"];
-
-      // get Python sys.path
-      // this is needed to get the pre-installed collections to work
-      const pythonPathResult = await commandRunner.runCommand(
-        "python3",
-        ' -c "import sys; print(sys.path, end=\\"\\")"',
-      );
-      this._collection_paths.push(
-        ...parsePythonStringArray(pythonPathResult.stdout),
-      );
     } catch (error) {
       if (error instanceof Error) {
         this.connection.window.showErrorMessage(error.message);
