@@ -535,15 +535,13 @@ export function parseAllDocuments(str: string, options?: Options): Document[] {
     return [];
   }
   const parsedDocuments: Document[] = [];
-  for (const item of str.split("---\n")) {
-    const doc = parseDocument(item);
-    if (doc) {
-      const parsedDocument = new Document(
-        doc,
-        Object.assign({ keepSourceTokens: true, options }),
-      );
-      parsedDocuments.push(parsedDocument);
-    }
+  const doc = parseDocument(str);
+  if (doc) {
+    const parsedDocument = new Document(
+      doc,
+      Object.assign({ keepSourceTokens: true, options }),
+    );
+    parsedDocuments.push(parsedDocument);
   }
   return parsedDocuments;
 }
@@ -621,7 +619,7 @@ export function isCursorInsideJinjaBrackets(
     return false;
   }
 
-  if (!nodeObject.includes("{{ ")) {
+  if (nodeObject && !nodeObject.includes("{{ ")) {
     // this handles the case that if a value starts with {{ foo }}, the whole expression must be quoted
     // to create a valid syntax
     // refer: https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_variables.html#when-to-quote-variables-a-yaml-gotcha

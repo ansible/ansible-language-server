@@ -30,7 +30,11 @@ export function getVarsCompletion(
       .getKeyPath();
     if (parentKeyPath) {
       const parentKeyNode = parentKeyPath[parentKeyPath.length - 1];
-      if (isScalar(parentKeyNode) && typeof parentKeyNode.value === "string") {
+
+      if (
+        isScalar(parentKeyNode) &&
+        typeof parentKeyNode["value"] === "string"
+      ) {
         path = parentKeyPath;
         const scopedNode = path[path.length - 3].toJSON();
         if (scopedNode.hasOwnProperty("vars")) {
@@ -61,7 +65,10 @@ export function getVarsCompletion(
       .getKeyPath();
     if (parentKeyPath) {
       const parentKeyNode = parentKeyPath[parentKeyPath.length - 1];
-      if (isScalar(parentKeyNode) && typeof parentKeyNode.value === "string") {
+      if (
+        isScalar(parentKeyNode) &&
+        typeof parentKeyNode["value"] === "string"
+      ) {
         path = parentKeyPath;
         const scopedNode = path[path.length - 3].toJSON();
         if (scopedNode.hasOwnProperty("vars")) {

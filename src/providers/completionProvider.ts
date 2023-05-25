@@ -363,7 +363,10 @@ export async function doCompletion(
       // check for 'hosts' keyword and 'ansible_host keyword under vars' to provide inventory auto-completion
       let keyPathForHosts: Node[] | null;
 
-      if (new AncestryBuilder(path).parent(YAMLMap).getValue() === null) {
+      if (
+        new AncestryBuilder(path).parent(YAMLMap).getValue() &&
+        new AncestryBuilder(path).parent(YAMLMap).getValue()["value"] === null
+      ) {
         keyPathForHosts = new AncestryBuilder(path)
           .parent(YAMLMap) // compensates for `_:`
           .parent(YAMLMap)
