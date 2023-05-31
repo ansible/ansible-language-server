@@ -534,16 +534,11 @@ export function parseAllDocuments(str: string, options?: Options): Document[] {
   if (!str) {
     return [];
   }
-  const parsedDocuments: Document[] = [];
-  const doc = parseDocument(str);
-  if (doc) {
-    const parsedDocument = new Document(
-      doc,
-      Object.assign({ keepSourceTokens: true, options }),
-    );
-    parsedDocuments.push(parsedDocument);
-  }
-  return parsedDocuments;
+  const doc = parseDocument(
+    str,
+    Object.assign({ keepSourceTokens: true, options }),
+  );
+  return [doc];
 }
 
 /**
