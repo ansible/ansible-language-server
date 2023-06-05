@@ -19,6 +19,19 @@ Do *NOT* manually add changelog entries here! This file is updated by
 
 <!-- KEEP-THIS-COMMENT -->
 
+## v1.0.5
+
+### Minor Changes
+
+- Add variable auto-completion feature when cursor inside jinja inline brackets
+  (#552) @priyamsahoo
+
+### Bugfixes
+
+- Get module route for FQCN with more than 3 elements (#538) @fredericgiquel
+- Replace sphinx with mkdocs (#544) @ssbarnea
+- Bump json5 from 2.2.1 to 2.2.3 (#539)
+
 ## v1.0.4
 
 ### Bugfixes
