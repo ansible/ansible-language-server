@@ -78,7 +78,7 @@ export async function doCompletion(
   });
 
   if (previousCharactersOfCurrentLine.includes(": ")) {
-    // this means we have encountered ": " previously in the sanme line and thus we are
+    // this means we have encountered ": " previously in the same line and thus we are
     // at the value level
     DUMMY_MAPPING_CHARACTERS = "__";
   }
