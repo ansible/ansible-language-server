@@ -13,7 +13,7 @@ if (isWindows()) {
   process.exit(PRETEST_ERR_RC);
 }
 
-const command = "ansible-lint --version";
+const command = "NO_COLOR=1 ansible-lint --version";
 try {
   const result = execSync(command);
   console.info(`Detected: ${result}`);

@@ -62,6 +62,9 @@ export class CommandRunner {
       runEnv = undefined;
     }
 
+    // We don't require colors in the stdout of the command results.
+    runEnv["NO_COLOR"] = "1";
+
     const currentWorkingDirectory = workingDirectory
       ? workingDirectory
       : URI.parse(this.context.workspaceFolder.uri).path;
