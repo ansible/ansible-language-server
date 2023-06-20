@@ -34,7 +34,7 @@ export async function getDefinition(
           const range = getOrigRange(node);
           return [
             {
-              targetUri: "file://" + module.source,
+              targetUri: `file://${  module.source}`,
               originSelectionRange: range
                 ? toLspRange(range, document)
                 : undefined,
