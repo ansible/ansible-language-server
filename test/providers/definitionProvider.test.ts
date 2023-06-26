@@ -8,16 +8,11 @@ import {
   disableExecutionEnvironmentSettings,
   setFixtureAnsibleCollectionPathEnv,
 } from "../helper";
-import { doHover } from "../../src/providers/hoverProvider";
 import { Position } from "vscode-languageserver";
 import { WorkspaceFolderContext } from "../../src/services/workspaceManager";
 import { getDefinition } from "../../src/providers/definitionProvider";
 import { fileExists } from "../../src/utils/misc";
 import { URI } from "vscode-uri";
-
-// export async function fileExists(filePath: string): Promise<boolean> {
-//   return !!(await fs.stat(filePath).catch(() => false));
-// }
 
 function testModuleNamesForDefinition(
   context: WorkspaceFolderContext,
@@ -25,7 +20,7 @@ function testModuleNamesForDefinition(
 ) {
   const tests = [
     {
-      word: "definition for buitin modules (ansible.builtin.debug)",
+      word: "definition for builtin modules (ansible.builtin.debug)",
       position: { line: 5, character: 8 } as Position,
       selectionRange: {
         start: { line: 5, character: 6 },
@@ -88,12 +83,12 @@ function testModuleNamesForDefinition(
 
 describe("getDefinition()", function () {
   const workspaceManager = createTestWorkspaceManager();
-  let fixtureFilePath = "definition/playbook_for_module_definition.yml";
-  let fixtureFileUri = resolveDocUri(fixtureFilePath);
-  let context = workspaceManager.getContext(fixtureFileUri);
+  const fixtureFilePath = "definition/playbook_for_module_definition.yml";
+  const fixtureFileUri = resolveDocUri(fixtureFilePath);
+  const context = workspaceManager.getContext(fixtureFileUri);
 
-  let textDoc = getDoc(fixtureFilePath);
-  let docSettings = context.documentSettings.get(textDoc.uri);
+  const textDoc = getDoc(fixtureFilePath);
+  const docSettings = context.documentSettings.get(textDoc.uri);
 
   describe("Module name definitions", function () {
     describe("With EE enabled @ee", function () {
