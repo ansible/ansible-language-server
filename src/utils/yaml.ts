@@ -1,11 +1,27 @@
 import * as _ from "lodash";
-import { Position, TextDocument } from "vscode-languageserver-textdocument";
-import { Document, Options, parseCST } from "yaml";
-import { Node, Pair, Scalar, YAMLMap, YAMLSeq } from "yaml/types";
+import { TextDocument } from "vscode-languageserver-textdocument";
+import {
+  Document,
+  DocumentOptions,
+  isMap,
+  isPair,
+  isScalar,
+  isSeq,
+  Node,
+  Pair,
+  parseDocument,
+  ParseOptions,
+  SchemaOptions,
+  YAMLMap,
+  YAMLSeq,
+} from "yaml";
 import { IModuleMetadata, IOption } from "../interfaces/module";
 import { DocsLibrary } from "../services/docsLibrary";
 import { isTaskKeyword, playExclusiveKeywords } from "./ansible";
 import { playKeywords, taskKeywords } from "../utils/ansible";
+import { Range, Position } from "vscode-languageserver";
+
+type Options = ParseOptions & DocumentOptions & SchemaOptions;
 
 /**
  * A helper class used for building YAML path assertions and retrieving parent
@@ -32,7 +48,7 @@ export class AncestryBuilder<N extends Node | Pair = Node> {
     type?: new (...args: unknown[]) => X,
   ): AncestryBuilder<X> {
     this._index--;
-    if (this.get() instanceof Pair) {
+    if (isPair(this.get())) {
       if (!type || !(type === Pair.prototype.constructor)) {
         this._index--;
       }
@@ -53,7 +69,7 @@ export class AncestryBuilder<N extends Node | Pair = Node> {
     const node = this.get();
     this.parent(Pair);
     const pairNode = this.get();
-    if (pairNode instanceof Pair && pairNode.key === node) {
+    if (isPair(pairNode) && pairNode.key === node) {
       this.parent(YAMLMap);
     } else {
       this._index = Number.MIN_SAFE_INTEGER;
@@ -77,8 +93,9 @@ export class AncestryBuilder<N extends Node | Pair = Node> {
   getStringKey(this: AncestryBuilder<YAMLMap>): string | null {
     const node = this._path[this._index + 1];
     if (
-      node instanceof Pair &&
-      node.key instanceof Scalar &&
+      node &&
+      isPair(node) &&
+      isScalar(node.key) &&
       typeof node.key.value === "string"
     ) {
       return node.key.value;
@@ -92,8 +109,8 @@ export class AncestryBuilder<N extends Node | Pair = Node> {
   // The `this` argument is for generics restriction of this method.
   getValue(this: AncestryBuilder<YAMLMap>): Node | null {
     const node = this._path[this._index + 1];
-    if (node instanceof Pair) {
-      return node.value;
+    if (isPair(node)) {
+      return node.value as Node;
     }
     return null;
   }
@@ -120,9 +137,9 @@ export class AncestryBuilder<N extends Node | Pair = Node> {
     if (this._index < 0) return null;
     const path = this._path.slice(0, this._index + 1);
     const node = this._path[this._index + 1];
-    if (node instanceof Pair) {
+    if (isPair(node)) {
       path.push(node);
-      path.push(node.key);
+      path.push(node.key as Node);
       return path;
     }
     return null;
@@ -138,7 +155,7 @@ export function getPathAt(
   const offset = document.offsetAt(position);
   const doc = _.find(docs, (d) => contains(d.contents, offset, inclusive));
   if (doc && doc.contents) {
-    return getPathAtOffset([doc.contents], offset, inclusive);
+    return getPathAtOffset([doc.contents], offset, inclusive, doc);
   }
   return null;
 }
@@ -160,49 +177,61 @@ export function getPathAtOffset(
   path: Node[],
   offset: number,
   inclusive: boolean,
+  doc: Document,
 ): Node[] | null {
   if (path) {
     const currentNode = path[path.length - 1];
-    if (currentNode instanceof YAMLMap) {
+    if (isMap(currentNode)) {
       let pair = _.find(currentNode.items, (p) =>
-        contains(p.key, offset, inclusive),
-      );
-      if (pair) {
-        return getPathAtOffset(path.concat(pair, pair.key), offset, inclusive);
-      }
-      pair = _.find(currentNode.items, (p) =>
-        contains(p.value, offset, inclusive),
+        contains(p.key as Node, offset, inclusive),
       );
       if (pair) {
         return getPathAtOffset(
-          path.concat(pair, pair.value),
+          path.concat(pair as unknown as Node, pair.key as Node),
           offset,
           inclusive,
+          doc,
+        );
+      }
+      pair = _.find(currentNode.items, (p) =>
+        contains(p.value as Node, offset, inclusive),
+      );
+      if (pair) {
+        return getPathAtOffset(
+          path.concat(pair as unknown as Node, pair.value as Node),
+          offset,
+          inclusive,
+          doc,
         );
       }
       pair = _.find(currentNode.items, (p) => {
-        const inBetweenNode = new Node();
+        const inBetweenNode = doc.createNode(null);
         const start = getOrigRange(p.key as Node)?.[1];
         const end = getOrigRange(p.value as Node)?.[0];
         if (start && end) {
-          inBetweenNode.range = [start, end - 1];
+          inBetweenNode.range = [start, end - 1, end];
           return contains(inBetweenNode, offset, inclusive);
         } else return false;
       });
       if (pair) {
-        return path.concat(pair, new Node());
+        return path.concat(pair as unknown as Node, doc.createNode(null));
       }
-    } else if (currentNode instanceof YAMLSeq) {
+    } else if (isSeq(currentNode)) {
       const item = _.find(currentNode.items, (n) =>
-        contains(n, offset, inclusive),
+        contains(n as Node, offset, inclusive),
       );
       if (item) {
-        return getPathAtOffset(path.concat(item), offset, inclusive);
+        return getPathAtOffset(
+          path.concat(item as Node),
+          offset,
+          inclusive,
+          doc,
+        );
       }
     } else if (contains(currentNode, offset, inclusive)) {
       return path;
     }
-    return path.concat(new Node()); // empty node as indentation marker
+    return path.concat(doc.createNode(null)); // empty node as indentation marker
   }
   return null;
 }
@@ -275,16 +304,16 @@ function getDeclaredCollectionsForMap(playNode: YAMLMap | null): string[] {
   const declaredCollections: string[] = [];
   const collectionsPair = _.find(
     playNode?.items,
-    (pair) => pair.key instanceof Scalar && pair.key.value === "collections",
+    (pair) => isScalar(pair.key) && pair.key.value === "collections",
   );
 
   if (collectionsPair) {
     // we've found the collections declaration
     const collectionsNode = collectionsPair.value;
-    if (collectionsNode instanceof YAMLSeq) {
+    if (isSeq(collectionsNode)) {
       for (const collectionNode of collectionsNode.items) {
-        if (collectionNode instanceof Scalar) {
-          declaredCollections.push(collectionNode.value);
+        if (isScalar(collectionNode)) {
+          declaredCollections.push(collectionNode.value.toString());
         }
       }
     }
@@ -374,7 +403,7 @@ export async function getPossibleOptionsForPath(
 
   // The module name is a key of the task parameters map
   const taskParamNode = taskParamPath[taskParamPath.length - 1];
-  if (!(taskParamNode instanceof Scalar)) return null;
+  if (!isScalar(taskParamNode)) return null;
 
   let module;
   // Module options can either be directly under module or in 'args'
@@ -382,7 +411,7 @@ export async function getPossibleOptionsForPath(
     module = await findProvidedModule(taskParamPath, document, docsLibrary);
   } else {
     [module] = await docsLibrary.findModule(
-      taskParamNode.value,
+      taskParamNode.value as string,
       taskParamPath,
       document.uri,
     );
@@ -420,10 +449,7 @@ export function getTaskParamPathWithTrace(
       .getKeyPath();
     if (parentKeyPath) {
       const parentKeyNode = parentKeyPath[parentKeyPath.length - 1];
-      if (
-        parentKeyNode instanceof Scalar &&
-        typeof parentKeyNode.value === "string"
-      ) {
+      if (isScalar(parentKeyNode) && typeof parentKeyNode.value === "string") {
         trace.push([parentKeyNode.value, "dict"]);
         path = parentKeyPath;
         continue;
@@ -436,10 +462,7 @@ export function getTaskParamPathWithTrace(
       .getKeyPath();
     if (parentKeyPath) {
       const parentKeyNode = parentKeyPath[parentKeyPath.length - 1];
-      if (
-        parentKeyNode instanceof Scalar &&
-        typeof parentKeyNode.value === "string"
-      ) {
+      if (isScalar(parentKeyNode) && typeof parentKeyNode.value === "string") {
         trace.push([parentKeyNode.value, "list"]);
         path = parentKeyPath;
         continue;
@@ -486,8 +509,8 @@ export async function findProvidedModule(
 
 export function getYamlMapKeys(mapNode: YAMLMap): Array<string> {
   return mapNode.items.map((pair) => {
-    if (pair.key && pair.key instanceof Scalar) {
-      return pair.key.value;
+    if (pair.key && isScalar(pair.key)) {
+      return pair.key.value.toString();
     }
   });
 }
@@ -495,31 +518,27 @@ export function getYamlMapKeys(mapNode: YAMLMap): Array<string> {
 export function getOrigRange(
   node: Node | null | undefined,
 ): [number, number] | null | undefined {
-  if (node?.cstNode?.range) {
-    const range = node.cstNode.range;
+  if (node.range) {
+    const range = node.range;
     return [
-      range.origStart !== undefined ? range.origStart : range.start,
-      range.origEnd !== undefined ? range.origEnd : range.end,
+      range[0] !== undefined ? range[0] : null,
+      range[1] !== undefined ? range[1] : null,
     ];
   } else {
-    return node?.range;
+    return [node?.range?.[0], node?.range?.[1]];
   }
 }
 
 /** Parsing with the YAML library tailored to the needs of this extension */
 export function parseAllDocuments(str: string, options?: Options): Document[] {
-  const cst = parseCST(str);
-  cst.setOrigRanges();
-
-  const parsedDocuments: Document[] = [];
-  for (const cstDoc of cst) {
-    const parsedDocument = new Document(
-      Object.assign({ keepCstNodes: true }, options),
-    );
-    parsedDocument.parse(cstDoc);
-    parsedDocuments.push(parsedDocument);
+  if (!str) {
+    return [];
   }
-  return parsedDocuments;
+  const doc = parseDocument(
+    str,
+    Object.assign({ keepSourceTokens: true, options }),
+  );
+  return [doc];
 }
 
 /**
@@ -542,7 +561,7 @@ export function isPlaybook(textDocument: TextDocument): boolean {
   }
 
   //   A playbook is always YAML sequence
-  if (!(path[0] instanceof YAMLSeq)) {
+  if (!isSeq(path[0])) {
     return false;
   }
 
@@ -571,4 +590,70 @@ export function isPlaybook(textDocument: TextDocument): boolean {
   );
 
   return isPlaybookValue;
+}
+
+/**
+ * A function to check if the cursor is present inside valid jinja inline brackets in a yaml file
+ * @param document text document on which the function is to be checked
+ * @param position current cursor position
+ * @param path array of nodes leading to that position
+ * @returns boolean true if the cursor is inside valid jinja inline brackets, else false
+ */
+export function isCursorInsideJinjaBrackets(
+  document: TextDocument,
+  position: Position,
+  path: Node[],
+): boolean {
+  const node = path?.[path?.length - 1];
+  let nodeObject: string | string[];
+
+  try {
+    nodeObject = node.toJSON();
+  } catch (error) {
+    // return early if invalid yaml syntax
+    return false;
+  }
+
+  if (nodeObject && !nodeObject.includes("{{ ")) {
+    // this handles the case that if a value starts with {{ foo }}, the whole expression must be quoted
+    // to create a valid syntax
+    // refer: https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_variables.html#when-to-quote-variables-a-yaml-gotcha
+    return false;
+  }
+
+  // get text from the beginning of current line till the cursor
+  const lineText = document.getText(
+    Range.create(position.line, 0, position.line, position.character),
+  );
+
+  const jinjaInlineBracketStartIndex = lineText.lastIndexOf("{{ ");
+  const lineAfterCursor = document.getText(
+    Range.create(
+      position,
+      document.positionAt(document.offsetAt(position) + lineText.length),
+    ),
+  );
+
+  // this is a safety check incase of multiple jinja inline brackets in a single line
+  let jinjaInlineBracketEndIndex = lineAfterCursor.indexOf(" }}");
+  if (
+    lineAfterCursor.indexOf("{{ ") !== -1 &&
+    lineAfterCursor.indexOf("{{ ") < jinjaInlineBracketEndIndex
+  ) {
+    jinjaInlineBracketEndIndex = -1;
+  }
+
+  if (
+    jinjaInlineBracketStartIndex > -1 &&
+    jinjaInlineBracketEndIndex > -1 &&
+    position.character > jinjaInlineBracketStartIndex &&
+    position.character <=
+      jinjaInlineBracketEndIndex +
+        jinjaInlineBracketStartIndex +
+        lineText.length
+  ) {
+    return true;
+  }
+
+  return false;
 }

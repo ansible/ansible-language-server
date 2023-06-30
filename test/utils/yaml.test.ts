@@ -1,10 +1,12 @@
 import { expect } from "chai";
-import { Node, Scalar, YAMLMap, YAMLSeq } from "yaml/types";
+import { Position } from "vscode-languageserver";
+import { Node, Scalar, YAMLMap, YAMLSeq } from "yaml";
 import {
   AncestryBuilder,
   getDeclaredCollections,
   getPathAt,
   isBlockParam,
+  isCursorInsideJinjaBrackets,
   isPlayParam,
   isRoleParam,
   isTaskParam,
@@ -12,12 +14,8 @@ import {
 } from "../../src/utils/yaml";
 import { getDoc, isWindows } from "../helper";
 
-async function getPathInFile(
-  yamlFile: string,
-  line: number,
-  character: number,
-) {
-  const textDoc = await getDoc(`yaml/${yamlFile}`);
+function getPathInFile(yamlFile: string, line: number, character: number) {
+  const textDoc = getDoc(`yaml/${yamlFile}`);
   const parsedDocs = parseAllDocuments(textDoc.getText());
   return getPathAt(
     textDoc,
@@ -210,55 +208,91 @@ describe("yaml", () => {
 
   describe("isTaskParam", () => {
     it("canCorrectlyConfirmTaskParam", async () => {
-      const path = (await getPathInFile("isTaskParam.yml", 3, 3)) as Node[];
+      const path = (await getPathInFile(
+        "isTaskParamInTaskFile.yml",
+        2,
+        3,
+      )) as Node[];
       const test = isTaskParam(path);
       expect(test).to.be.eq(true);
     });
 
     it("canCorrectlyNegateTaskParam", async () => {
-      const path = (await getPathInFile("isTaskParam.yml", 1, 1)) as Node[];
+      const path = (await getPathInFile(
+        "isTaskParamInvalid.yml",
+        1,
+        1,
+      )) as Node[];
       const test = isTaskParam(path);
       expect(test).to.be.eq(false);
     });
 
     it("canCorrectlyNegateTaskParamForValue", async () => {
-      const path = (await getPathInFile("isTaskParam.yml", 2, 9)) as Node[];
+      const path = (await getPathInFile(
+        "isTaskParamInTaskFile.yml",
+        2,
+        9,
+      )) as Node[];
       const test = isTaskParam(path);
       expect(test).to.be.eq(false);
     });
 
     it("canCorrectlyNegateTaskParamForPlay", async () => {
-      const path = (await getPathInFile("isTaskParam.yml", 7, 3)) as Node[];
+      const path = (await getPathInFile(
+        "isTaskParamInPlaybook.yml",
+        4,
+        3,
+      )) as Node[];
       const test = isTaskParam(path);
       expect(test).to.be.eq(false);
     });
 
     it("canCorrectlyNegateTaskParamForBlock", async () => {
-      const path = (await getPathInFile("isTaskParam.yml", 18, 7)) as Node[];
+      const path = (await getPathInFile(
+        "isTaskParamInPlaybook.yml",
+        14,
+        7,
+      )) as Node[];
       const test = isTaskParam(path);
       expect(test).to.be.eq(false);
     });
 
     it("canCorrectlyNegateTaskParamForRole", async () => {
-      const path = (await getPathInFile("isTaskParam.yml", 21, 7)) as Node[];
+      const path = (await getPathInFile(
+        "isTaskParamInPlaybook.yml",
+        17,
+        7,
+      )) as Node[];
       const test = isTaskParam(path);
       expect(test).to.be.eq(false);
     });
 
     it("canCorrectlyConfirmTaskParamInPreTasks", async () => {
-      const path = (await getPathInFile("isTaskParam.yml", 10, 7)) as Node[];
+      const path = (await getPathInFile(
+        "isTaskParamInPlaybook.yml",
+        6,
+        7,
+      )) as Node[];
       const test = isTaskParam(path);
       expect(test).to.be.eq(true);
     });
 
     it("canCorrectlyConfirmTaskParamInTasks", async () => {
-      const path = (await getPathInFile("isTaskParam.yml", 13, 7)) as Node[];
+      const path = (await getPathInFile(
+        "isTaskParamInPlaybook.yml",
+        9,
+        7,
+      )) as Node[];
       const test = isTaskParam(path);
       expect(test).to.be.eq(true);
     });
 
     it("canCorrectlyConfirmTaskParamInBlock", async () => {
-      const path = (await getPathInFile("isTaskParam.yml", 17, 11)) as Node[];
+      const path = (await getPathInFile(
+        "isTaskParamInPlaybook.yml",
+        13,
+        11,
+      )) as Node[];
       const test = isTaskParam(path);
       expect(test).to.be.eq(true);
     });
@@ -286,18 +320,6 @@ describe("yaml", () => {
       const path = (await getPathInFile("isPlayParam.yml", 7, 3)) as Node[];
       const test = isPlayParam(path, "file:///roles/test/tasks/isPlay.yml");
       expect(test).to.be.eq(false);
-    });
-
-    it("isIndecisiveWithoutPlayKeywords", async () => {
-      const path = (await getPathInFile("isPlayParam.yml", 7, 3)) as Node[];
-      const test = isPlayParam(path, "file://test/isPlay.yml");
-      expect(test).to.be.eq(undefined);
-    });
-
-    it("isIndecisiveWithoutPlayKeywordsWithoutPath", async () => {
-      const path = (await getPathInFile("isPlayParam.yml", 7, 3)) as Node[];
-      const test = isPlayParam(path);
-      expect(test).to.be.eq(undefined);
     });
 
     it("canCorrectlyNegatePlayParamForNonRootSequence", async () => {
@@ -355,6 +377,69 @@ describe("yaml", () => {
     it("canCorrectlyNegateRoleParamOnValue", async () => {
       const path = (await getPathInFile("isRoleParam.yml", 5, 13)) as Node[];
       const test = isRoleParam(path);
+      expect(test).to.be.eq(false);
+    });
+  });
+
+  describe("isCursorInsideJinjaBrackets", () => {
+    const file = "isCursorInsideJinjaBrackets.yml";
+    const document = getDoc(`yaml/${file}`);
+    it("can confirm cursor within normal jinja bracket", async () => {
+      const line = 5;
+      const character = 26;
+      const position = Position.create(line - 1, character - 1);
+      const path = getPathInFile(file, line, character);
+      const test = isCursorInsideJinjaBrackets(document, position, path);
+      expect(test).to.be.eq(true);
+    });
+
+    it("can confirm cursor within jinja bracket in correct syntax", async () => {
+      const line = 7;
+      const character = 20;
+      const position = Position.create(line - 1, character - 1);
+      const path = getPathInFile(file, line, character);
+      const test = isCursorInsideJinjaBrackets(document, position, path);
+
+      expect(test).to.be.eq(true);
+    });
+
+    it("can confirm cursor within jinja bracket incase of multiple bracket pairs", async () => {
+      const line = 9;
+      const character = 48;
+      const position = Position.create(line - 1, character - 1);
+      const path = getPathInFile(file, line, character);
+      const test = isCursorInsideJinjaBrackets(document, position, path);
+
+      expect(test).to.be.eq(true);
+    });
+
+    it("can confirm cursor within jinja bracket even if text already present inside it", async () => {
+      const line = 9;
+      const character = 36;
+      const position = Position.create(line - 1, character - 1);
+      const path = getPathInFile(file, line, character);
+      const test = isCursorInsideJinjaBrackets(document, position, path);
+
+      expect(test).to.be.eq(true);
+    });
+
+    it("can negate cursor outside jinja bracket", async () => {
+      const line = 9;
+      const character = 21;
+      const position = Position.create(line - 1, character - 1);
+      const path = getPathInFile(file, line, character) as Node[];
+      const test = isCursorInsideJinjaBrackets(document, position, path);
+
+      expect(test).to.be.eq(false);
+    });
+
+    it("can negate cursor within jinja bracket incase of invalid yaml syntax", async () => {
+      const line = 11;
+      const character = 25;
+      const position = Position.create(line - 1, character - 1);
+      const path = getPathInFile(file, line, character) as Node[];
+      const test = isCursorInsideJinjaBrackets(document, position, path);
+
       expect(test).to.be.eq(false);
     });
   });

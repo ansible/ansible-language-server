@@ -9,6 +9,8 @@
     "outDir": "./out/server",
     "sourceMap": true,
     "target": "es6",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
   },
   "exclude": ["node_modules", "out", "vscode-ansible"],
 }

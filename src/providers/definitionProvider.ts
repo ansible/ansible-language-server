@@ -1,6 +1,7 @@
 import { DefinitionLink, Range } from "vscode-languageserver";
 import { Position, TextDocument } from "vscode-languageserver-textdocument";
-import { Scalar } from "yaml/types";
+import { URI } from "vscode-uri";
+import { isScalar } from "yaml";
 import { DocsLibrary } from "../services/docsLibrary";
 import { toLspRange } from "../utils/misc";
 import {
@@ -21,12 +22,12 @@ export async function getDefinition(
   if (path) {
     const node = path[path.length - 1];
     if (
-      node instanceof Scalar &&
+      isScalar(node) &&
       new AncestryBuilder(path).parentOfKey().get() // ensure we look at a key, not value of a Pair
     ) {
       if (isTaskParam(path)) {
         const [module] = await docsLibrary.findModule(
-          node.value,
+          node.value as string,
           path,
           document.uri,
         );
@@ -34,7 +35,7 @@ export async function getDefinition(
           const range = getOrigRange(node);
           return [
             {
-              targetUri: module.source,
+              targetUri: URI.file(module.source).toString(),
               originSelectionRange: range
                 ? toLspRange(range, document)
                 : undefined,

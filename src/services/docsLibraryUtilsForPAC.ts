@@ -5,7 +5,7 @@
  * NOTE: 'PAC' in the filename stands for 'Playbook Adjacent Collections'
  */
 
-import { Node } from "yaml/types";
+import { Node } from "yaml";
 import { IModuleMetadata } from "../interfaces/module";
 import {
   IPluginRoute,
