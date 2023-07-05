@@ -127,9 +127,6 @@ tasks:
     cmds:
       - bash -c '{{ .NODE_ENV }} nvm install 14'
       - task: test
-      # - >
-      #   source $VIRTUAL_ENV/bin/activate &&
-      #   bash -c '{{ .NODE_ENV }} npm run test'
   test-node16:
     desc: Run all tests using node 16
     cmds:
