@@ -103,8 +103,6 @@ export async function findModulesUtils(
     }
   }
 
-  console.log("*** module -> ", module);
-
   if (module) {
     if (!module.fragments) {
       // collect information from documentation fragments
