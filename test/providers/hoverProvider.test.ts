@@ -440,7 +440,6 @@ describe("doHover()", () => {
   describe("Hover for playbook adjacent collection", () => {
     describe("With EE enabled @ee", () => {
       before(async () => {
-        (await docSettings).ansible.usePlaybookAdjacentCollections = true;
         setFixtureAnsibleCollectionPathEnv(
           "/home/runner/.ansible/collections:/usr/share/ansible",
         );
@@ -450,7 +449,6 @@ describe("doHover()", () => {
       testPlaybookAdjacentCollection(context, textDoc);
 
       after(async () => {
-        (await docSettings).ansible.usePlaybookAdjacentCollections = false;
         setFixtureAnsibleCollectionPathEnv();
         await disableExecutionEnvironmentSettings(docSettings);
       });
@@ -458,16 +456,11 @@ describe("doHover()", () => {
 
     describe("With EE disabled", () => {
       before(async () => {
-        (await docSettings).ansible.usePlaybookAdjacentCollections = true;
         setFixtureAnsibleCollectionPathEnv();
         await disableExecutionEnvironmentSettings(docSettings);
       });
 
       testPlaybookAdjacentCollection(context, textDoc);
-
-      after(async () => {
-        (await docSettings).ansible.usePlaybookAdjacentCollections = false;
-      });
     });
   });
 
@@ -481,7 +474,6 @@ describe("doHover()", () => {
   describe("Negate hover for non playbook adjacent collection", () => {
     describe("With EE enabled @ee", () => {
       before(async () => {
-        (await docSettings).ansible.usePlaybookAdjacentCollections = true;
         setFixtureAnsibleCollectionPathEnv(
           "/home/runner/.ansible/collections:/usr/share/ansible",
         );
@@ -491,7 +483,6 @@ describe("doHover()", () => {
       testNonPlaybookAdjacentCollection(context, textDoc);
 
       after(async () => {
-        (await docSettings).ansible.usePlaybookAdjacentCollections = false;
         setFixtureAnsibleCollectionPathEnv();
         await disableExecutionEnvironmentSettings(docSettings);
       });
@@ -499,16 +490,11 @@ describe("doHover()", () => {
 
     describe("With EE disabled", () => {
       before(async () => {
-        (await docSettings).ansible.usePlaybookAdjacentCollections = true;
         setFixtureAnsibleCollectionPathEnv();
         await disableExecutionEnvironmentSettings(docSettings);
       });
 
       testNonPlaybookAdjacentCollection(context, textDoc);
-
-      after(async () => {
-        (await docSettings).ansible.usePlaybookAdjacentCollections = false;
-      });
     });
   });
 });

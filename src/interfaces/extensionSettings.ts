@@ -22,7 +22,6 @@ export interface ExtensionSettings {
   ansible: {
     path: string;
     useFullyQualifiedCollectionNames: boolean;
-    usePlaybookAdjacentCollections: boolean;
   };
   completion: {
     provideRedirectModules: boolean;
@@ -80,10 +79,6 @@ interface AnsibleSettingsWithDescription {
     description: string;
   };
   useFullyQualifiedCollectionNames: {
-    default: boolean;
-    description: string;
-  };
-  usePlaybookAdjacentCollections: {
     default: boolean;
     description: string;
   };

@@ -14,11 +14,6 @@ Toggle usage of fully qualified collection names (FQCN) when inserting module na
 _default value:
 `true`_
 
-- **ansible.ansible.usePlaybookAdjacentCollections**:
-Toggle support for playbook adjacent collections \
-_default value:
-`false`_
-
 - **ansible.python.interpreterPath**:
 Path to the python/python3 executable. This settings may be used to make the extension work with ansible and ansible-lint installations in a python virtual environment \
 _default value:
