@@ -34,6 +34,7 @@ import {
   parseAllDocuments,
   getPossibleOptionsForPath,
   isCursorInsideJinjaBrackets,
+  isPlaybook,
 } from "../utils/yaml";
 import { getVarsCompletion } from "./completionProviderUtils";
 
@@ -51,13 +52,16 @@ const priorityMap = {
   choice: 2,
 };
 
-let DUMMY_MAPPING_CHARACTERS;
+let DUMMY_MAPPING_CHARACTERS: string;
+let IS_PLAYBOOK: boolean;
 
 export async function doCompletion(
   document: TextDocument,
   position: Position,
   context: WorkspaceFolderContext,
 ): Promise<CompletionItem[] | null> {
+  IS_PLAYBOOK = isPlaybook(document);
+
   let preparedText = document.getText();
   const offset = document.offsetAt(position);
 
@@ -217,8 +221,11 @@ export async function doCompletion(
         return completionItems;
       }
 
-      // Provide variable auto-completion if the cursor is inside valid jinja inline brackets
-      if (isCursorInsideJinjaBrackets(document, position, path)) {
+      // Provide variable auto-completion if the cursor is inside valid jinja inline brackets in a playbook
+      if (
+        IS_PLAYBOOK &&
+        isCursorInsideJinjaBrackets(document, position, path)
+      ) {
         const varCompletion: CompletionItem[] = getVarsCompletion(
           document.uri,
           path,
