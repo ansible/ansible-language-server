@@ -191,6 +191,7 @@ export async function doCompletion(
                 ? `${insertName}:${resolveSuffix(
                     "dict", // since a module is always a dictionary
                     cursorAtFirstElementOfList,
+                    IS_PLAYBOOK,
                   )}`
                 : insertName;
               return {
@@ -557,6 +558,7 @@ export async function doCompletionResolve(
         ? `${insertName}:${resolveSuffix(
             "dict", // since a module is always a dictionary
             completionItem.data.firstElementOfList,
+            IS_PLAYBOOK,
           )}`
         : insertName;
 
@@ -582,6 +584,7 @@ export async function doCompletionResolve(
       ? `${completionItem.label}:${resolveSuffix(
           completionItem.data.type,
           completionItem.data.firstElementOfList,
+          IS_PLAYBOOK,
         )}`
       : `${completionItem.label}`;
 
@@ -621,19 +624,40 @@ function firstElementOfList(document: TextDocument, nodeRange: Range): boolean {
   return elementsBeforeKey === "-";
 }
 
-function resolveSuffix(optionType: string, firstElementOfList: boolean) {
+function resolveSuffix(
+  optionType: string,
+  firstElementOfList: boolean,
+  isDocPlaybook: boolean,
+) {
   let returnSuffix: string;
 
-  switch (optionType) {
-    case "list":
-      returnSuffix = firstElementOfList ? `${EOL}\t\t- ` : `${EOL}\t- `;
-      break;
-    case "dict":
-      returnSuffix = firstElementOfList ? `${EOL}\t\t` : `${EOL}\t`;
-      break;
-    default:
-      returnSuffix = " ";
-      break;
+  if (isDocPlaybook) {
+    // if doc is a playbook, indentation will shift one tab since a play is a list
+    switch (optionType) {
+      case "list":
+        returnSuffix = firstElementOfList ? `${EOL}\t\t- ` : `${EOL}\t- `;
+        break;
+      case "dict":
+        returnSuffix = firstElementOfList ? `${EOL}\t\t` : `${EOL}\t`;
+        break;
+      default:
+        returnSuffix = " ";
+        break;
+    }
+  } else {
+    // if doc is not a playbook (any other ansible file like task file, etc.) indentation will not
+    // include that extra tab
+    switch (optionType) {
+      case "list":
+        returnSuffix = `${EOL}\t- `;
+        break;
+      case "dict":
+        returnSuffix = `${EOL}\t`;
+        break;
+      default:
+        returnSuffix = " ";
+        break;
+    }
   }
 
   return returnSuffix;
