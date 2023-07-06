@@ -1107,7 +1107,7 @@ describe("doCompletion()", () => {
   describe("Completion for playbook adjacent collection", () => {
     describe("With EE enabled @ee", () => {
       before(async () => {
-        (await docSettings).ansible.supportPlaybookAdjacentCollections = true;
+        (await docSettings).ansible.usePlaybookAdjacentCollections = true;
         setFixtureAnsibleCollectionPathEnv(
           "/home/runner/.ansible/collections:/usr/share/ansible",
         );
@@ -1117,7 +1117,7 @@ describe("doCompletion()", () => {
       testPlaybookAdjacentCollection(context, textDoc);
 
       after(async () => {
-        (await docSettings).ansible.supportPlaybookAdjacentCollections = false;
+        (await docSettings).ansible.usePlaybookAdjacentCollections = false;
         setFixtureAnsibleCollectionPathEnv();
         await disableExecutionEnvironmentSettings(docSettings);
       });
@@ -1125,7 +1125,7 @@ describe("doCompletion()", () => {
 
     describe("With EE disabled", () => {
       before(async () => {
-        (await docSettings).ansible.supportPlaybookAdjacentCollections = true;
+        (await docSettings).ansible.usePlaybookAdjacentCollections = true;
         setFixtureAnsibleCollectionPathEnv();
         await disableExecutionEnvironmentSettings(docSettings);
       });
@@ -1133,7 +1133,7 @@ describe("doCompletion()", () => {
       testPlaybookAdjacentCollection(context, textDoc);
 
       after(async () => {
-        (await docSettings).ansible.supportPlaybookAdjacentCollections = false;
+        (await docSettings).ansible.usePlaybookAdjacentCollections = false;
       });
     });
   });
@@ -1148,7 +1148,7 @@ describe("doCompletion()", () => {
   describe("Negate completion for non playbook adjacent collection", () => {
     describe("With EE enabled @ee", () => {
       before(async () => {
-        (await docSettings).ansible.supportPlaybookAdjacentCollections = true;
+        (await docSettings).ansible.usePlaybookAdjacentCollections = true;
         setFixtureAnsibleCollectionPathEnv(
           "/home/runner/.ansible/collections:/usr/share/ansible",
         );
@@ -1158,7 +1158,7 @@ describe("doCompletion()", () => {
       testNonPlaybookAdjacentCollection(context, textDoc);
 
       after(async () => {
-        (await docSettings).ansible.supportPlaybookAdjacentCollections = false;
+        (await docSettings).ansible.usePlaybookAdjacentCollections = false;
         setFixtureAnsibleCollectionPathEnv();
         await disableExecutionEnvironmentSettings(docSettings);
       });
@@ -1166,7 +1166,7 @@ describe("doCompletion()", () => {
 
     describe("With EE disabled", () => {
       before(async () => {
-        (await docSettings).ansible.supportPlaybookAdjacentCollections = true;
+        (await docSettings).ansible.usePlaybookAdjacentCollections = true;
         setFixtureAnsibleCollectionPathEnv();
         await disableExecutionEnvironmentSettings(docSettings);
       });
@@ -1174,7 +1174,7 @@ describe("doCompletion()", () => {
       testNonPlaybookAdjacentCollection(context, textDoc);
 
       after(async () => {
-        (await docSettings).ansible.supportPlaybookAdjacentCollections = false;
+        (await docSettings).ansible.usePlaybookAdjacentCollections = false;
       });
     });
   });

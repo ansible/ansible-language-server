@@ -14,7 +14,7 @@ Toggle usage of fully qualified collection names (FQCN) when inserting module na
 _default value:
 `true`_
 
-- **ansible.ansible.supportPlaybookAdjacentCollections**:
+- **ansible.ansible.usePlaybookAdjacentCollections**:
 Toggle support for playbook adjacent collections \
 _default value:
 `false`_
