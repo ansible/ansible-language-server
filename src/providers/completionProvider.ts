@@ -624,7 +624,7 @@ function firstElementOfList(document: TextDocument, nodeRange: Range): boolean {
   return elementsBeforeKey === "-";
 }
 
-function resolveSuffix(
+export function resolveSuffix(
   optionType: string,
   firstElementOfList: boolean,
   isDocPlaybook: boolean,
