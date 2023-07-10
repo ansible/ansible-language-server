@@ -19,7 +19,7 @@
               - sub_sub_opt_1:
                 sub_sub_opt_3:
                   - sub_sub_sub_opt_1:
-        
+
     - name: Collection module with FQCN
       org_1.coll_1.module_1:
         opt_1:
