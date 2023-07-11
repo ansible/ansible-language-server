@@ -52,15 +52,15 @@ const priorityMap = {
   choice: 2,
 };
 
-let DUMMY_MAPPING_CHARACTERS: string;
-let IS_PLAYBOOK: boolean;
+let dummyMappingCharacter: string;
+let isAnsiblePlaybook: boolean;
 
 export async function doCompletion(
   document: TextDocument,
   position: Position,
   context: WorkspaceFolderContext,
 ): Promise<CompletionItem[] | null> {
-  IS_PLAYBOOK = isPlaybook(document);
+  isAnsiblePlaybook = isPlaybook(document);
 
   let preparedText = document.getText();
   const offset = document.offsetAt(position);
@@ -74,7 +74,7 @@ export async function doCompletion(
   // 2. When we are at the value level, we use `__`. We do this because based on the above hack, the
   // use of `_:` at the value level creates invalid YAML as `: ` is an incorrect token in yaml string scalar
 
-  DUMMY_MAPPING_CHARACTERS = "_:";
+  dummyMappingCharacter = "_:";
 
   const previousCharactersOfCurrentLine = document.getText({
     start: { line: position.line, character: 0 },
@@ -84,10 +84,10 @@ export async function doCompletion(
   if (previousCharactersOfCurrentLine.includes(": ")) {
     // this means we have encountered ": " previously in the same line and thus we are
     // at the value level
-    DUMMY_MAPPING_CHARACTERS = "__";
+    dummyMappingCharacter = "__";
   }
 
-  preparedText = insert(preparedText, offset, DUMMY_MAPPING_CHARACTERS);
+  preparedText = insert(preparedText, offset, dummyMappingCharacter);
   const yamlDocs = parseAllDocuments(preparedText);
 
   const extensionSettings = await context.documentSettings.get(document.uri);
@@ -191,7 +191,7 @@ export async function doCompletion(
                 ? `${insertName}:${resolveSuffix(
                     "dict", // since a module is always a dictionary
                     cursorAtFirstElementOfList,
-                    IS_PLAYBOOK,
+                    isAnsiblePlaybook,
                   )}`
                 : insertName;
               return {
@@ -224,7 +224,7 @@ export async function doCompletion(
 
       // Provide variable auto-completion if the cursor is inside valid jinja inline brackets in a playbook
       if (
-        IS_PLAYBOOK &&
+        isAnsiblePlaybook &&
         isCursorInsideJinjaBrackets(document, position, path)
       ) {
         const varCompletion: CompletionItem[] = getVarsCompletion(
@@ -499,7 +499,7 @@ function getNodeRange(node: Node, document: TextDocument): Range | undefined {
     const start = range[0];
     let end = range[1];
     // compensate for DUMMY MAPPING
-    if (node.value.includes(DUMMY_MAPPING_CHARACTERS)) {
+    if (node.value.includes(dummyMappingCharacter)) {
       end -= 2;
     } else {
       // colon, being at the end of the line, was excluded from the node
@@ -558,7 +558,7 @@ export async function doCompletionResolve(
         ? `${insertName}:${resolveSuffix(
             "dict", // since a module is always a dictionary
             completionItem.data.firstElementOfList,
-            IS_PLAYBOOK,
+            isAnsiblePlaybook,
           )}`
         : insertName;
 
@@ -584,7 +584,7 @@ export async function doCompletionResolve(
       ? `${completionItem.label}:${resolveSuffix(
           completionItem.data.type,
           completionItem.data.firstElementOfList,
-          IS_PLAYBOOK,
+          isAnsiblePlaybook,
         )}`
       : `${completionItem.label}`;
 
