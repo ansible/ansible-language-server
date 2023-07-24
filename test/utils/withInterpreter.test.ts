@@ -1,10 +1,7 @@
 import { expect } from "chai";
-import path = require("path");
-import { globArray } from "../../src/utils/pathUtils";
 import { withInterpreter } from "../../src/utils/misc";
 
 describe("withInterpreter", () => {
-  const dir = path.resolve(__dirname, "..", "fixtures", "utils", "docsFinder");
   const tests = [
     {
       scenario: "when activation script is provided",
