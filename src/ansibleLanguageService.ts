@@ -58,7 +58,10 @@ export class AnsibleLanguageService {
 
       const result: InitializeResult = {
         capabilities: {
-          textDocumentSync: TextDocumentSyncKind.Incremental,
+          textDocumentSync: {
+            save: { includeText: false },
+            change: TextDocumentSyncKind.Incremental,
+          },
           semanticTokensProvider: {
             documentSelector: [
               {
