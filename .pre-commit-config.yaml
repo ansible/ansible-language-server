@@ -91,6 +91,8 @@ repos:
     rev: "v4.0.0-alpha.3"
     hooks:
       - id: prettier
+        additional_dependencies:
+          - prettier
   - repo: https://github.com/igorshubovych/markdownlint-cli
     rev: v0.37.0
     hooks:
