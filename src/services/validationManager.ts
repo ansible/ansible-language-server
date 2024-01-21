@@ -22,7 +22,8 @@ export class ValidationManager {
   private connection: Connection;
   private documents: TextDocuments<TextDocument>;
 
-  private validationCache: Map<string, _IntervalTree.default<Diagnostic>> = new Map();
+  private validationCache: Map<string, _IntervalTree.default<Diagnostic>> =
+    new Map();
 
   /**
    * Mapping from file that generated diagnostics (origin), to files included in

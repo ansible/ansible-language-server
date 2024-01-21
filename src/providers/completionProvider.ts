@@ -18,7 +18,11 @@ import {
   roleKeywords,
   taskKeywords,
 } from "../utils/ansible.js";
-import { formatModule, formatOption, getDetails } from "../utils/docsFormatter.js";
+import {
+  formatModule,
+  formatOption,
+  getDetails,
+} from "../utils/docsFormatter.js";
 import { insert, toLspRange } from "../utils/misc.js";
 import {
   AncestryBuilder,

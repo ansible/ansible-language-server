@@ -14,15 +14,15 @@
     // "noImplicitReturns": true,
     // "noUnusedLocals": true,
     // "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
     // "strict": true
   },
   "ts-node": {
     "transpileOnly": true,
     "esm": true,
     "compilerOptions": {
-      "module": "NodeNext"
-    }
+      "module": "NodeNext",
+    },
   },
   "exclude": ["node_modules", "out", "vscode-ansible"],
 }

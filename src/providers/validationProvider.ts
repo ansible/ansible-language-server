@@ -11,7 +11,6 @@ import { WorkspaceFolderContext } from "../services/workspaceManager.js";
 import { isPlaybook, parseAllDocuments } from "../utils/yaml.js";
 import { CommandRunner } from "../utils/commandRunner.js";
 
-
 const IntervalTree = _IntervalTree as unknown as typeof _IntervalTree.default;
 
 /**
