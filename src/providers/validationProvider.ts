@@ -1,4 +1,4 @@
-import IntervalTree from "@flatten-js/interval-tree";
+import _IntervalTree from "@flatten-js/interval-tree";
 import {
   Connection,
   Diagnostic,
@@ -6,10 +6,13 @@ import {
   Range,
 } from "vscode-languageserver";
 import { TextDocument } from "vscode-languageserver-textdocument";
-import { ValidationManager } from "../services/validationManager";
-import { WorkspaceFolderContext } from "../services/workspaceManager";
-import { isPlaybook, parseAllDocuments } from "../utils/yaml";
-import { CommandRunner } from "../utils/commandRunner";
+import { ValidationManager } from "../services/validationManager.js";
+import { WorkspaceFolderContext } from "../services/workspaceManager.js";
+import { isPlaybook, parseAllDocuments } from "../utils/yaml.js";
+import { CommandRunner } from "../utils/commandRunner.js";
+
+
+const IntervalTree = _IntervalTree as unknown as typeof _IntervalTree.default;
 
 /**
  * Validates the given document.

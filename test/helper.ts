@@ -1,10 +1,10 @@
 import { TextDocument } from "vscode-languageserver-textdocument";
 import * as path from "path";
 import { readFileSync } from "fs";
-import { WorkspaceManager } from "../src/services/workspaceManager";
-import { createConnection, TextDocuments } from "vscode-languageserver/node";
-import { ValidationManager } from "../src/services/validationManager";
-import { ExtensionSettings } from "../src/interfaces/extensionSettings";
+import { WorkspaceManager } from "../src/services/workspaceManager.js";
+import { createConnection, TextDocuments } from "vscode-languageserver/node.js";
+import { ValidationManager } from "../src/services/validationManager.js";
+import { ExtensionSettings } from "../src/interfaces/extensionSettings.js";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const Fuse = require("fuse.js");

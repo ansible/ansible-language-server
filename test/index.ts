@@ -1,5 +1,5 @@
 // This file is loaded automatically by mocha during the test run.
-import { isWindows } from "./helper";
+import { isWindows } from "./helper.js";
 import { execSync } from "child_process";
 
 // Error code returned if we cannot even start testing:

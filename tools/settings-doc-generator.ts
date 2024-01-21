@@ -1,6 +1,6 @@
 import Handlebars = require("handlebars");
 import * as fs from "fs";
-import { SettingsManager } from "../src/services/settingsManager";
+import { SettingsManager } from "../src/services/settingsManager.js";
 import * as path from "path";
 import * as _ from "lodash";
 

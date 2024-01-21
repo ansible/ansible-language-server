@@ -7,10 +7,10 @@ import {
   enableExecutionEnvironmentSettings,
   disableExecutionEnvironmentSettings,
   setFixtureAnsibleCollectionPathEnv,
-} from "../helper";
-import { doHover } from "../../src/providers/hoverProvider";
+} from "../helper.js";
+import { doHover } from "../../src/providers/hoverProvider.js";
 import { Position } from "vscode-languageserver";
-import { WorkspaceFolderContext } from "../../src/services/workspaceManager";
+import { WorkspaceFolderContext } from "../../src/services/workspaceManager.js";
 
 function testPlayKeywords(
   context: WorkspaceFolderContext,

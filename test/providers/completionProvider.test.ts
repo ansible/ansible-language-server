@@ -1,12 +1,13 @@
 import { TextDocument } from "vscode-languageserver-textdocument";
 import { expect } from "chai";
+
 import { Position, CompletionItemKind } from "vscode-languageserver";
 import {
   doCompletion,
   doCompletionResolve,
-} from "../../src/providers/completionProvider";
-import {} from "../../src/providers/validationProvider";
-import { WorkspaceFolderContext } from "../../src/services/workspaceManager";
+} from "../../src/providers/completionProvider.js";
+import {} from "../../src/providers/validationProvider.js";
+import { WorkspaceFolderContext } from "../../src/services/workspaceManager.js";
 import {
   createTestWorkspaceManager,
   getDoc,
@@ -17,7 +18,7 @@ import {
   setFixtureAnsibleCollectionPathEnv,
   setAnsibleConfigEnv,
   unsetAnsibleConfigEnv,
-} from "../helper";
+} from "../helper.js";
 
 function testPlayKeywords(
   context: WorkspaceFolderContext,

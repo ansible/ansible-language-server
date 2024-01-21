@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { withInterpreter } from "../../src/utils/misc";
+import { withInterpreter } from "../../src/utils/misc.js";
 
 describe("withInterpreter", () => {
   const tests = [

@@ -65,8 +65,8 @@ tasks:
       - out/log/manifest.yml
   build:
     desc: Build the project
-    deps:
-      - setup
+    # deps:
+    #   - setup
     cmds:
       - npm run compile
     sources:

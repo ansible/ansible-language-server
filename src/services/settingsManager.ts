@@ -4,7 +4,7 @@ import { DidChangeConfigurationParams } from "vscode-languageserver-protocol";
 import {
   ExtensionSettingsWithDescription,
   ExtensionSettings,
-} from "../interfaces/extensionSettings";
+} from "../interfaces/extensionSettings.js";
 
 export class SettingsManager {
   private connection: Connection;

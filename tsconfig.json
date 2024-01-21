@@ -3,14 +3,26 @@
     "alwaysStrict": true,
     "declaration": true,
     "forceConsistentCasingInFileNames": true,
-    "lib": ["es2016"],
-    "module": "commonjs",
-    "moduleResolution": "node",
+    // "lib": ["es2016"],
+    "module": "NodeNext",
+    "moduleResolution": "nodenext",
     "outDir": "./out/server",
     "sourceMap": true,
-    "target": "es6",
+    "target": "esnext",
     "esModuleInterop": true,
     "skipLibCheck": true,
+    // "noImplicitReturns": true,
+    // "noUnusedLocals": true,
+    // "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true
+    // "strict": true
+  },
+  "ts-node": {
+    "transpileOnly": true,
+    "esm": true,
+    "compilerOptions": {
+      "module": "NodeNext"
+    }
   },
   "exclude": ["node_modules", "out", "vscode-ansible"],
 }

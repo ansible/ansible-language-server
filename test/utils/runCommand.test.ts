@@ -1,8 +1,8 @@
-import { CommandRunner } from "../../src/utils/commandRunner";
+import { CommandRunner } from "../../src/utils/commandRunner.js";
 import { AssertionError, expect } from "chai";
-import { WorkspaceManager } from "../../src/services/workspaceManager";
-import { createConnection } from "vscode-languageserver/node";
-import { getDoc } from "../helper";
+import { WorkspaceManager } from "../../src/services/workspaceManager.js";
+import { createConnection } from "vscode-languageserver/node.js";
+import { getDoc } from "../helper.js";
 import * as path from "path";
 
 describe("commandRunner", () => {

@@ -3,14 +3,14 @@ import path = require("path");
 import {
   getAnsibleMetaData,
   getResultsThroughCommandRunner,
-} from "../../src/utils/getAnsibleMetaData";
+} from "../../src/utils/getAnsibleMetaData.js";
 import {
   createTestWorkspaceManager,
   disableExecutionEnvironmentSettings,
   enableExecutionEnvironmentSettings,
   getDoc,
   resolveDocUri,
-} from "../helper";
+} from "../helper.js";
 
 function getAnsibleTestInfo() {
   const ansibleInfo = {};
