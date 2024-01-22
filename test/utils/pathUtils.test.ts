@@ -1,6 +1,8 @@
 import { expect } from "chai";
-import path = require("path");
-import { globArray } from "../../src/utils/pathUtils";
+import * as path from "path";
+import { globArray } from "../../src/utils/pathUtils.js";
+import * as url from "url";
+const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 
 describe("docsFinder", () => {
   const dir = path.resolve(__dirname, "..", "fixtures", "utils", "docsFinder");

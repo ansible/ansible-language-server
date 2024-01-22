@@ -1,6 +1,9 @@
 import * as child_process from "child_process";
 import * as path from "path";
-import { URI } from "vscode-uri";
+
+import pkg from "vscode-uri";
+const { URI } = pkg;
+
 import {
   Connection,
   Diagnostic,
@@ -10,8 +13,8 @@ import {
   Range,
 } from "vscode-languageserver";
 import { TextDocument } from "vscode-languageserver-textdocument";
-import { WorkspaceFolderContext } from "./workspaceManager";
-import { CommandRunner } from "../utils/commandRunner";
+import { WorkspaceFolderContext } from "./workspaceManager.js";
+import { CommandRunner } from "../utils/commandRunner.js";
 
 /**
  * Acts as an interface to ansible-playbook command.

@@ -28,9 +28,9 @@
     "npm": ">=7.11.2"
   },
   "bin": {
-    "ansible-language-server": "./bin/ansible-language-server"
+    "ansible-language-server": "./bin/ansible-language-server.js"
   },
-  "main": "./out/server/src/server.js",
+  "exports": "./out/server/src/server.js",
   "types": "./out/server/src/server.d.ts",
   "files": [
     "docs/changelog.md",
@@ -75,6 +75,7 @@
     "eslint-config-prettier": "^8.8.0",
     "fuse.js": "^6.6.2",
     "handlebars": "^4.7.7",
+    "lodash-es": "^4.17.21",
     "mocha": "^10.2.0",
     "npm-check-updates": "^16.8.0",
     "nyc": "^15.1.0",
@@ -91,10 +92,11 @@
     "//prepare": "Prepare is needed for installation from source",
     "prepare": "npm run compile",
     "watch": "tsc --watch -p .",
-    "test": "nyc -s -a mocha && nyc report --check-coverage",
+    "test": "mocha",
     "test-with-ee": "nyc -s -a mocha --grep @ee && nyc report --check-coverage",
     "test-without-ee": "nyc -s -a mocha --grep @ee --invert && nyc report --check-coverage",
     "generate-settings-readme": "ts-node tools/settings-doc-generator.ts"
   },
-  "all": true
+  "all": true,
+  "type": "module"
 }

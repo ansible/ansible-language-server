@@ -1,10 +1,13 @@
 import { promises as fs } from "fs";
 import { Connection } from "vscode-languageserver";
 import { DidChangeWatchedFilesParams } from "vscode-languageserver-protocol";
-import { URI } from "vscode-uri";
+
+import pkg from "vscode-uri";
+const { URI } = pkg;
+
 import { parseAllDocuments } from "yaml";
-import { IDocumentMetadata } from "../interfaces/documentMeta";
-import { fileExists, hasOwnProperty } from "../utils/misc";
+import { IDocumentMetadata } from "../interfaces/documentMeta.js";
+import { fileExists, hasOwnProperty } from "../utils/misc.js";
 export class MetadataLibrary {
   private connection: Connection;
 

@@ -1,7 +1,9 @@
-import * as chai from "chai";
-import { ConsoleOutput } from "./consoleOutput";
+// import * as chaiModule from "chai";
+import { ConsoleOutput } from "./consoleOutput.js";
 
-chai.config.truncateThreshold = 0; // disable truncating
+// const chai = require('chai');
+
+// chai.config.truncateThreshold = 0; // disable truncating
 
 export const mochaHooks = (): Mocha.RootHookObject => {
   const consoleOutput = new ConsoleOutput();

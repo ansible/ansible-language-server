@@ -2,9 +2,9 @@ import { expect } from "chai";
 import {
   WorkspaceFolderContext,
   WorkspaceManager,
-} from "../../src/services/workspaceManager";
-import { createTestWorkspaceManager } from "../helper";
-import { ExtensionSettings } from "../../src/interfaces/extensionSettings";
+} from "../../src/services/workspaceManager.js";
+import { createTestWorkspaceManager } from "../helper.js";
+import { ExtensionSettings } from "../../src/interfaces/extensionSettings.js";
 
 function simulateClientSettings(workspaceManager: WorkspaceManager, settings) {
   workspaceManager.clientCapabilities.workspace = {

@@ -1,9 +1,10 @@
-import { URI } from "vscode-uri";
+import pkg from "vscode-uri";
+const { URI } = pkg;
 import { Connection } from "vscode-languageserver";
-import { withInterpreter, asyncExec } from "./misc";
-import { getAnsibleCommandExecPath } from "./execPath";
-import { WorkspaceFolderContext } from "../services/workspaceManager";
-import { ExtensionSettings } from "../interfaces/extensionSettings";
+import { withInterpreter, asyncExec } from "./misc.js";
+import { getAnsibleCommandExecPath } from "./execPath.js";
+import { WorkspaceFolderContext } from "../services/workspaceManager.js";
+import { ExtensionSettings } from "../interfaces/extensionSettings.js";
 
 export class CommandRunner {
   private connection: Connection;

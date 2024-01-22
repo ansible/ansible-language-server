@@ -6,16 +6,19 @@ import {
   WorkspaceFolder,
   WorkspaceFoldersChangeEvent,
 } from "vscode-languageserver";
-import { AnsibleConfig } from "./ansibleConfig";
-import { AnsibleLint } from "./ansibleLint";
-import { AnsiblePlaybook } from "./ansiblePlaybook";
-import { DocsLibrary } from "./docsLibrary";
-import { ExecutionEnvironment } from "./executionEnvironment";
-import { MetadataLibrary } from "./metadataLibrary";
-import { SettingsManager } from "./settingsManager";
+import { AnsibleConfig } from "./ansibleConfig.js";
+import { AnsibleLint } from "./ansibleLint.js";
+import { AnsiblePlaybook } from "./ansiblePlaybook.js";
+import { DocsLibrary } from "./docsLibrary.js";
+import { ExecutionEnvironment } from "./executionEnvironment.js";
+import { MetadataLibrary } from "./metadataLibrary.js";
+import { SettingsManager } from "./settingsManager.js";
 import * as path from "path";
-import { URI } from "vscode-uri";
-import { AnsibleInventory } from "./ansibleInventory";
+
+import pkg from "vscode-uri";
+const { URI } = pkg;
+
+import { AnsibleInventory } from "./ansibleInventory.js";
 
 /**
  * Holds the overall context for the whole workspace.

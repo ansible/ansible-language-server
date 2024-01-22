@@ -1,7 +1,9 @@
 import { Connection } from "vscode-languageserver";
-import { WorkspaceFolderContext } from "./workspaceManager";
-import { CommandRunner } from "../utils/commandRunner";
-import { URI } from "vscode-uri";
+import { WorkspaceFolderContext } from "./workspaceManager.js";
+import { CommandRunner } from "../utils/commandRunner.js";
+
+import pkg from "vscode-uri";
+const { URI } = pkg;
 
 /**
  * Class to extend ansible-inventory executable as a service

@@ -8,7 +8,7 @@
   "extends": ["plugin:@typescript-eslint/recommended", "prettier"],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "ecmaVersion": 2021,
+    "ecmaVersion": "latest",
     "sourceType": "module"
   },
   "plugins": ["@typescript-eslint"],

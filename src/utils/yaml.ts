@@ -1,4 +1,4 @@
-import * as _ from "lodash";
+import { find } from "lodash-es";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import {
   Document,
@@ -15,10 +15,10 @@ import {
   YAMLMap,
   YAMLSeq,
 } from "yaml";
-import { IModuleMetadata, IOption } from "../interfaces/module";
-import { DocsLibrary } from "../services/docsLibrary";
-import { isTaskKeyword, playExclusiveKeywords } from "./ansible";
-import { playKeywords, taskKeywords } from "../utils/ansible";
+import { IModuleMetadata, IOption } from "../interfaces/module.js";
+import { DocsLibrary } from "../services/docsLibrary.js";
+import { isTaskKeyword, playExclusiveKeywords } from "./ansible.js";
+import { playKeywords, taskKeywords } from "../utils/ansible.js";
 import { Range, Position } from "vscode-languageserver";
 
 type Options = ParseOptions & DocumentOptions & SchemaOptions;
@@ -153,7 +153,7 @@ export function getPathAt(
   inclusive = false,
 ): Node[] | null {
   const offset = document.offsetAt(position);
-  const doc = _.find(docs, (d) => contains(d.contents, offset, inclusive));
+  const doc = find(docs, (d) => contains(d.contents, offset, inclusive));
   if (doc && doc.contents) {
     return getPathAtOffset([doc.contents], offset, inclusive, doc);
   }
@@ -182,7 +182,7 @@ export function getPathAtOffset(
   if (path) {
     const currentNode = path[path.length - 1];
     if (isMap(currentNode)) {
-      let pair = _.find(currentNode.items, (p) =>
+      let pair = find(currentNode.items, (p) =>
         contains(p.key as Node, offset, inclusive),
       );
       if (pair) {
@@ -193,7 +193,7 @@ export function getPathAtOffset(
           doc,
         );
       }
-      pair = _.find(currentNode.items, (p) =>
+      pair = find(currentNode.items, (p) =>
         contains(p.value as Node, offset, inclusive),
       );
       if (pair) {
@@ -204,7 +204,7 @@ export function getPathAtOffset(
           doc,
         );
       }
-      pair = _.find(currentNode.items, (p) => {
+      pair = find(currentNode.items, (p) => {
         const inBetweenNode = doc.createNode(null);
         const start = getOrigRange(p.key as Node)?.[1];
         const end = getOrigRange(p.value as Node)?.[0];
@@ -217,7 +217,7 @@ export function getPathAtOffset(
         return path.concat(pair as unknown as Node, doc.createNode(null));
       }
     } else if (isSeq(currentNode)) {
-      const item = _.find(currentNode.items, (n) =>
+      const item = find(currentNode.items, (n) =>
         contains(n as Node, offset, inclusive),
       );
       if (item) {
@@ -302,7 +302,7 @@ export function getDeclaredCollections(modulePath: Node[] | null): string[] {
 
 function getDeclaredCollectionsForMap(playNode: YAMLMap | null): string[] {
   const declaredCollections: string[] = [];
-  const collectionsPair = _.find(
+  const collectionsPair = find(
     playNode?.items,
     (pair) => isScalar(pair.key) && pair.key.value === "collections",
   );

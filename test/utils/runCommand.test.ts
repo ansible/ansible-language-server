@@ -1,21 +1,24 @@
-import { CommandRunner } from "../../src/utils/commandRunner";
+import { CommandRunner } from "../../src/utils/commandRunner.js";
 import { AssertionError, expect } from "chai";
-import { WorkspaceManager } from "../../src/services/workspaceManager";
-import { createConnection } from "vscode-languageserver/node";
-import { getDoc } from "../helper";
+import { WorkspaceManager } from "../../src/services/workspaceManager.js";
+import { createConnection } from "vscode-languageserver/node.js";
+import { getDoc } from "../helper.js";
 import * as path from "path";
+import * as url from "url";
+const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
+const { default: pkgJSON } = await import(
+  path.resolve(__dirname, "..", "..", "package.json"),
+  { assert: { type: "json" } }
+);
 
 describe("commandRunner", () => {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const pkgJSON = require(path.resolve(__dirname, "..", "..", "package.json"));
-
   const tests = [
     {
       args: [
         path.join(
           path.resolve(__dirname, "..", ".."),
           "bin",
-          "ansible-language-server",
+          "ansible-language-server.js",
         ),
         "--version",
       ],

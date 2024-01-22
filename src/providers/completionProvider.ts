@@ -9,17 +9,21 @@ import {
 } from "vscode-languageserver";
 import { Position, TextDocument } from "vscode-languageserver-textdocument";
 import { isScalar, Node, YAMLMap } from "yaml";
-import { IOption } from "../interfaces/module";
-import { WorkspaceFolderContext } from "../services/workspaceManager";
+import { IOption } from "../interfaces/module.js";
+import { WorkspaceFolderContext } from "../services/workspaceManager.js";
 import {
   blockKeywords,
   playKeywords,
   playWithoutTaskKeywords,
   roleKeywords,
   taskKeywords,
-} from "../utils/ansible";
-import { formatModule, formatOption, getDetails } from "../utils/docsFormatter";
-import { insert, toLspRange } from "../utils/misc";
+} from "../utils/ansible.js";
+import {
+  formatModule,
+  formatOption,
+  getDetails,
+} from "../utils/docsFormatter.js";
+import { insert, toLspRange } from "../utils/misc.js";
 import {
   AncestryBuilder,
   findProvidedModule,
@@ -35,8 +39,8 @@ import {
   getPossibleOptionsForPath,
   isCursorInsideJinjaBrackets,
   isPlaybook,
-} from "../utils/yaml";
-import { getVarsCompletion } from "./completionProviderUtils";
+} from "../utils/yaml.js";
+import { getVarsCompletion } from "./completionProviderUtils.js";
 
 const priorityMap = {
   nameKeyword: 1,

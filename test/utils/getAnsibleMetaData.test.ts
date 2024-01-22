@@ -1,16 +1,18 @@
 import { expect } from "chai";
-import path = require("path");
+import * as path from "path";
 import {
   getAnsibleMetaData,
   getResultsThroughCommandRunner,
-} from "../../src/utils/getAnsibleMetaData";
+} from "../../src/utils/getAnsibleMetaData.js";
 import {
   createTestWorkspaceManager,
   disableExecutionEnvironmentSettings,
   enableExecutionEnvironmentSettings,
   getDoc,
   resolveDocUri,
-} from "../helper";
+} from "../helper.js";
+import * as url from "url";
+const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 
 function getAnsibleTestInfo() {
   const ansibleInfo = {};

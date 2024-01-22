@@ -1,8 +1,10 @@
-import Handlebars = require("handlebars");
+import * as Handlebars from "handlebars";
 import * as fs from "fs";
-import { SettingsManager } from "../src/services/settingsManager";
+import { SettingsManager } from "../src/services/settingsManager.js";
 import * as path from "path";
 import * as _ from "lodash";
+import * as url from "url";
+const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 
 // Get the default settings values from settingsManager class
 const settingsManager = new SettingsManager(null, null);

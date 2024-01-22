@@ -1,4 +1,4 @@
-import IntervalTree from "@flatten-js/interval-tree";
+import _IntervalTree from "@flatten-js/interval-tree";
 import {
   Connection,
   Diagnostic,
@@ -7,6 +7,8 @@ import {
   TextDocuments,
 } from "vscode-languageserver";
 import { TextDocument } from "vscode-languageserver-textdocument";
+
+const IntervalTree = _IntervalTree as unknown as typeof _IntervalTree.default;
 
 /**
  * Provides cache for selected diagnostics.
@@ -20,7 +22,8 @@ export class ValidationManager {
   private connection: Connection;
   private documents: TextDocuments<TextDocument>;
 
-  private validationCache: Map<string, IntervalTree<Diagnostic>> = new Map();
+  private validationCache: Map<string, _IntervalTree.default<Diagnostic>> =
+    new Map();
 
   /**
    * Mapping from file that generated diagnostics (origin), to files included in

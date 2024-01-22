@@ -4,7 +4,10 @@ import { DidChangeConfigurationParams } from "vscode-languageserver-protocol";
 import {
   ExtensionSettingsWithDescription,
   ExtensionSettings,
-} from "../interfaces/extensionSettings";
+} from "../interfaces/extensionSettings.js";
+
+import pkg from "lodash";
+const { cloneDeep, merge } = pkg;
 
 export class SettingsManager {
   private connection: Connection;
@@ -129,7 +132,7 @@ export class SettingsManager {
 
   // Structure the settings similar to the ExtensionSettings interface for usage in the code
   private defaultSettings: ExtensionSettings = this._settingsAdjustment(
-    _.cloneDeep(this.defaultSettingsWithDescription),
+    cloneDeep(this.defaultSettingsWithDescription),
   );
 
   public globalSettings: ExtensionSettings = this.defaultSettings;
@@ -162,7 +165,7 @@ export class SettingsManager {
       // Recursively merge globalSettings with clientSettings to use:
       //  - setting from client when provided
       //  - default value of setting otherwise
-      const mergedSettings = _.merge(this.globalSettings, clientSettings);
+      const mergedSettings = merge(this.globalSettings, clientSettings);
       result = Promise.resolve(mergedSettings);
       this.documentSettings.set(uri, result);
     }
