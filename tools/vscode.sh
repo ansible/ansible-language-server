@@ -24,7 +24,8 @@ cleanup() {
 
 if [[ -f "/usr/bin/apt-get" ]]; then
   trap "cleanup" SIGINT SIGTERM ERR EXIT
-  xvfb-run --auto-servernum task devel -- ../ansible-language-server
+  sudo apt-get -qq install -y xvfb
+  xvfb-run -e /dev/stdout --auto-servernum task devel -- ../ansible-language-server
 else
   task devel -- ../ansible-language-server
 fi
