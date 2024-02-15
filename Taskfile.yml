@@ -3,17 +3,13 @@
 version: "3"
 env: &env
   # basically the same thing from .envrc file:
-  VIRTUAL_ENV: # "{{.VIRTUAL_ENV}}"
-    sh: echo "${VIRTUAL_ENV:-out/venvs/${HOSTNAME:-localhost}}"
+  # Avoid undesired extra hints from docker when pulling images
+  DOCKER_CLI_HINTS: "false"
 vars:
-  HOSTNAME:
-    sh: echo ${HOSTNAME:-localhost}
-  NODE_ENV: |
-    [ -z "$NVM_DIR" ] && export NVM_DIR="$HOME/.nvm";
-    [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" --silent;
-    [ -s "/usr/local/opt/nvm/nvm.sh" ] && . "/usr/local/opt/nvm/nvm.sh";
   EE_VERSION:
     sh: ./tools/get-image-version
+  VIRTUAL_ENV:
+    sh: echo "${VIRTUAL_ENV:-${PWD}/out/venvs/${HOSTNAME:-localhost}}"
 tasks:
   default:
     desc: Run most commands
@@ -23,7 +19,6 @@ tasks:
       VERSION:
         sh: node -p "require('./package.json').version"
     cmds:
-      - bash -c '{{ .NODE_ENV }} nvm install'
       - task: lint
       - task: package
       - task: docs
@@ -41,10 +36,9 @@ tasks:
     cmds:
       # Retrieve possibly missing commits:
       - $(git rev-parse --is-shallow-repository) && git fetch --unshallow > /dev/null || true
-      - git fetch --tags
+      - git fetch --tags --force
       - npm run generate-settings-readme
-      - source $VIRTUAL_ENV/bin/activate &&
-        mkdocs build --strict
+      - "source {{.VIRTUAL_ENV}}/bin/activate && mkdocs build --strict"
 
   setup:
     desc: Install dependencies
@@ -57,6 +51,7 @@ tasks:
       - ./tools/test-setup.sh
     sources:
       - package.json
+      - package-lock.json
       - .config/requirements.*
       - setup.cfg
       - tools/test-setup.sh
@@ -81,7 +76,14 @@ tasks:
     deps:
       - setup
     cmds:
-      - $VIRTUAL_ENV/bin/python -m pre_commit autoupdate
+      - npm install -g npm@latest
+      # 1st node version is the implicit one and must match node version from
+      # vscode about dialog and be within supported range from https://www.npmjs.com/package/vscode-extension-tester
+      # as we want to avoid using different node versions across the projects.
+      # 2nd node version is used for preparing for new versions
+      - asdf local nodejs latest:18 latest:$(asdf nodejs resolve lts)
+      - "{{.VIRTUAL_ENV}}/bin/python -m pre_commit autoupdate"
+      - npm outdated
       # bumps some developments dependencies
       - npx ncu -u --dep dev
       # running install after ncu is needed in order to update the lock file
@@ -94,7 +96,7 @@ tasks:
       <<: *env
       PRE_COMMIT_COLOR: always
     cmds:
-      - $VIRTUAL_ENV/bin/python -m pre_commit run -a
+      - "{{.VIRTUAL_ENV}}/bin/python -m pre_commit run -a"
     silent: true
     sources:
       - "*.*"
@@ -106,8 +108,9 @@ tasks:
       - src/**/*.*
       - test/**/*.*
       - tools/**/*.*
-  test:
-    desc: Run all tests
+  .test:
+    # Keep the desc empty to hide entry when listing
+    # desc: Run all tests
     vars:
       ENGINE:
         sh: bash -c "command -v docker | head -n 1"
@@ -118,28 +121,32 @@ tasks:
       # Tests that container engine is functional and that we have the image:
       - "{{.ENGINE}} run -i ghcr.io/ansible/creator-ee:{{ .EE_VERSION }} ansible-lint --version"
       - >
-        source $VIRTUAL_ENV/bin/activate &&
+        source {{.VIRTUAL_ENV}}/bin/activate &&
         command -v ansible-lint &&
-        bash -c '{{ .NODE_ENV }} npm run test'
+        npm run test
     interactive: true
-  test-node14:
-    desc: Run all tests using node 14
+  test:
+    desc: Run all tests using node (same version as vscode)
     cmds:
-      - bash -c '{{ .NODE_ENV }} nvm install 14'
-      - task: test
-  test-node16:
-    desc: Run all tests using node 16
+      - bash -c 'asdf local nodejs latest:18 latest:$(asdf nodejs resolve lts)'
+      - task: .test
+  test-node-lts:
+    desc: Run all tests using node-lts (future)
     cmds:
-      - bash -c '{{ .NODE_ENV }} nvm install 16'
-      - task: test
+      # switch to node-lts
+      - bash -c 'asdf local nodejs latest:$(asdf nodejs resolve lts) latest:18'
+      - task: .test
+      - node --version
+      # restore implicit node version
+      - bash -c 'asdf local nodejs latest:18 latest:$(asdf nodejs resolve lts)'
   test-with-ee:
     desc: Run only ee tests
     deps:
       - setup
     cmds:
       - >
-        source $VIRTUAL_ENV/bin/activate &&
-        bash -c '{{ .NODE_ENV }} npm run test-with-ee'
+        source {{.VIRTUAL_ENV}}/bin/activate &&
+        bash -c 'npm run test-with-ee'
     interactive: true
   test-without-ee:
     desc: Run only non-ee tests
@@ -147,8 +154,8 @@ tasks:
       - setup
     cmds:
       - >
-        source $VIRTUAL_ENV/bin/activate &&
-        bash -c '{{ .NODE_ENV }} npm run test-without-ee'
+        source {{.VIRTUAL_ENV}}/bin/activate &&
+        bash -c 'npm run test-without-ee'
     interactive: true
   package:
     desc: Package extension
@@ -163,7 +170,7 @@ tasks:
       - "*.vsix"
     cmds:
       - rm -f *.tgz
-      - bash -c '{{ .NODE_ENV }} npm pack'
+      - bash -c 'npm pack'
     silent: false
   pr:
     desc: Opens a pull request using gh

@@ -7,7 +7,6 @@ set -euo pipefail
 
 IMAGE=ghcr.io/ansible/creator-ee:$(./tools/get-image-version)
 PIP_LOG_FILE=out/log/pip.log
-HOSTNAME="${HOSTNAME:-localhost}"
 ERR=0
 EE_ANSIBLE_VERSION=null
 EE_ANSIBLE_LINT_VERSION=null
@@ -54,6 +53,17 @@ log () {
     >&2 echo -e "${prefix}${2}${NC}"
 }
 
+if [[ -z "${HOSTNAME:-}" ]]; then
+   log error "A valid HOSTNAME environment variable is required but is missing or empty."
+   exit 2
+fi
+
+log notice "Install latest lts version of nodejs (used by 'node-lts' job)"
+asdf install
+
+log notice "Report current build tool versions..."
+asdf current
+
 if [[ -f "/usr/bin/apt-get" ]]; then
     INSTALL=0
     # qemu-user-static is required by podman on arm64
@@ -64,7 +74,7 @@ if [[ -f "/usr/bin/apt-get" ]]; then
             "${DEB}" || true)" != 'installed' ]] && INSTALL=1
     done
     if [[ "${INSTALL}" -eq 1 ]]; then
-        printf '%s\n' "We need sudo to install some packages: ${DEBS[*]}"
+        log warning "We need sudo to install some packages: ${DEBS[*]}"
         # mandatory or other apt-get commands fail
         sudo apt-get update -qq -o=Dpkg::Use-Pty=0
         # avoid outdated ansible and pipx
@@ -76,7 +86,7 @@ if [[ -f "/usr/bin/apt-get" ]]; then
             -o=Dpkg::Use-Pty=0 "${DEBS[@]}"
     fi
 fi
-python3 --version
+log notice "Using $(python3 --version)"
 
 # Ensure that git is configured properly to allow unattended commits, something
 # that is needed by some tasks, like devel or deps.
@@ -111,6 +121,7 @@ fi
 
 # Fail-fast if run on Windows or under WSL1/2 on /mnt/c because it is so slow
 # that we do not support it at all. WSL use is ok, but not on mounts.
+WSL=0
 if [[ "${OS:-}" == "windows" ]]; then
     log error "You cannot use Windows build tools for development, try WSL."
     exit 1
@@ -120,6 +131,7 @@ if grep -qi microsoft /proc/version >/dev/null 2>&1; then
     if [[ "$(pwd -P || true)" == /mnt/* ]]; then
         log warning "Under WSL, you must avoid running from mounts (/mnt/*) due to critical performance issues."
     fi
+    WSL=1
 fi
 
 # User specific environment
@@ -152,8 +164,8 @@ command -v gh >/dev/null 2>&1 || {
           sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
       sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
       echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
-      sudo apt update
-      sudo apt install gh
+      sudo apt-get update
+      sudo apt-get install gh
     else
         command -v dnf >/dev/null 2>&1 && sudo dnf install -y gh
     fi
@@ -168,22 +180,50 @@ if [[ "$(command -v npm || true)" == '/mnt/c/Program Files/nodejs/npm' ]]; then
         nodejs gcc g++ make python3-dev
 fi
 
-VIRTUAL_ENV=${VIRTUAL_ENV:-out/venvs/${HOSTNAME}}
+# if a virtualenv is already active, ensure is the expected one
+EXPECTED_VENV="${PWD}/out/venvs/${HOSTNAME}"
+if [[ -d "${VIRTUAL_ENV:-}" && "${VIRTUAL_ENV:-}" != "${EXPECTED_VENV}" ]]; then
+     log warning "Detected another virtualenv active ($VIRTUAL_ENV) than expected one, switching it to ${EXPECTED_VENV}"
+fi
+VIRTUAL_ENV=${EXPECTED_VENV}
 if [[ ! -d "${VIRTUAL_ENV}" ]]; then
     log notice "Creating virtualenv ..."
     python3 -m venv "${VIRTUAL_ENV}"
 fi
-# shellcheck disable=SC1091
+# shellcheck source=/dev/null
 . "${VIRTUAL_ENV}/bin/activate"
 
+if [[ "$(which python3)" != ${VIRTUAL_ENV}/bin/python3 ]]; then
+    log warning "Virtualenv broken, trying to recreate it ..."
+    python3 -m venv --clear "${VIRTUAL_ENV}"
+    . "${VIRTUAL_ENV}/bin/activate"
+    if [[ "$(which python3)" != ${VIRTUAL_ENV}/bin/python3 ]]; then
+        log error "Virtualenv still broken."
+        exit 99
+    fi
+fi
 log notice "Upgrading pip ..."
+
 python3 -m pip install -q -U pip
 
 EE_VERSION=$(./tools/get-image-version)
 if [[ $(uname || true) != MINGW* ]]; then # if we are not on pure Windows
-    URL="https://raw.githubusercontent.com/ansible/creator-ee/${EE_VERSION}/_build/requirements.txt"
-    log notice "Installing dependencies from .config/requirements.in and ${URL} loaded from .config/Containerfile ..."
-    python3 -m pip install -r "${URL}" -r .config/requirements.in
+    log notice "Installing dependencies from .config/requirements.in loaded from .config/Dockerfile ..."
+
+    if [[ "${OS:-}" == "darwin" ]]; then
+        log notice "MacOS detected, altering CFLAGS to avoid potential build failure due to https://github.com/ansible/pylibssh/issues/207 ..."
+        CFLAGS="-I $(brew --prefix)/include -I ext -L $(brew --prefix)/lib -lssh"
+        export CFLAGS
+    fi
+    if [[ "${WSL}" == "0" ]]; then
+        log notice "Ensure python version is recent enough for using latest ansible-core"
+        python3 -c "import sys; sys.exit(0 if sys.version_info[:2]>=(3, 10) else 1);"
+        python3 -m pip install -q -r "https://raw.githubusercontent.com/ansible/creator-ee/${EE_VERSION}/_build/requirements.txt" -r .config/requirements.in
+    else
+        # Under WSL we do not use our constraints because github runners has ubuntu 20.04 with python3.9 which is too old
+        python3 -c "import sys; sys.exit(0 if sys.version_info[:2]>=(3, 9) else 1);"
+        python3 -m pip install -q -r .config/requirements.in
+    fi
 fi
 
 # GHA failsafe only: ensure ansible and ansible-lint cannot be found anywhere
@@ -221,23 +261,9 @@ for CMD in ansible ansible-lint; do
 done
 unset CMD
 
-command -v nvm >/dev/null 2>&1 || {
-    # define its location (needed)
-    [[ -z "${NVM_DIR:-}" ]] && export NVM_DIR="${HOME}/.nvm";
-    # install if missing
-    [[ ! -s "${NVM_DIR:-}/nvm.sh" ]] && {
-        log warning "Installing missing nvm"
-        curl -s -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
-    }
-    # activate nvm
-    # shellcheck disable=1091
-    . "${NVM_DIR:-${HOME}/.nvm}/nvm.sh"
-    # shellcheck disable=1091
-    [[ -s "/usr/local/opt/nvm/nvm.sh" ]] && . "/usr/local/opt/nvm/nvm.sh";
-}
 command -v npm  >/dev/null 2>&1 || {
     log notice "Installing nodejs stable."
-    nvm install stable
+    asdf install
 }
 # Check if npm has permissions to install packages (system installed does not)
 # Share https://stackoverflow.com/a/59227497/99834
@@ -290,12 +316,11 @@ env:
 tools:
   ansible-lint: $(get_version ansible-lint)
   ansible: $(get_version ansible)
+  asdf: $(get_version asdf)
   bash: $(get_version bash)
   gh: $(get_version gh || echo null)
   git: $(get_version git)
   node: $(get_version node)
-  npm: $(get_version npm)
-  nvm: $(get_version nvm || echo null)
   pre-commit: $(get_version pre-commit)
   python: $(get_version python)
   task: $(get_version task)
@@ -308,12 +333,16 @@ creator-ee:
   ansible-lint: ${EE_ANSIBLE_LINT_VERSION}
 EOF
 
-log notice "Install node deps using either yarn or npm"
 if [[ -f yarn.lock ]]; then
-    yarn install
+    command -v yarn >/dev/null 2>&1 || npm install -g yarn
+    yarn --version
+    CMD="yarn install --immutable"
+    # --immutable-cache --check-cache
 else
-    npm ci --no-audit
+    CMD="npm ci --no-audit"
 fi
+log notice "Install node deps using: ${CMD}"
+$CMD
 
 [[ $ERR -eq 0 ]] && level=notice || level=error
 log "${level}" "${0##*/} -> out/log/manifest.yml and returned ${ERR}"
