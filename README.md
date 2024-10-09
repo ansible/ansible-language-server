@@ -7,5 +7,5 @@ repository.
 The Ansible Language Server README is located
 [here](https://github.com/ansible/vscode-ansible/blob/main/docs/als/README.md).
 
-Documentation for the extension can be found at
-[ansible.readthedocs.io/projects/vscode-ansible/](https://ansible.readthedocs.io/projects/vscode-ansible/).
+Documentation for the Ansible Language Server can be found at
+[ansible.readthedocs.io/projects/vscode-ansible/als](https://ansible.readthedocs.io/projects/vscode-ansible/als/).
